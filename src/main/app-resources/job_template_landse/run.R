@@ -4,7 +4,7 @@
 library("rciop")
 
 # load any other R library required
-library("rgeos")
+#library("rgeos")
 
 # load the parametee values with rciop.getparam() function
 myparam1 <- rciop.getparam("param1")
