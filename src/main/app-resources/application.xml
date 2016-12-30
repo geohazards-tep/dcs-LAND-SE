@@ -9,7 +9,7 @@
         </defaultParameters>
     </jobTemplate>
   </jobTemplates>
-  <workflow id="test_workflow" title="Test landstat" abstract="This is the abstract">
+  <workflow id="test_workflow" title="Test landse" abstract="This is the abstract">
     <workflowVersion>1.0</workflowVersion>
     <node id="node_job_template_landse">
       <job id="job_template_landse"/>
