@@ -121,18 +121,20 @@ if (length(table(pars == "-wd"))==2)
   wd_selected<-pars[which(pars=="-wd")+1]
   } else
   {
-  wd_selected<-paste(getwd(),"/",sep="")
+  wd_selected<-""
+  #wd_selected<-paste(getwd(),"/",sep="")
   #wd_selected<-"/media/disco_dati/R/SusceptibilityAnalysis/MEMPHIS_test/"
   #wd_selected<-"X:/R/SusceptibilityAnalysis/Messina_Tool_Paper/soglia2_Random/"
   }
-setwd(wd_selected)
+# setwd(wd_selected)
 
 if (length(table(pars == "-cd"))==2)
   {
   cd_selected<-pars[which(pars=="-cd")+1]
   } else
   {
-  cd_selected<-paste(getwd(),"/",sep="")
+  cd_selected<-""
+  #cd_selected<-paste(getwd(),"/",sep="")
   #cd_selected<-"/media/disco_dati/R/SusceptibilityAnalysis/MEMPHIS_test/"
   #cd_selected<-"X:/R/SusceptibilityAnalysis/Messina_Tool_Paper/soglia2_Random/"
   }
