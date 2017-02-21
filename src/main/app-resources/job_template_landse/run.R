@@ -1,4 +1,10 @@
 #!/opt/anaconda/bin/Rscript --vanilla --slave --quiet
+library("rciop")
+
+
+
+
+
 
 #########################################################################
 #########################################################################
@@ -115,22 +121,32 @@ if (length(table(pars == "-wd"))==2)
   wd_selected<-pars[which(pars=="-wd")+1]
   } else
   {
-  wd_selected<-"/media/disco_dati/R/SusceptibilityAnalysis/MEMPHIS_test/"
+  wd_selected<-getwd()
+  #wd_selected<-"/media/disco_dati/R/SusceptibilityAnalysis/MEMPHIS_test/"
   #wd_selected<-"X:/R/SusceptibilityAnalysis/Messina_Tool_Paper/soglia2_Random/"
   }
 setwd(wd_selected)
-
-#setwd("/home/rstudio/R/SusceptibilityAnalysis/Generali/"
-#setwd("X:/R/SusceptibilityAnalysis/Generali/"
 
 if (length(table(pars == "-cd"))==2)
   {
   cd_selected<-pars[which(pars=="-cd")+1]
   } else
   {
-  cd_selected<-"/media/disco_dati/R/SusceptibilityAnalysis/MEMPHIS_test/"
+  cd_selected<-getwd()
+  #cd_selected<-"/media/disco_dati/R/SusceptibilityAnalysis/MEMPHIS_test/"
   #cd_selected<-"X:/R/SusceptibilityAnalysis/Messina_Tool_Paper/soglia2_Random/"
   }
+
+
+data_file_name <- rciop.getparam("file_name")
+res_data<-rciop.copy(data_file_name, TMPDIR, uncompress=FALSE)
+if (res_data$exit.code==0) local.url.data <- res_data$output
+
+data_file_name
+tar_file_list<-untar(local.url.data,list=TRUE) # list files
+untar(local.url.data,list=FALSE) # untar files
+
+list.files(getwd())
 
 
 
