@@ -1,27 +1,34 @@
 <?xml version="1.0" encoding="us-ascii"?>
-<application id="landse">
+<application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" id="landse">
+<!-- <application id="landse"> -->
   <jobTemplates>
     <jobTemplate id="job_template_landse">
       <streamingExecutable>/application/job_template_landse/run.R</streamingExecutable>
         <defaultParameters>
-          <!-- <parameter id="file_name" title="Input file" abstract="Name of input file name" scope="runtime">test_file_name</parameter> -->
-          <parameter id="file_name">test_file_name</parameter>
-        </defaultParameters>
+          <parameter id="file_name" title="Link to the compressed data file" abstract="Specify URL of the compressed data file (.gz, .tgz)" scope="runtime">https://194.119.218.103/s/fipH65EfYS2xGBN/download</parameter>
+          <!--
+          <parameter id="enable_shapefile" title="Using shapefile" abstract="Specify is a shapefile must be used (TRUE, FALSE)" scope="runtime">TRUE</parameter>
+          <parameter id="use_shape_field" title="Using shapefile field" abstract="Specify is the area values are provided in a shapefile field (TRUE, FALSE). If TRUE, in the following, provide the name of the field to be used." scope="runtime">FALSE</parameter>
+          <parameter id="shape_area_field" title="Name of shapefile field with area values" abstract="Specify the name of the shapefile field containing the area values." scope="runtime">area</parameter>
+          -->
+      </defaultParameters>
     </jobTemplate>
   </jobTemplates>
-  <workflow id="test_workflow" title="Test landse" abstract="This is the abstract">
+  <workflow id="dcs_landse_workflow" title="LAND-SE workflow" abstract="This is the workflow of LAND-SE a tool for the landslide susceptibility evaluation">
     <workflowVersion>1.0</workflowVersion>
     <node id="node_job_template_landse">
       <job id="job_template_landse"/>
         <sources>
           <!-- <source refid="file:urls">/tmp/inputs</source> -->
           <!-- <source refid="string:list">input1,input2</source> -->
-          <source refid="string:list" scope="runtime">input1,input2</source>
+          <source id="file_name_test" refid="string:list" title="Link to the compressed data file" abstract="Specify URL of the compressed data file (.gz, .tgz)">https://194.119.218.103/s/fipH65EfYS2xGBN/download</source>
           <!-- <source refid="cas:series">http://localhost/catalogue/sandbox/MER_RR__1P/description</source> -->
         </sources>
         <parameters>
           <parameter id="param1">1</parameter>
           <parameter id="param2">0</parameter>
+          <!--<parameter id="param3">https://194.119.218.103/s/azZ0iVToQos6UEv/download</parameter> -->
+          <!--<parameter id="param4">https://194.119.218.103/s/fDz6mILiMgyKhlk/download</parameter> -->
         </parameters>
     </node>
   </workflow>
