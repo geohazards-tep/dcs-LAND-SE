@@ -1,11 +1,3 @@
-#!/opt/anaconda/bin/Rscript --vanilla --slave --quiet
-library("rciop")
-
-
-
-
-
-
 #########################################################################
 #########################################################################
 ####                                                                 ####
@@ -106,67 +98,39 @@ library("rciop")
 #########################################################################
 #########################################################################
 
-# rm(list=(ls()))
-# graphics.off()
-#memory.limit(size=120000)
-time_start_calculation<-Sys.time()
-time_suffix<-format(time_start_calculation,"%Y%m%d_%H%M")
-enable_file_logging<-TRUE
-log_file_name<-paste("LAND-SE_run_",time_suffix,".log",sep="")
-
 
 #C:\PROGRA~1\R\R-3.0.3\bin\R.exe --no-save --args -cd /media/sf_disco_dati/R/SusceptibilityAnalysis/testing -wd /media/sf_disco_dati/R/SusceptibilityAnalysis/testing < rainfall_events_commented.R > susceptibilty.log
 #pars<-c("-cd","/media/sf_disco_dati/R/SusceptibilityAnalysis/testing","-wd","/media/sf_disco_dati/R/SusceptibilityAnalysis/testing")
 pars <-commandArgs(trailingOnly=TRUE)
+
+# rm(list=(ls()))
+# graphics.off()
+#memory.limit(size=120000)
+time_start_calculation<-Sys.time()
 
 if (length(table(pars == "-wd"))==2)
   {
   wd_selected<-pars[which(pars=="-wd")+1]
   } else
   {
-  wd_selected<-""
-  #wd_selected<-paste(getwd(),"/",sep="")
-  #wd_selected<-"/media/disco_dati/R/SusceptibilityAnalysis/MEMPHIS_test/"
+  wd_selected<-"/media/disco_dati/R/SusceptibilityAnalysis/MEMPHIS_test/"
   #wd_selected<-"X:/R/SusceptibilityAnalysis/Messina_Tool_Paper/soglia2_Random/"
   }
-# setwd(wd_selected)
+setwd(wd_selected)
+
+#setwd("/home/rstudio/R/SusceptibilityAnalysis/Generali/"
+#setwd("X:/R/SusceptibilityAnalysis/Generali/"
 
 if (length(table(pars == "-cd"))==2)
   {
   cd_selected<-pars[which(pars=="-cd")+1]
   } else
   {
-  cd_selected<-""
-  #cd_selected<-paste(getwd(),"/",sep="")
-  #cd_selected<-"/media/disco_dati/R/SusceptibilityAnalysis/MEMPHIS_test/"
+  cd_selected<-"/media/disco_dati/R/SusceptibilityAnalysis/MEMPHIS_test/"
   #cd_selected<-"X:/R/SusceptibilityAnalysis/Messina_Tool_Paper/soglia2_Random/"
   }
 
 
-data_file_name <- rciop.getparam("file_name")
-res_data<-rciop.copy(data_file_name, TMPDIR, uncompress=FALSE)
-if (res_data$exit.code==0) local.url.data <- res_data$output
-
-data_file_name
-tar_file_list<-untar(local.url.data,list=TRUE) # list files
-untar(local.url.data,list=FALSE) # untar files
-
-list.files(getwd())
-
-#-------------------------------- File logging opening --------------------------------#
-if (enable_file_logging == TRUE)
-  {
-  sink.file<-file(paste(getwd(),"/",log_file_name,sep=""),open="a")  
-  if(file.exists(paste(getwd(),"/",log_file_name,sep=""))==FALSE)
-    {
-    file.create(paste(getwd(),"/",log_file_name,sep=""),showWarnings=TRUE)
-    }
-  sink(sink.file,type="message")
-  sink(sink.file,type="output")
-  #sink() # to unsink file
-  #print("",quote=FALSE)
-  print("---------------------------------------",quote=FALSE)
-  }
 
 #--------------------------- PARAMETER DEFINITION ---------------------------#
 load_rdata<-FALSE
@@ -7068,51 +7032,5 @@ time_end_calculation<-Sys.time()
 total_calculation_time<-difftime(time_end_calculation, time_start_calculation,units="hours")
 print(paste("Total calculation time: ",total_calculation_time," hours",sep=""))
 
-
-### Zipping results
-zip(paste("result_",time_suffix,".zip",sep=""),files=c("GroupingVariable_Histogram.pdf","GroupingVariable_Histogram_Validation.pdf","result_Collinearity_Analysis.txt",paste("Susceptibility_",unlist(strsplit(rdata_file,"/"))[length(unlist(strsplit(rdata_file,"/")))],sep="")))
-file.remove(c("GroupingVariable_Histogram.pdf","GroupingVariable_Histogram_Validation.pdf","result_Collinearity_Analysis.txt",paste("Susceptibility_",unlist(strsplit(rdata_file,"/"))[length(unlist(strsplit(rdata_file,"/")))],sep="")))
-file.remove(list.files(pattern="Rplots",include.dirs=FALSE))
-
-	  
-if(model.run.matrix[1] == "YES")
-  {
-  zip(paste("result_LinearDiscriminant_",time_suffix,".zip",sep=""),files=list.files(pattern="LDA",include.dirs=TRUE))
-  unlink(list.files(pattern="LDA",include.dirs=TRUE), recursive = TRUE,force=FALSE)
-  }
-
-if(model.run.matrix[2] == "YES")
-  {
-  zip(paste("result_QuadraticDiscriminant_",time_suffix,".zip",sep=""),files=list.files(pattern="QDA",include.dirs=TRUE))
-  unlink(list.files(pattern="QDA",include.dirs=TRUE), recursive = TRUE,force=FALSE)
-  }
-
-if(model.run.matrix[3] == "YES")
-  {
-  zip(paste("result_LogisticRegression_",time_suffix,".zip",sep=""),files=list.files(pattern="LRM",include.dirs=TRUE))
-  unlink(list.files(pattern="LRM",include.dirs=TRUE), recursive = TRUE,force=FALSE)
-  }
-
-if(model.run.matrix[4] == "YES")
-  {
-  zip(paste("result_NeuralNetwork_",time_suffix,".zip",sep=""),files=list.files(pattern="NNM",include.dirs=TRUE))
-  unlink(list.files(pattern="NNM",include.dirs=TRUE), recursive = TRUE,force=FALSE)
-  }
-
-if(model.run.matrix[5] == "YES")
-  {
-  zip(paste("result_Combination_",time_suffix,".zip",sep=""),files=list.files(pattern="CFM",include.dirs=TRUE))
-  unlink(list.files(pattern="CFM",include.dirs=TRUE), recursive = TRUE,force=FALSE)
-  }
-
-
-#-------------------------------- File logging closing --------------------------------#
-if (enable_file_logging == TRUE)
-  {
-  sink()
-  }  
-	  
-	  
-rciop.publish(getwd(), recursive=FALSE, metalink=TRUE)
 
 
