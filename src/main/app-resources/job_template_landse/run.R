@@ -106,15 +106,33 @@ library("rciop")
 #########################################################################
 #########################################################################
 
-
-#C:\PROGRA~1\R\R-3.0.3\bin\R.exe --no-save --args -cd /media/sf_disco_dati/R/SusceptibilityAnalysis/testing -wd /media/sf_disco_dati/R/SusceptibilityAnalysis/testing < rainfall_events_commented.R > susceptibilty.log
-#pars<-c("-cd","/media/sf_disco_dati/R/SusceptibilityAnalysis/testing","-wd","/media/sf_disco_dati/R/SusceptibilityAnalysis/testing")
-pars <-commandArgs(trailingOnly=TRUE)
-
 # rm(list=(ls()))
 # graphics.off()
 #memory.limit(size=120000)
 time_start_calculation<-Sys.time()
+time_suffix<-format(time_start_calculation,"%Y%m%d_%H%M")
+enable_file_logging<-TRUE
+log_file_name<-paste("LAND-SE_run_",time_suffix,".log",sep="")
+
+
+#-------------------------------- File logging opening --------------------------------#
+if (enable_file_logging == TRUE)
+  {
+  sink.file<-file(paste(log_file_name,sep=""),open="a")  
+  if(file.exists(paste(log_file_name,sep=""))==FALSE)
+    {
+    file.create(paste(log_file_name,sep=""),showWarnings=TRUE)
+    }
+  sink(sink.file,type="message")
+  sink(sink.file,type="output")
+  #sink() # to unsink file
+  #print("",quote=FALSE)
+  print("---------------------------------------",quote=FALSE)
+  }
+
+#C:\PROGRA~1\R\R-3.0.3\bin\R.exe --no-save --args -cd /media/sf_disco_dati/R/SusceptibilityAnalysis/testing -wd /media/sf_disco_dati/R/SusceptibilityAnalysis/testing < rainfall_events_commented.R > susceptibilty.log
+#pars<-c("-cd","/media/sf_disco_dati/R/SusceptibilityAnalysis/testing","-wd","/media/sf_disco_dati/R/SusceptibilityAnalysis/testing")
+pars <-commandArgs(trailingOnly=TRUE)
 
 if (length(table(pars == "-wd"))==2)
   {
@@ -7052,6 +7070,49 @@ time_end_calculation<-Sys.time()
 total_calculation_time<-difftime(time_end_calculation, time_start_calculation,units="hours")
 print(paste("Total calculation time: ",total_calculation_time," hours",sep=""))
 
-rciop.publish(getwd(), recursive=TRUE, metalink=TRUE)
+
+### Zipping results
+zip(paste("result_",time_suffix,".zip",sep=""),files=c("GroupingVariable_Histogram.pdf","GroupingVariable_Histogram_Validation.pdf","result_Collinearity_Analysis.txt",paste("Susceptibility_",unlist(strsplit(rdata_file,"/"))[length(unlist(strsplit(rdata_file,"/")))],sep="")))
+file.remove(c("GroupingVariable_Histogram.pdf","GroupingVariable_Histogram_Validation.pdf","result_Collinearity_Analysis.txt",paste("Susceptibility_",unlist(strsplit(rdata_file,"/"))[length(unlist(strsplit(rdata_file,"/")))],sep="")))
+
+if(model.run.matrix[1] == "YES")
+  {
+  zip(paste("result_LinearDiscriminant_",time_suffix,".zip",sep=""),files=list.files(pattern="LDA",include.dirs=TRUE))
+  unlink(list.files(pattern="LDA",include.dirs=TRUE), recursive = TRUE,force=FALSE)
+  }
+
+if(model.run.matrix[2] == "YES")
+  {
+  zip(paste("result_QuadraticDiscriminant_",time_suffix,".zip",sep=""),files=list.files(pattern="QDA",include.dirs=TRUE))
+  unlink(list.files(pattern="QDA",include.dirs=TRUE), recursive = TRUE,force=FALSE)
+  }
+
+if(model.run.matrix[3] == "YES")
+  {
+  zip(paste("result_LogisticRegression_",time_suffix,".zip",sep=""),files=list.files(pattern="LRM",include.dirs=TRUE))
+  unlink(list.files(pattern="LRM",include.dirs=TRUE), recursive = TRUE,force=FALSE)
+  }
+
+if(model.run.matrix[4] == "YES")
+  {
+  zip(paste("result_NeuralNetwork_",time_suffix,".zip",sep=""),files=list.files(pattern="NNM",include.dirs=TRUE))
+  unlink(list.files(pattern="NNM",include.dirs=TRUE), recursive = TRUE,force=FALSE)
+  }
+
+if(model.run.matrix[5] == "YES")
+  {
+  zip(paste("result_Combination_",time_suffix,".zip",sep=""),files=list.files(pattern="CFM",include.dirs=TRUE))
+  unlink(list.files(pattern="CFM",include.dirs=TRUE), recursive = TRUE,force=FALSE)
+  }
+
+
+#-------------------------------- File logging closing --------------------------------#
+if (enable_file_logging == TRUE)
+  {
+  sink()
+  }  
+	  
+	  
+rciop.publish(getwd(), recursive=FALSE, metalink=TRUE)
 
 
