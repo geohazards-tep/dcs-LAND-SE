@@ -7113,6 +7113,11 @@ if (enable_file_logging == TRUE)
   }  
 	  
 	  
-rciop.publish(getwd(), recursive=FALSE, metalink=TRUE)
-
+#rciop.publish(getwd(), recursive=FALSE, metalink=TRUE)
+	
+zip_list<-list.files(pattern=".zip",include.dirs=FALSE)
+for(count_zip in 1:length(zip_list))
+  {
+  rciop.publish(paste(getwd(),"/",zip_list[count_zip],sep=""), recursive=FALSE, metalink=TRUE)
+  }
 
