@@ -1403,7 +1403,7 @@ if(model.run.matrix[1] == "YES")
 	    
 	    shape_training_lda@data <- merge(x=shape_training_lda@data,y=result_training_lda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
 	    #writeOGR(shape_training_lda,dsn="result_LDA_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-	    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_lda,dsn="result_LDA_training",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+	    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_lda,dsn=getwd(),layer="training_LDA",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
 	    # WARNING: The validation does't have the unvertainty estimation: probably this can be daone using the parabolic error function 
 	    shape_validation_lda<-shape_validation
@@ -1419,7 +1419,7 @@ if(model.run.matrix[1] == "YES")
 	    shape_validation_lda@data <- merge(x=shape_validation_lda@data,y=result_validation_lda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
 	    shape_validation_lda@data <- cbind(shape_validation_lda@data,PROB_SDMOD=(coefficients(fit.parabola.probability.lda)*(shape_validation_lda@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.lda)*shape_validation_lda@data$VAL_PROB))
 	    #writeOGR(shape_validation_lda,dsn="result_LDA_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-	    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_lda,dsn="result_LDA_validation",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+	    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_lda,dsn=getwd(),layer="validation_LDA",driver="ESRI Shapefile",overwrite_layer=TRUE)
 		
 	    # Plot and export of maps
 	    # LDA Susceptibility
@@ -1575,7 +1575,7 @@ if(model.run.matrix[1] == "YES")
 		
 		shape_training_lda@data <- merge(x=shape_training_lda@data,y=result_training_lda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
 		#writeOGR(shape_training_lda,dsn="result_LDA_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-		if(enable_detailed_data_export==TRUE) writeOGR(shape_training_lda,dsn="result_LDA_training",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+		if(enable_detailed_data_export==TRUE) writeOGR(shape_training_lda,dsn=getwd(),layer="training_LDA",driver="ESRI Shapefile",overwrite_layer=TRUE)
 		
 		
 		# WARNING: The validation does't have the unvertainty estimation: probably this can be daone using the parabolic error function 
@@ -1593,7 +1593,7 @@ if(model.run.matrix[1] == "YES")
 		shape_validation_lda@data <- merge(x=shape_validation_lda@data,y=result_validation_lda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
 		shape_validation_lda@data <- cbind(shape_validation_lda@data,PROB_SDMOD=(coefficients(fit.parabola.probability.lda)*(shape_validation_lda@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.lda)*shape_validation_lda@data$VAL_PROB))
 		#writeOGR(shape_validation_lda,dsn="result_LDA_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-		if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_lda,dsn="result_LDA_validation",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+		if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_lda,dsn=getwd(),layer="validation_LDA",driver="ESRI Shapefile",overwrite_layer=TRUE)
 		
 		require(raster)
 		
@@ -2642,7 +2642,7 @@ if(model.run.matrix[2] == "YES")
 
     shape_training_qda@data <- merge(x=shape_training_qda@data,y=result_training_qda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     #writeOGR(shape_training_qda,dsn="result_QDA_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_qda,dsn="result_QDA_training",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_qda,dsn=getwd(),layer="training_QDA",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
     # WARNING: The validation does't have the unvertainty estimation: probably this can be daone using the parabolic error function 
     shape_validation_qda<-shape_validation
@@ -2658,7 +2658,7 @@ if(model.run.matrix[2] == "YES")
     shape_validation_qda@data <- merge(x=shape_validation_qda@data,y=result_validation_qda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_qda@data <- cbind(shape_validation_qda@data,PROB_SDMOD=(coefficients(fit.parabola.probability.qda)*(shape_validation_qda@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.qda)*shape_validation_qda@data$VAL_PROB))
     #writeOGR(shape_validation_qda,dsn="result_QDA_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_qda,dsn="result_QDA_validation",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_qda,dsn=getwd(),layer="validation_QDA",driver="ESRI Shapefile",overwrite_layer=TRUE)
     ##################################################################
     ##################################################################
     
@@ -2812,7 +2812,7 @@ if(model.run.matrix[2] == "YES")
     
     shape_training_qda@data <- merge(x=shape_training_qda@data,y=result_training_qda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     #writeOGR(shape_training_qda,dsn="result_QDA_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_qda,dsn="result_QDA_training",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_qda,dsn=getwd(),layer="training_QDA",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
     
     # WARNING: The validation does't have the unvertainty estimation: probabilty this can be daone using the parabolic error function 
@@ -2830,7 +2830,7 @@ if(model.run.matrix[2] == "YES")
     shape_validation_qda@data <- merge(x=shape_validation_qda@data,y=result_validation_qda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_qda@data <- cbind(shape_validation_qda@data,PROB_SDMOD=(coefficients(fit.parabola.probability.qda)*(shape_validation_qda@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.qda)*shape_validation_qda@data$VAL_PROB))
     #writeOGR(shape_validation_qda,dsn="result_QDA_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_qda,dsn="result_QDA_validation",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_qda,dsn=getwd(),layer="validation_QDA",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
     require(raster)
     
@@ -3898,7 +3898,7 @@ if(model.run.matrix[3] == "YES")
     
     shape_training_lrm@data <- merge(x=shape_training_lrm@data,y=result_training_lrm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     #writeOGR(shape_training_lrm,dsn="result_LRM_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_lrm,dsn="result_LRM_training",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_lrm,dsn=getwd(),layer="training_LRM",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
     # WARNING: The validation does't have the unvertainty estimation: probably this can be daone using the parabolic error function 
     shape_validation_lrm<-shape_validation
@@ -3916,7 +3916,7 @@ if(model.run.matrix[3] == "YES")
     shape_validation_lrm@data <- merge(x=shape_validation_lrm@data,y=result_validation_lrm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_lrm@data <- cbind(shape_validation_lrm@data,PROB_SDMOD=(coefficients(fit.parabola.probability.lrm)*(shape_validation_lrm@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.lrm)*shape_validation_lrm@data$VAL_PROB))
     #writeOGR(shape_validation_lrm,dsn="result_LRM_validation.shp",layer="validation",driver="ESRI Shapefile")  # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_lrm,dsn="result_LRM_validation",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_lrm,dsn=getwd(),layer="validation_LRM",driver="ESRI Shapefile",overwrite_layer=TRUE)
     ##################################################################
     ##################################################################
     
@@ -4074,7 +4074,7 @@ if(model.run.matrix[3] == "YES")
     shape_training_lrm@data <- merge(x=shape_training_lrm@data,y=result_training_lrm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     #writeOGR(shape_training_lrm,dsn="result_LRM_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
     
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_lrm,dsn="result_LRM_training",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_lrm,dsn=getwd(),layer="training_LRM",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
     
     # WARNING: The validation does't have the unvertainty estimation: probabilty this can be daone using the parabolic error function 
@@ -4091,7 +4091,7 @@ if(model.run.matrix[3] == "YES")
     shape_validation_lrm@data <- merge(x=shape_validation_lrm@data,y=result_validation_lrm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_lrm@data <- cbind(shape_validation_lrm@data,PROB_SDMOD=(coefficients(fit.parabola.probability.lrm)*(shape_validation_lrm@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.lrm)*shape_validation_lrm@data$VAL_PROB))
     #writeOGR(shape_validation_lrm,dsn="result_LRM_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_lrm,dsn="result_LRM_validation",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_lrm,dsn=getwd(),layer="validation_LRM",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
     require(raster)
     
@@ -5173,7 +5173,7 @@ if(model.run.matrix[4] == "YES")
     
     shape_training_nnm@data <- merge(x=shape_training_nnm@data,y=result_training_nnm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)  
     #writeOGR(shape_training_nnm,dsn="result_NNM_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_nnm,dsn="result_NNM_training",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_nnm,dsn=getwd(),layer="training_NNM",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
     # WARNING: The validation does't have the unvertainty estimation: probably this can be daone using the parabolic error function 
     shape_validation_nnm<-shape_validation
@@ -5190,7 +5190,7 @@ if(model.run.matrix[4] == "YES")
     shape_validation_nnm@data <- merge(x=shape_validation_nnm@data,y=result_validation_nnm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_nnm@data <- cbind(shape_validation_nnm@data,PROB_SDMOD=(coefficients(fit.parabola.probability.nnm)*(shape_validation_nnm@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.nnm)*shape_validation_nnm@data$VAL_PROB))
     #writeOGR(shape_validation_nnm,dsn="result_NNM_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_nnm,dsn="result_NNM_validation",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_nnm,dsn=getwd(),layer="validation_NNM",driver="ESRI Shapefile",overwrite_layer=TRUE)
     ##################################################################
     ##################################################################
     
@@ -5346,7 +5346,7 @@ if(model.run.matrix[4] == "YES")
     #############
     shape_training_nnm@data <- merge(x=shape_training_nnm@data,y=result_training_nnm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     #writeOGR(shape_training_nnm,dsn="result_NNM_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_nnm,dsn="result_NNM_training",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_nnm,dsn=getwd(),layer="training_NNM",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
     
     # WARNING: The validation does't have the unvertainty estimation: probabilty this can be daone using the parabolic error function 
@@ -5363,7 +5363,7 @@ if(model.run.matrix[4] == "YES")
     shape_validation_nnm@data <- merge(x=shape_validation_nnm@data,y=result_validation_nnm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_nnm@data <- cbind(shape_validation_nnm@data,PROB_SDMOD=(coefficients(fit.parabola.probability.nnm)*(shape_validation_nnm@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.nnm)*shape_validation_nnm@data$VAL_PROB))
     #writeOGR(shape_validation_nnm,dsn="result_NNM_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_nnm,dsn="result_NNM_validation",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_nnm,dsn=getwd(),layer="validation_NNM",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
     require(raster)
     
@@ -6409,7 +6409,7 @@ if(model.run.matrix[5] == "YES")
     #############
     shape_training_cfm@data <- merge(x=shape_training_cfm@data,y=result_training_cfm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     #writeOGR(shape_training_cfm,dsn="result_CFM_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_cfm,dsn="result_CFM_training",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_cfm,dsn=getwd(),layer="training_CFM",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
     # WARNING: The validation does't have the unvertainty estimation: probably this can be daone using the parabolic error function 
     shape_validation_cfm<-shape_validation
@@ -6425,7 +6425,7 @@ if(model.run.matrix[5] == "YES")
     shape_validation_cfm@data <- merge(x=shape_validation_cfm@data,y=result_validation_cfm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_cfm@data <- cbind(shape_validation_cfm@data,PROB_SDMOD=(coefficients(fit.parabola.probability.cfm)*(shape_validation_cfm@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.cfm)*shape_validation_cfm@data$VAL_PROB))
     #writeOGR(shape_validation_cfm,dsn="result_CFM_validation.shp",layer="validation",driver="ESRI Shapefile")  # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_cfm,dsn="result_CFM_validation",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_cfm,dsn=getwd(),layer="validation_CFM",driver="ESRI Shapefile",overwrite_layer=TRUE)
     ##################################################################
     ##################################################################
     
@@ -6580,7 +6580,7 @@ if(model.run.matrix[5] == "YES")
     #############
     shape_training_cfm@data <- merge(x=shape_training_cfm@data,y=result_training_cfm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     #writeOGR(shape_training_cfm,dsn="result_CFM_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_cfm,dsn="result_CFM_training",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_cfm,dsn=getwd(),layer="training_CFM",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
     
     # WARNING: The validation does't have the unvertainty estimation: probabilty this can be daone using the parabolic error function 
@@ -6598,7 +6598,7 @@ if(model.run.matrix[5] == "YES")
     shape_validation_cfm@data <- merge(x=shape_validation_cfm@data,y=result_validation_cfm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_cfm@data <- cbind(shape_validation_cfm@data,PROB_SDMOD=(coefficients(fit.parabola.probability.cfm)*(shape_validation_cfm@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.cfm)*shape_validation_cfm@data$VAL_PROB))
     #writeOGR(shape_validation_cfm,dsn="result_CFM_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_cfm,dsn="result_CFM_validation",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_cfm,dsn=getwd(),layer="validation_CFM",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
     require(raster)
     
