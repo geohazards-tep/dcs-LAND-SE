@@ -7077,32 +7077,32 @@ file.remove(list.files(pattern="Rplots",include.dirs=FALSE))
 	  
 if(model.run.matrix[1] == "YES")
   {
-  zip(paste("result_LinearDiscriminant_",time_suffix,".zip",sep=""),files=list.files(pattern="LDA",include.dirs=TRUE))
-  unlink(list.files(pattern="LDA",include.dirs=TRUE), recursive = TRUE,force=FALSE)
+  zip(paste("result_LinearDiscriminant_",time_suffix,".zip",sep=""),files=list.files(pattern="LDA",include.dirs=FALSE))
+  #unlink(list.files(pattern="LDA",include.dirs=TRUE), recursive = TRUE,force=FALSE)
   }
 
 if(model.run.matrix[2] == "YES")
   {
-  zip(paste("result_QuadraticDiscriminant_",time_suffix,".zip",sep=""),files=list.files(pattern="QDA",include.dirs=TRUE))
-  unlink(list.files(pattern="QDA",include.dirs=TRUE), recursive = TRUE,force=FALSE)
+  zip(paste("result_QuadraticDiscriminant_",time_suffix,".zip",sep=""),files=list.files(pattern="QDA",include.dirs=FALSE))
+  #unlink(list.files(pattern="QDA",include.dirs=TRUE), recursive = TRUE,force=FALSE)
   }
 
 if(model.run.matrix[3] == "YES")
   {
-  zip(paste("result_LogisticRegression_",time_suffix,".zip",sep=""),files=list.files(pattern="LRM",include.dirs=TRUE))
-  unlink(list.files(pattern="LRM",include.dirs=TRUE), recursive = TRUE,force=FALSE)
+  zip(paste("result_LogisticRegression_",time_suffix,".zip",sep=""),files=list.files(pattern="LRM",include.dirs=FALSE))
+  #unlink(list.files(pattern="LRM",include.dirs=TRUE), recursive = TRUE,force=FALSE)
   }
 
 if(model.run.matrix[4] == "YES")
   {
-  zip(paste("result_NeuralNetwork_",time_suffix,".zip",sep=""),files=list.files(pattern="NNM",include.dirs=TRUE))
-  unlink(list.files(pattern="NNM",include.dirs=TRUE), recursive = TRUE,force=FALSE)
+  zip(paste("result_NeuralNetwork_",time_suffix,".zip",sep=""),files=list.files(pattern="NNM",include.dirs=FALSE))
+  #unlink(list.files(pattern="NNM",include.dirs=TRUE), recursive = TRUE,force=FALSE)
   }
 
 if(model.run.matrix[5] == "YES")
   {
-  zip(paste("result_Combination_",time_suffix,".zip",sep=""),files=list.files(pattern="CFM",include.dirs=TRUE))
-  unlink(list.files(pattern="CFM",include.dirs=TRUE), recursive = TRUE,force=FALSE)
+  zip(paste("result_Combination_",time_suffix,".zip",sep=""),files=list.files(pattern="CFM",include.dirs=FALSE))
+  #unlink(list.files(pattern="CFM",include.dirs=TRUE), recursive = TRUE,force=FALSE)
   }
 
 
