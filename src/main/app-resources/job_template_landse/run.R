@@ -120,27 +120,27 @@ log_file_name<-paste("LAND-SE_run_",time_suffix,".log",sep="")
 pars <-commandArgs(trailingOnly=TRUE)
 
 if (length(table(pars == "-wd"))==2)
-  {
+{
   wd_selected<-pars[which(pars=="-wd")+1]
-  } else
-  {
+} else
+{
   wd_selected<-""
   #wd_selected<-paste(getwd(),"/",sep="")
   #wd_selected<-"/media/disco_dati/R/SusceptibilityAnalysis/MEMPHIS_test/"
   #wd_selected<-"X:/R/SusceptibilityAnalysis/Messina_Tool_Paper/soglia2_Random/"
-  }
+}
 # setwd(wd_selected)
 
 if (length(table(pars == "-cd"))==2)
-  {
+{
   cd_selected<-pars[which(pars=="-cd")+1]
-  } else
-  {
+} else
+{
   cd_selected<-""
   #cd_selected<-paste(getwd(),"/",sep="")
   #cd_selected<-"/media/disco_dati/R/SusceptibilityAnalysis/MEMPHIS_test/"
   #cd_selected<-"X:/R/SusceptibilityAnalysis/Messina_Tool_Paper/soglia2_Random/"
-  }
+}
 
 
 data_file_name <- rciop.getparam("file_name")
@@ -155,18 +155,18 @@ list.files(getwd())
 
 #-------------------------------- File logging opening --------------------------------#
 if (enable_file_logging == TRUE)
-  {
+{
   sink.file<-file(paste(getwd(),"/",log_file_name,sep=""),open="a")  
   if(file.exists(paste(getwd(),"/",log_file_name,sep=""))==FALSE)
-    {
+  {
     file.create(paste(getwd(),"/",log_file_name,sep=""),showWarnings=TRUE)
-    }
+  }
   sink(sink.file,type="message")
   sink(sink.file,type="output")
   #sink() # to unsink file
   #print("",quote=FALSE)
   print("---------------------------------------",quote=FALSE)
-  }
+}
 
 #--------------------------- PARAMETER DEFINITION ---------------------------#
 load_rdata<-FALSE
@@ -213,13 +213,13 @@ spatial.data.epsg<-as.numeric(configuration.spatial.data.table$EPSG)
 
 #------------------------- READ OF THE DATA -------------------------#
 if (load_rdata==FALSE)
-  {
+{
   training.table<-read.table("training.txt",header = TRUE,dec=".", sep="\t")
-  } else
-  {
+} else
+{
   load(file=rdata_file)
-  }
-      
+}
+
 #names(training.table)
 #dim(training.table)
 training.table<-na.omit(training.table)
@@ -252,8 +252,8 @@ color_ramp_palette_fun<-colorRampPalette(c(rgb(38,115,0,max=255),rgb(255,255,0,m
 
 if (enable_screen_plotting==TRUE)
 {
-dev.new()
-hist(training.table[,2], breaks=breaks.histogram.values,freq=TRUE, xlab="Susceptibility Class", ylab="Frequency", main="Histogram of grouping variable", col=color_ramp_palette_fun(length(breaks.histogram.values)-1))
+  dev.new()
+  hist(training.table[,2], breaks=breaks.histogram.values,freq=TRUE, xlab="Susceptibility Class", ylab="Frequency", main="Histogram of grouping variable", col=color_ramp_palette_fun(length(breaks.histogram.values)-1))
 }
 pdf(file = "GroupingVariable_Histogram.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
 hist(training.table[,2], breaks=breaks.histogram.values,freq=TRUE, xlab="Susceptibility Class", ylab="Frequency", main="Histogram of grouping variable", col=color_ramp_palette_fun(length(breaks.histogram.values)-1))
@@ -263,10 +263,10 @@ dev.off()
 
 #-------------------  READ OF THE VALIDATION DATA -------------------#
 if (load_rdata==FALSE)
-  {
+{
   validation.table<-read.table("validation.txt",header = TRUE,dec=".", sep="\t")
-  }
-      
+}
+
 #dim(validation.table)
 
 validation.table<-na.omit(validation.table)
@@ -289,8 +289,8 @@ validation.identification.value<-validation.table[,1]
 
 if (enable_screen_plotting==TRUE)
 {
-dev.new()
-hist(validation.table[,2], breaks=breaks.histogram.values,freq=TRUE, xlab="Susceptibility Class", ylab="Frequency", main="Histogram of validation grouping variable", col=color_ramp_palette_fun(length(breaks.histogram.values)-1))
+  dev.new()
+  hist(validation.table[,2], breaks=breaks.histogram.values,freq=TRUE, xlab="Susceptibility Class", ylab="Frequency", main="Histogram of validation grouping variable", col=color_ramp_palette_fun(length(breaks.histogram.values)-1))
 }
 pdf(file = "GroupingVariable_Histogram_Validation.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
 hist(validation.table[,2], breaks=breaks.histogram.values,freq=TRUE, xlab="Susceptibility Class", ylab="Frequency", main="Histogram of validation grouping variable", col=color_ramp_palette_fun(length(breaks.histogram.values)-1))
@@ -315,14 +315,14 @@ dev.off()
 
 #---------------------- READ SPATIAL DATA FILE ----------------------#
 if(configuration.spatial.data.table$PRESENCE == "YES" & configuration.spatial.data.table$GEOMETRY=="POLYGONS")
-  {
+{
   library(rgdal)
   shape_training<-readOGR(dsn="training.shp",layer="training")
   index_col_shape_training<-match(configuration.spatial.data.table[c(3,5,6)],colnames(shape_training@data))
   index_col_shape_training<-index_col_shape_training[which(is.finite(index_col_shape_training))]
   shape_training@data<-shape_training@data[,index_col_shape_training]
   #shape_training@data<-shape_training@data[order(shape_training@data[,index_col_shape_training[1]]),index_col_shape_training]
-
+  
   
   
   shape_validation<-readOGR(dsn="validation.shp",layer="validation")
@@ -330,12 +330,12 @@ if(configuration.spatial.data.table$PRESENCE == "YES" & configuration.spatial.da
   index_col_shape_validation<-index_col_shape_validation[which(is.finite(index_col_shape_validation))]
   shape_validation@data<-shape_validation@data[,index_col_shape_validation]
   #shape_validation@data<-shape_validation@data[order(shape_validation@data[,index_col_shape_training[1]]),index_col_shape_validation]
-
+  
   
   shape_merge_field<-names(shape_training@data)[1]
   
   #spplot(shape_validation)
-    
+  
   #shape_validation@data
   #slot(shape_validation, "data") # equivalent to the previous
   #slot(shape_validation, "polygons")
@@ -343,15 +343,15 @@ if(configuration.spatial.data.table$PRESENCE == "YES" & configuration.spatial.da
   # Matching DATA ID and Shapefile ID and adding variable columuns
   #if(identical(as.character(identification.value),as.character(shape_training@data[,shape_merge_field])) & identical(as.character(validation.identification.value),as.character(shape_validation@data[,shape_merge_field])))
   if(identical(sort(as.character(identification.value)),sort(as.character(shape_training@data[,shape_merge_field]))) & identical(sort(as.character(validation.identification.value)),sort(as.character(shape_validation@data[,shape_merge_field]))))
-    {
-	shape_training@data <- merge(x=shape_training@data,y=training.table,by.x=shape_merge_field, by.y=names(training.table)[1], all.x=T, sort=F)	
-	shape_validation@data <- merge(x=shape_validation@data,y=validation.table,by.x=shape_merge_field, by.y=names(validation.table)[1], all.x=T, sort=F)	
-	#shape_training@data<-cbind(shape_training@data, training.table[,-c(1,2)])
+  {
+    shape_training@data <- merge(x=shape_training@data,y=training.table,by.x=shape_merge_field, by.y=names(training.table)[1], all.x=T, sort=F)	
+    shape_validation@data <- merge(x=shape_validation@data,y=validation.table,by.x=shape_merge_field, by.y=names(validation.table)[1], all.x=T, sort=F)	
+    #shape_training@data<-cbind(shape_training@data, training.table[,-c(1,2)])
     #shape_validation@data<-cbind(shape_validation@data, validation.table[,-c(1,2)])
-	} else
-    {
+  } else
+  {
     print("ERROR - Data ID and Shapefile ID doesn't match")
-    }
+  }
   # In case of mismatching  due to order of IDs, do not change the ID in shape data but please refere to http://mapserver.org/utilities/sortshp.html
   
   
@@ -410,104 +410,104 @@ if(configuration.spatial.data.table$PRESENCE == "YES" & configuration.spatial.da
   require(RColorBrewer)
   color.vector.uncertainty<-rev(brewer.pal(length(breaks.map.uncertainty)-1,"YlOrRd"))
   color.vector.matching<-c(rgb(38,115,0,max=255),rgb(233,255,190,max=255),rgb(215,215,158,max=255),rgb(115,115,0,max=255))
-  }
+}
 
 if(configuration.spatial.data.table$PRESENCE == "YES" & configuration.spatial.data.table$GEOMETRY=="POINTS")
-	{
-	library(rgdal)
+{
+  library(rgdal)
   #####################
   if (load_rdata==FALSE)
-    {
+  {
     shape_training<-readOGR(dsn="training.shp",layer="training")
     shape_validation<-readOGR(dsn="validation.shp",layer="validation")
-    } else
-    {
+  } else
+  {
     shape_training<-training.xy.table
     shape_validation<-validation.xy.table
     rm(list=c("training.xy.table","validation.xy.table"))
-    }
+  }
   #####################
   
-	#shape_training<-readOGR(dsn="training.shp",layer="training")
-	#shape_validation<-readOGR(dsn="validation.shp",layer="validation")
-	shape_merge_field<-(configuration.spatial.data.table$ID_FIELD)
-	#spplot(shape_validation)
-	 
-	#shape_validation@data
-	#slot(shape_validation, "data") # equivalent to the previous
-	#slot(shape_validation, "polygons")
-		  
-	## Matching DATA ID and Shapefile ID and adding variable columuns
-	#if(identical(as.character(identification.value),as.character(shape_training@data[,shape_merge_field])) & identical(as.character(validation.identification.value),as.character(shape_validation@data[,shape_merge_field])))
-	#{
-	#shape_training@data <- merge(x=shape_training@data,y=training.table,by.x=shape_merge_field, by.y=names(training.table)[1], all.x=T, sort=F)	
-	#shape_validation@data <- merge(x=shape_validation@data,y=validation.table,by.x=shape_merge_field, by.y=names(validation.table)[1], all.x=T, sort=F)	
-	##shape_training@data<-cbind(shape_training@data, training.table[,-c(1,2)])
-	##shape_validation@data<-cbind(shape_validation@data, validation.table[,-c(1,2)])
-	#} else
-	#{
-	#print("ERROR - Data ID and Shapefile ID doesn't match")
-	#}
-		  
-		  
-	#is.projected(shapefile.subdivision)
-	#proj4string(shapefile.subdivision)
-	#str(shapefile.subdivision)
-	#summary(shapefile.subdivision)
-	#coordinates(shapefile.subdivision)
-	 
-	#### spplot parameter training
-	# Determination of position of map items
-	longitude.map.extent.training<-bbox(shape_training)[1,2]-bbox(shape_training)[1,1]
-	latitude.map.extent.training<-bbox(shape_training)[2,2]-bbox(shape_training)[2,1]
-	arrow.scale.value.training<-round(longitude.map.extent.training,-log10(longitude.map.extent.training))/10
-	scale.scale.value.training<-round(longitude.map.extent.training,-log10(longitude.map.extent.training))/10*2
-	arrow.lon.training<-bbox(shape_training)[1,2]-arrow.scale.value.training
-	arrow.lat.training<-bbox(shape_training)[2,2]-arrow.scale.value.training*1.5
-	scale.lon.training<-bbox(shape_training)[1,2]-scale.scale.value.training*1.5
-	scale.lat.training<-bbox(shape_training)[2,1]+arrow.scale.value.training/2
-	text.scale1.lon.training<-bbox(shape_training)[1,2]-scale.scale.value.training*1.5
-	text.scale1.lat.training<-bbox(shape_training)[2,1]+arrow.scale.value.training
-	text.scale2.lon.training<-text.scale1.lon.training+scale.scale.value.training
-	text.scale2.lat.training<-text.scale1.lat.training
-	
-	# Definition of map items
-	arrow.training <- list("SpatialPolygonsRescale", layout.north.arrow(),  offset = c(arrow.lon.training,arrow.lat.training), scale = arrow.scale.value.training, which = 1)
-	scale.training <- list("SpatialPolygonsRescale", layout.scale.bar(),  offset = c(scale.lon.training,scale.lat.training), scale = scale.scale.value.training, fill=c("transparent","black"), which = 1)
-	text.scale1.training <- list("sp.text", c(text.scale1.lon.training,text.scale1.lat.training), "0", which = 1, cex=0.7)
-	text.scale2.training <- list("sp.text", c(text.scale2.lon.training,text.scale2.lat.training), paste(scale.scale.value.training," m",sep=""), which = 1, cex=0.7)
-	
-	#### spplot parameter validation
-	longitude.map.extent.validation<-bbox(shape_validation)[1,2]-bbox(shape_validation)[1,1]
-	latitude.map.extent.validation<-bbox(shape_validation)[2,2]-bbox(shape_validation)[2,1]
-	arrow.scale.value.validation<-round(longitude.map.extent.validation,-log10(longitude.map.extent.validation))/10
-	scale.scale.value.validation<-round(longitude.map.extent.validation,-log10(longitude.map.extent.validation))/10*2
-	arrow.lon.validation<-bbox(shape_validation)[1,2]-arrow.scale.value.validation
-	arrow.lat.validation<-bbox(shape_validation)[2,2]-arrow.scale.value.validation*1.5
-	scale.lon.validation<-bbox(shape_validation)[1,2]-scale.scale.value.validation*1.5
-	scale.lat.validation<-bbox(shape_validation)[2,1]+arrow.scale.value.validation/2
-	text.scale1.lon.validation<-bbox(shape_validation)[1,2]-scale.scale.value.validation*1.5
-	text.scale1.lat.validation<-bbox(shape_validation)[2,1]+arrow.scale.value.validation
-	text.scale2.lon.validation<-text.scale1.lon.validation+scale.scale.value.validation
-	text.scale2.lat.validation<-text.scale1.lat.validation
-	
-	# Definition of map items
-	arrow.validation <- list("SpatialPolygonsRescale", layout.north.arrow(),  offset = c(arrow.lon.validation,arrow.lat.validation), scale = arrow.scale.value.validation, which = 1)
-	scale.validation <- list("SpatialPolygonsRescale", layout.scale.bar(),  offset = c(scale.lon.validation,scale.lat.validation), scale = scale.scale.value.validation, fill=c("transparent","black"), which = 1)
-	text.scale1.validation <- list("sp.text", c(text.scale1.lon.validation,text.scale1.lat.validation), "0", which = 1, cex=0.7)
-	text.scale2.validation <- list("sp.text", c(text.scale2.lon.validation,text.scale2.lat.validation), paste(scale.scale.value.validation," m",sep=""), which = 1, cex=0.7)
-	  
-	# Plot and export of maps
-	breaks.map.susceptibility<-c(0,0.2,0.45,0.55,0.8,1.0001)
-	breaks.map.uncertainty<-c(0,0.001,0.005,0.01,0.05,0.1,0.5,1)
-	breaks.map.matching.code<-c(1,2,3,4,5)
-	color.vector.susceptibility<-color_ramp_palette_fun(length(breaks.histogram.values)-1)
-	require(RColorBrewer)
-	color.vector.uncertainty<-rev(brewer.pal(length(breaks.map.uncertainty)-1,"YlOrRd"))
-	color.vector.matching<-c(rgb(38,115,0,max=255),rgb(233,255,190,max=255),rgb(215,215,158,max=255),rgb(115,115,0,max=255))
-	}
+  #shape_training<-readOGR(dsn="training.shp",layer="training")
+  #shape_validation<-readOGR(dsn="validation.shp",layer="validation")
+  shape_merge_field<-(configuration.spatial.data.table$ID_FIELD)
+  #spplot(shape_validation)
+  
+  #shape_validation@data
+  #slot(shape_validation, "data") # equivalent to the previous
+  #slot(shape_validation, "polygons")
+  
+  ## Matching DATA ID and Shapefile ID and adding variable columuns
+  #if(identical(as.character(identification.value),as.character(shape_training@data[,shape_merge_field])) & identical(as.character(validation.identification.value),as.character(shape_validation@data[,shape_merge_field])))
+  #{
+  #shape_training@data <- merge(x=shape_training@data,y=training.table,by.x=shape_merge_field, by.y=names(training.table)[1], all.x=T, sort=F)	
+  #shape_validation@data <- merge(x=shape_validation@data,y=validation.table,by.x=shape_merge_field, by.y=names(validation.table)[1], all.x=T, sort=F)	
+  ##shape_training@data<-cbind(shape_training@data, training.table[,-c(1,2)])
+  ##shape_validation@data<-cbind(shape_validation@data, validation.table[,-c(1,2)])
+  #} else
+  #{
+  #print("ERROR - Data ID and Shapefile ID doesn't match")
+  #}
   
   
+  #is.projected(shapefile.subdivision)
+  #proj4string(shapefile.subdivision)
+  #str(shapefile.subdivision)
+  #summary(shapefile.subdivision)
+  #coordinates(shapefile.subdivision)
+  
+  #### spplot parameter training
+  # Determination of position of map items
+  longitude.map.extent.training<-bbox(shape_training)[1,2]-bbox(shape_training)[1,1]
+  latitude.map.extent.training<-bbox(shape_training)[2,2]-bbox(shape_training)[2,1]
+  arrow.scale.value.training<-round(longitude.map.extent.training,-log10(longitude.map.extent.training))/10
+  scale.scale.value.training<-round(longitude.map.extent.training,-log10(longitude.map.extent.training))/10*2
+  arrow.lon.training<-bbox(shape_training)[1,2]-arrow.scale.value.training
+  arrow.lat.training<-bbox(shape_training)[2,2]-arrow.scale.value.training*1.5
+  scale.lon.training<-bbox(shape_training)[1,2]-scale.scale.value.training*1.5
+  scale.lat.training<-bbox(shape_training)[2,1]+arrow.scale.value.training/2
+  text.scale1.lon.training<-bbox(shape_training)[1,2]-scale.scale.value.training*1.5
+  text.scale1.lat.training<-bbox(shape_training)[2,1]+arrow.scale.value.training
+  text.scale2.lon.training<-text.scale1.lon.training+scale.scale.value.training
+  text.scale2.lat.training<-text.scale1.lat.training
+  
+  # Definition of map items
+  arrow.training <- list("SpatialPolygonsRescale", layout.north.arrow(),  offset = c(arrow.lon.training,arrow.lat.training), scale = arrow.scale.value.training, which = 1)
+  scale.training <- list("SpatialPolygonsRescale", layout.scale.bar(),  offset = c(scale.lon.training,scale.lat.training), scale = scale.scale.value.training, fill=c("transparent","black"), which = 1)
+  text.scale1.training <- list("sp.text", c(text.scale1.lon.training,text.scale1.lat.training), "0", which = 1, cex=0.7)
+  text.scale2.training <- list("sp.text", c(text.scale2.lon.training,text.scale2.lat.training), paste(scale.scale.value.training," m",sep=""), which = 1, cex=0.7)
+  
+  #### spplot parameter validation
+  longitude.map.extent.validation<-bbox(shape_validation)[1,2]-bbox(shape_validation)[1,1]
+  latitude.map.extent.validation<-bbox(shape_validation)[2,2]-bbox(shape_validation)[2,1]
+  arrow.scale.value.validation<-round(longitude.map.extent.validation,-log10(longitude.map.extent.validation))/10
+  scale.scale.value.validation<-round(longitude.map.extent.validation,-log10(longitude.map.extent.validation))/10*2
+  arrow.lon.validation<-bbox(shape_validation)[1,2]-arrow.scale.value.validation
+  arrow.lat.validation<-bbox(shape_validation)[2,2]-arrow.scale.value.validation*1.5
+  scale.lon.validation<-bbox(shape_validation)[1,2]-scale.scale.value.validation*1.5
+  scale.lat.validation<-bbox(shape_validation)[2,1]+arrow.scale.value.validation/2
+  text.scale1.lon.validation<-bbox(shape_validation)[1,2]-scale.scale.value.validation*1.5
+  text.scale1.lat.validation<-bbox(shape_validation)[2,1]+arrow.scale.value.validation
+  text.scale2.lon.validation<-text.scale1.lon.validation+scale.scale.value.validation
+  text.scale2.lat.validation<-text.scale1.lat.validation
+  
+  # Definition of map items
+  arrow.validation <- list("SpatialPolygonsRescale", layout.north.arrow(),  offset = c(arrow.lon.validation,arrow.lat.validation), scale = arrow.scale.value.validation, which = 1)
+  scale.validation <- list("SpatialPolygonsRescale", layout.scale.bar(),  offset = c(scale.lon.validation,scale.lat.validation), scale = scale.scale.value.validation, fill=c("transparent","black"), which = 1)
+  text.scale1.validation <- list("sp.text", c(text.scale1.lon.validation,text.scale1.lat.validation), "0", which = 1, cex=0.7)
+  text.scale2.validation <- list("sp.text", c(text.scale2.lon.validation,text.scale2.lat.validation), paste(scale.scale.value.validation," m",sep=""), which = 1, cex=0.7)
+  
+  # Plot and export of maps
+  breaks.map.susceptibility<-c(0,0.2,0.45,0.55,0.8,1.0001)
+  breaks.map.uncertainty<-c(0,0.001,0.005,0.01,0.05,0.1,0.5,1)
+  breaks.map.matching.code<-c(1,2,3,4,5)
+  color.vector.susceptibility<-color_ramp_palette_fun(length(breaks.histogram.values)-1)
+  require(RColorBrewer)
+  color.vector.uncertainty<-rev(brewer.pal(length(breaks.map.uncertainty)-1,"YlOrRd"))
+  color.vector.matching<-c(rgb(38,115,0,max=255),rgb(233,255,190,max=255),rgb(215,215,158,max=255),rgb(115,115,0,max=255))
+}
+
+
 #---------------------  COLLINEARITY EVALUATION ---------------------#
 
 # Colldiag is an implementation of the regression collinearity diagnostic procedures found in
@@ -525,43 +525,43 @@ if(configuration.spatial.data.table$PRESENCE == "YES" & configuration.spatial.da
 # percent or more.
 
 if(enable_multicollinearity_test==TRUE)
-	{
-	#load collinearity package (perturb)
-	library(perturb)
-	#colnames(explanatory.variables)
-	collinearity.test<-colldiag(explanatory.variables)
-	#collinearity.test$condindx 
-	#collinearity.test$pi 
-	range(collinearity.test$condindx)
-	
-	if(range(collinearity.test$condindx)[2] >= 30) {      
-		collinearity.value<-"Some explanatory variables are collinear"
-		} else {      
-		collinearity.value<-"Explanatory variables are not collinear"
-		}
-	
-	print(collinearity.test,fuzz=.5)
-	collinearity.evaluation.matrix<-print(collinearity.test,fuzz=.5)
-	write.table("COLLINEARITY ANALYSIS RESULT",file="result_Collinearity_Analysis.txt", quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
-	write.table("",file="result_Collinearity_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
-	write.table("EXPLANATION",file="result_Collinearity_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
-	write.table("This analysis was performed with Colldiag an implementation of the regression collinearity diagnostic procedures found in Belsley, Kuh,
-	and Welsch (1980). These procedures examine the ?conditioning? of the matrix of independent variables. The procedure computes the condition
-	indexes of the matrix. If the largest condition index (the condition number) is large (Belsley et al suggest 30 or higher), then there may be
-	collinearity problems. All large condition indexes may be worth investigating. The procedure also provides further information that may help to
-	identify the source of these problems, the variance decomposition proportions associated with each condition index. If a large condition
-	index (> 30) is associated with two or more variables with large variance decomposition proportions, these variables may be causing collinearity problems.
-	Belsley et al suggest that a large proportion is 50 percent or more.",file="result_Collinearity_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t",
-	row.names=FALSE, col.names=FALSE)
-	write.table("",file="result_Collinearity_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
-	write.table("RESULTS",file="result_Collinearity_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
-	write.table(paste("Largest condition index (the condition number) =",range(collinearity.test$condindx)[2]),file="result_Collinearity_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
-	write.table("",file="result_Collinearity_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
-	write.table(collinearity.value,file="result_Collinearity_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
-	write.table("",file="result_Collinearity_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
-	write.table("Matrix of the variance decomposition proportions associated with each condition index (1st column)",file="result_Collinearity_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
-	write.table(rbind(colnames(collinearity.evaluation.matrix),collinearity.evaluation.matrix),file="result_Collinearity_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
-	}
+{
+  #load collinearity package (perturb)
+  library(perturb)
+  #colnames(explanatory.variables)
+  collinearity.test<-colldiag(explanatory.variables)
+  #collinearity.test$condindx 
+  #collinearity.test$pi 
+  range(collinearity.test$condindx)
+  
+  if(range(collinearity.test$condindx)[2] >= 30) {      
+    collinearity.value<-"Some explanatory variables are collinear"
+  } else {      
+    collinearity.value<-"Explanatory variables are not collinear"
+  }
+  
+  print(collinearity.test,fuzz=.5)
+  collinearity.evaluation.matrix<-print(collinearity.test,fuzz=.5)
+  write.table("COLLINEARITY ANALYSIS RESULT",file="result_Collinearity_Analysis.txt", quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
+  write.table("",file="result_Collinearity_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
+  write.table("EXPLANATION",file="result_Collinearity_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
+  write.table("This analysis was performed with Colldiag an implementation of the regression collinearity diagnostic procedures found in Belsley, Kuh,
+              and Welsch (1980). These procedures examine the ?conditioning? of the matrix of independent variables. The procedure computes the condition
+              indexes of the matrix. If the largest condition index (the condition number) is large (Belsley et al suggest 30 or higher), then there may be
+              collinearity problems. All large condition indexes may be worth investigating. The procedure also provides further information that may help to
+              identify the source of these problems, the variance decomposition proportions associated with each condition index. If a large condition
+              index (> 30) is associated with two or more variables with large variance decomposition proportions, these variables may be causing collinearity problems.
+              Belsley et al suggest that a large proportion is 50 percent or more.",file="result_Collinearity_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t",
+              row.names=FALSE, col.names=FALSE)
+  write.table("",file="result_Collinearity_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
+  write.table("RESULTS",file="result_Collinearity_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
+  write.table(paste("Largest condition index (the condition number) =",range(collinearity.test$condindx)[2]),file="result_Collinearity_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
+  write.table("",file="result_Collinearity_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
+  write.table(collinearity.value,file="result_Collinearity_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
+  write.table("",file="result_Collinearity_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
+  write.table("Matrix of the variance decomposition proportions associated with each condition index (1st column)",file="result_Collinearity_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
+  write.table(rbind(colnames(collinearity.evaluation.matrix),collinearity.evaluation.matrix),file="result_Collinearity_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
+}
 
 
 
@@ -626,22 +626,22 @@ library(MASS)
 
 ##### Linear Discriminant Analisys Run
 if(model.run.matrix[1] == "YES")
-  {
-
+{
+  
   #if(class(result.lda[1]) == "NULL") # Other Error selection criteria. In this case the IF istruction must be put at the end of the script 
   if (class(try(lda(explanatory.variables, grouping.variable, tol=0.001, method="moment")))=="try-error")  
-    { 
+  { 
     lda(explanatory.variables, grouping.variable, tol=0.001, method="moment")
     write.table("Linear Discriminant Analysis was not completed",file="Error_LDA_Analysis.txt", quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
     write.table("",file="Error_LDA_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
     write.table("Error LOG",file="Error_LDA_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
     write.table(cbind("Message",rev(1:length(as.vector(.Traceback)))," ->",as.vector(.Traceback)),file="Error_LDA_Analysis.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
-    }
-    
+  }
+  
   ##### Linear Discriminant Analisys using data.frame
   result.lda<-NULL
   result.lda<-lda(explanatory.variables, grouping.variable, tol=0.001, method="moment") 
-
+  
   # Result Predicted
   predict.result.lda<-predict(result.lda)
   str(predict.result.lda)
@@ -662,8 +662,8 @@ if(model.run.matrix[1] == "YES")
   result.lda.matching.code<-gsub("10","3",result.lda.matching.code)
   result.lda.matching.code<-gsub("11","4",result.lda.matching.code)
   result.lda.matching.code<-as.numeric(result.lda.matching.code)
-
-
+  
+  
   ##### Linear Discriminant Analisys using formula
   #read of the data
   #training.table<-read.table("data_provafrax_Export_Staffora_filtered.txt",header = TRUE,dec=".", sep="\t")
@@ -682,7 +682,7 @@ if(model.run.matrix[1] == "YES")
   #rownames(cross.classification.lda)<-list("Landslides","No Landslides") # Observed
   #colnames(cross_classification_lda)<-list("Landslides","No Landslides") # Predicted    
   #str(cross.classification.lda)
-
+  
   
   
   #Elaboration of Coefficient of association for contingency table 
@@ -695,30 +695,30 @@ if(model.run.matrix[1] == "YES")
   #co_table(cross.classification.lda, margin=1)
   #mar_table(cross.classification.lda) 
   #structable(cross.classification.lda)
-
+  
   #Different plots for contingency table
   if (enable_screen_plotting==TRUE)
   {
-  dev.new()
-  fourfold(round(cross.classification.lda/sum(cross.classification.lda)*100,2), std="margin", main="LINEAR DISCRIMINANT ANALYSIS MODEL", conf_level=0.95, extended=TRUE, space = 0.2, margin=1, color = c(rgb(255,0,0,max=255), rgb(255,128,0,max=255), rgb(56,168,0,max=255), rgb(170,255,0,max=255), rgb(150,220,255,max=255), rgb(0,0,128,max=255)))
-  #fourfold(cross.classification.lda, std="margin", main="LINEAR DISCRIMINANT ANALYSIS MODEL", extended=TRUE, space = 0.2, margin=1, color = c(rgb(255,0,0,max=255), rgb(255,128,0,max=255), rgb(56,168,0,max=255), rgb(170,255,0,max=255), rgb(150,220,255,max=255), rgb(0,0,128,max=255)))
+    dev.new()
+    fourfold(round(cross.classification.lda/sum(cross.classification.lda)*100,2), std="margin", main="LINEAR DISCRIMINANT ANALYSIS MODEL", conf_level=0.95, extended=TRUE, space = 0.2, margin=1, color = c(rgb(255,0,0,max=255), rgb(255,128,0,max=255), rgb(56,168,0,max=255), rgb(170,255,0,max=255), rgb(150,220,255,max=255), rgb(0,0,128,max=255)))
+    #fourfold(cross.classification.lda, std="margin", main="LINEAR DISCRIMINANT ANALYSIS MODEL", extended=TRUE, space = 0.2, margin=1, color = c(rgb(255,0,0,max=255), rgb(255,128,0,max=255), rgb(56,168,0,max=255), rgb(170,255,0,max=255), rgb(150,220,255,max=255), rgb(0,0,128,max=255)))
     
-  #dev.new()
-  #spine(cross.classification.lda)
-  #dev.new()       
-  #mosaic(cross.classification.lda)
-  #dev.new()       
-  #pairs(cross.classification.lda)
-  #dev.new()
-  #sieve(cross.classification.lda)
-  #dev.new()
-  #strucplot(cross.classification.lda)
-  #dev.new()       
-  #cotabplot(cross.classification.lda)
-  #dev.new()       
-  #doubledecker(cross.classification.lda)
-  #dev.new()       
-  #grid_barplot(cross.classification.lda)
+    #dev.new()
+    #spine(cross.classification.lda)
+    #dev.new()       
+    #mosaic(cross.classification.lda)
+    #dev.new()       
+    #pairs(cross.classification.lda)
+    #dev.new()
+    #sieve(cross.classification.lda)
+    #dev.new()
+    #strucplot(cross.classification.lda)
+    #dev.new()       
+    #cotabplot(cross.classification.lda)
+    #dev.new()       
+    #doubledecker(cross.classification.lda)
+    #dev.new()       
+    #grid_barplot(cross.classification.lda)
   }
   
   
@@ -738,7 +738,7 @@ if(model.run.matrix[1] == "YES")
   #{
   #dev.new()
   #roc.plot(as.numeric(training.table$FRAXD2[-result.lda$na.action]),as.numeric(predict.result.lda$class),main = "ROC PLOT: LINEAR DISCRIMINANT ANALYSIS MODEL - BINARY PREDICTED", binormal = TRUE, plot = "both")
-
+  
   ##### ROC PLOT OBS - POSTERIOR PROBABILITY ASSOCIATED TO 1                                                                                 
   ## 1st method
   #dev.new()
@@ -755,24 +755,24 @@ if(model.run.matrix[1] == "YES")
   #roc.plot(verification.results.lda, main = "ROC PLOT: LINEAR DISCRIMINANT ANALYSIS MODEL", binormal = TRUE, plot = "both", extra=TRUE, legend=TRUE)
   #}
   area.under.roc.curve.lda<-roc.area(training.table[,2],predict.result.lda$posterior[,2])
-
+  
   ## showing confidence intervals.  MAY BE SLOW
   
   if (cross.classification.lda[1,2]==0 | cross.classification.lda[2,1]==0) {bin=FALSE; bin_plot="emp"; plot_thres=FALSE} else {bin=TRUE; bin_plot="both"; plot_thres=TRUE}
   
   if (enable_screen_plotting==TRUE)
   {
-  dev.new()
-  roc.plot(verification.results.lda, main = "ROC PLOT: LINEAR DISCRIMINANT ANALYSIS MODEL", binormal=bin, plot=bin_plot, CI=enable_rocplot_confidenceinterval, n.boot=bootstrap.sample.values[1] , alpha = 0.05, extra=TRUE, legend=TRUE,show.thres=plot_thres,thresholds=threshold_series)
-  mtext(paste("ROC area = ",round(area.under.roc.curve.lda$A,2),";  Sample size = ",area.under.roc.curve.lda$n.total,";  Bootstrap samples = ",bootstrap.sample.values[1], sep=""), side=3, col="red", cex=0.8)
-  ## Histogram of posterior probability
-  dev.new()
-  hist(predict.result.lda$posterior[,2], breaks=breaks.histogram.values,freq=TRUE, xlab="Susceptibility Class", ylab="Frequency", main="Histogram of Linear Disciminant Analysis susceptibility", col=color_ramp_palette_fun(length(breaks.histogram.values)-1))
+    dev.new()
+    roc.plot(verification.results.lda, main = "ROC PLOT: LINEAR DISCRIMINANT ANALYSIS MODEL", binormal=bin, plot=bin_plot, CI=enable_rocplot_confidenceinterval, n.boot=bootstrap.sample.values[1] , alpha = 0.05, extra=TRUE, legend=TRUE,show.thres=plot_thres,thresholds=threshold_series)
+    mtext(paste("ROC area = ",round(area.under.roc.curve.lda$A,2),";  Sample size = ",area.under.roc.curve.lda$n.total,";  Bootstrap samples = ",bootstrap.sample.values[1], sep=""), side=3, col="red", cex=0.8)
+    ## Histogram of posterior probability
+    dev.new()
+    hist(predict.result.lda$posterior[,2], breaks=breaks.histogram.values,freq=TRUE, xlab="Susceptibility Class", ylab="Frequency", main="Histogram of Linear Disciminant Analysis susceptibility", col=color_ramp_palette_fun(length(breaks.histogram.values)-1))
   }
   pdf(file = "result_LDA_Histogram.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
   hist(predict.result.lda$posterior[,2], breaks=breaks.histogram.values,freq=TRUE, xlab="Susceptibility Class", ylab="Frequency", main="Histogram of Linear Disciminant Analysis susceptibility", col=color_ramp_palette_fun(length(breaks.histogram.values)-1))
   dev.off()
-
+  
   # EXPORT OF PLOT FOR LDA MODEL
   pdf(file = "result_LDA_FourfoldPlot.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
   fourfold(round(cross.classification.lda/sum(cross.classification.lda)*100,2), std="margin", main="LINEAR DISCRIMINANT ANALYSIS MODEL", conf_level=0.95, extended=TRUE, space = 0.2, margin=1, color = c(rgb(255,0,0,max=255), rgb(255,128,0,max=255), rgb(56,168,0,max=255), rgb(170,255,0,max=255), rgb(150,220,255,max=255), rgb(0,0,128,max=255)))
@@ -790,9 +790,9 @@ if(model.run.matrix[1] == "YES")
   
   ## BOOTSTRAP PROCEDURE FOR THE ESTIMATION OF MODEL PREDICTION VARIABILITY
   if(bootstrap.model.variability[1] == "YES")
-    {
+  {
     bootstrap.sample.model.lda<-bootstrap.sample.model[1]
-
+    
     matrix.bootstrap.model.lda<-matrix(data=NA, nrow=dim(training.table)[1], ncol=(bootstrap.sample.model.lda*3)+1)
     colnames(matrix.bootstrap.model.lda)<-rep("na",(bootstrap.sample.model.lda*3)+1)
     matrix.bootstrap.model.lda[,1]<-identification.value
@@ -803,38 +803,38 @@ if(model.run.matrix[1] == "YES")
     colnames(matrix.bootstrap.model.lda)[seq(3,(bootstrap.sample.model.lda*3),3)]<-name.prob.run
     name.pred.run<-paste(rep("Prediction_Run",bootstrap.sample.model.lda),1:bootstrap.sample.model.lda,sep="_")
     colnames(matrix.bootstrap.model.lda)[seq(4,(bootstrap.sample.model.lda*3)+1,3)]<-name.pred.run
-
+    
     selection.index<-NULL
     library(MASS)
     #Bootstrap procedure
     for (count.boot in 1:bootstrap.sample.model.lda)
-        {
+    {
+      selection.index<-sample(1:dim(training.table)[1], replace=TRUE, prob=NULL)
+      matrix.bootstrap.model.lda[as.numeric(names(table(selection.index))),(count.boot*3)-1]<-table(selection.index)
+      explanatory.variables.bootstrap.model.lda<-training.table[selection.index,3:dim(training.table)[2]]
+      grouping.variable.bootstrap.model.lda<-as.factor(training.table[selection.index,2])
+      #result.bootstrap.model.lda<-lda(explanatory.variables.bootstrap.model.lda, grouping.variable.bootstrap.model.lda, tol=0.001, method="moment")
+      while(inherits(try(result.bootstrap.model.lda<-lda(explanatory.variables.bootstrap.model.lda, grouping.variable.bootstrap.model.lda, tol=0.001, method="moment"),silent=TRUE),what="try-error"))
+      {
+        print(paste("Count boot: ",count.boot," - Boostrap while resampling",sep=""))
         selection.index<-sample(1:dim(training.table)[1], replace=TRUE, prob=NULL)
         matrix.bootstrap.model.lda[as.numeric(names(table(selection.index))),(count.boot*3)-1]<-table(selection.index)
         explanatory.variables.bootstrap.model.lda<-training.table[selection.index,3:dim(training.table)[2]]
+        if(bootstrap_constant_correction==TRUE)
+        {
+          print("Performing bootstrap 0 value correction")
+          indexbootstrapcosntant<-which(explanatory.variables.bootstrap.model.lda==0,arr.ind=TRUE)
+          explanatory.variables.bootstrap.model.lda[indexbootstrapcosntant]<-runif(length(indexbootstrapcosntant)/2, min = 0.00001, max = 0.01)
+        }
         grouping.variable.bootstrap.model.lda<-as.factor(training.table[selection.index,2])
-        #result.bootstrap.model.lda<-lda(explanatory.variables.bootstrap.model.lda, grouping.variable.bootstrap.model.lda, tol=0.001, method="moment")
-        while(inherits(try(result.bootstrap.model.lda<-lda(explanatory.variables.bootstrap.model.lda, grouping.variable.bootstrap.model.lda, tol=0.001, method="moment"),silent=TRUE),what="try-error"))
-			{
-			print(paste("Count boot: ",count.boot," - Boostrap while resampling",sep=""))
-			selection.index<-sample(1:dim(training.table)[1], replace=TRUE, prob=NULL)
-			matrix.bootstrap.model.lda[as.numeric(names(table(selection.index))),(count.boot*3)-1]<-table(selection.index)
-			explanatory.variables.bootstrap.model.lda<-training.table[selection.index,3:dim(training.table)[2]]
-			if(bootstrap_constant_correction==TRUE)
-				{
-				print("Performing bootstrap 0 value correction")
-				indexbootstrapcosntant<-which(explanatory.variables.bootstrap.model.lda==0,arr.ind=TRUE)
-				explanatory.variables.bootstrap.model.lda[indexbootstrapcosntant]<-runif(length(indexbootstrapcosntant)/2, min = 0.00001, max = 0.01)
-				}
-			grouping.variable.bootstrap.model.lda<-as.factor(training.table[selection.index,2])
-			}
-		#matrix.bootstrap.model.lda[as.numeric(names(table(selection.index))),(count.boot*3)]<-predict(result.bootstrap.model.lda,newdata=explanatory.variables[as.numeric(names(table(selection.index))),])$posterior[,2]
-        matrix.bootstrap.model.lda[,(count.boot*3)+1]<-predict(result.bootstrap.model.lda,newdata=explanatory.variables)$posterior[,2]
-		matrix.bootstrap.model.lda[as.numeric(names(table(selection.index))),(count.boot*3)]<-matrix.bootstrap.model.lda[as.numeric(names(table(selection.index))),(count.boot*3)+1]
-		}
+      }
+      #matrix.bootstrap.model.lda[as.numeric(names(table(selection.index))),(count.boot*3)]<-predict(result.bootstrap.model.lda,newdata=explanatory.variables[as.numeric(names(table(selection.index))),])$posterior[,2]
+      matrix.bootstrap.model.lda[,(count.boot*3)+1]<-predict(result.bootstrap.model.lda,newdata=explanatory.variables)$posterior[,2]
+      matrix.bootstrap.model.lda[as.numeric(names(table(selection.index))),(count.boot*3)]<-matrix.bootstrap.model.lda[as.numeric(names(table(selection.index))),(count.boot*3)+1]
+    }
     # Export of bootstrap sample
     write.table(matrix.bootstrap.model.lda,file="result_LDA_BootstrapSamples.txt", quote = FALSE,sep = "\t", row.names=FALSE, col.names=TRUE)
-
+    
     ID.bootstrap.model.lda.count<-numeric(length=dim(training.table)[1])
     #Probability (selected values)
     bootstrap.model.lda.probability.mean<-numeric(length=dim(training.table)[1])
@@ -843,7 +843,7 @@ if(model.run.matrix[1] == "YES")
     bootstrap.model.lda.probability.max<-numeric(length=dim(training.table)[1])
     bootstrap.model.lda.probability.sderror<-numeric(length=dim(training.table)[1])
     bootstrap.model.lda.probability.quantiles<-matrix(nrow=dim(training.table)[1],ncol=7)
-
+    
     #Prediction (all values)
     bootstrap.model.lda.prediction.mean<-numeric(length=dim(training.table)[1])
     bootstrap.model.lda.prediction.sd<-numeric(length=dim(training.table)[1])
@@ -852,56 +852,56 @@ if(model.run.matrix[1] == "YES")
     bootstrap.model.lda.prediction.sderror<-numeric(length=dim(training.table)[1])
     bootstrap.model.lda.prediction.quantiles<-matrix(nrow=dim(training.table)[1],ncol=7)
     
-#    for (count.row.variability in 1:dim(training.table)[1])
-#        {
-#        # Statistics on boostrapped probability
-#        ID.bootstrap.model.lda.count[count.row.variability]<-length(na.omit(matrix.bootstrap.model.lda[count.row.variability,seq(2,(bootstrap.sample.model.lda*3)-1,3)]))
-#        bootstrap.model.lda.probability.mean[count.row.variability]<-mean(na.omit(matrix.bootstrap.model.lda[count.row.variability,seq(3,(bootstrap.sample.model.lda*3),3)]))
-#        bootstrap.model.lda.probability.sd[count.row.variability]<-sd(na.omit(matrix.bootstrap.model.lda[count.row.variability,seq(3,(bootstrap.sample.model.lda*3),3)]))
-#        bootstrap.model.lda.probability.min[count.row.variability]<-min(na.omit(matrix.bootstrap.model.lda[count.row.variability,seq(3,(bootstrap.sample.model.lda*3),3)]))
-#        bootstrap.model.lda.probability.max[count.row.variability]<-max(na.omit(matrix.bootstrap.model.lda[count.row.variability,seq(3,(bootstrap.sample.model.lda*3),3)]))
-#        bootstrap.model.lda.probability.sderror[count.row.variability]<-bootstrap.model.lda.probability.sd[count.row.variability]/ID.bootstrap.model.lda.count[count.row.variability]
-#        bootstrap.model.lda.probability.quantiles[count.row.variability,]<-quantile(na.omit(matrix.bootstrap.model.lda[count.row.variability,seq(3,(bootstrap.sample.model.lda*3),3)]),probs=c(0,0.05,0.25,0.5,0.75,0.95,1))
-#        # Statistics on boostrapped prediction
-#        bootstrap.model.lda.prediction.mean[count.row.variability]<-mean(matrix.bootstrap.model.lda[count.row.variability,seq(4,(bootstrap.sample.model.lda*3)+1,3)])
-#        bootstrap.model.lda.prediction.sd[count.row.variability]<-sd(matrix.bootstrap.model.lda[count.row.variability,seq(4,(bootstrap.sample.model.lda*3)+1,3)])
-#        bootstrap.model.lda.prediction.min[count.row.variability]<-min(matrix.bootstrap.model.lda[count.row.variability,seq(4,(bootstrap.sample.model.lda*3)+1,3)])
-#        bootstrap.model.lda.prediction.max[count.row.variability]<-max(matrix.bootstrap.model.lda[count.row.variability,seq(4,(bootstrap.sample.model.lda*3)+1,3)])
-#        bootstrap.model.lda.prediction.sderror[count.row.variability]<-bootstrap.model.lda.prediction.sd[count.row.variability]/bootstrap.sample.model.lda
-#        bootstrap.model.lda.prediction.quantiles[count.row.variability,]<-quantile(na.omit(matrix.bootstrap.model.lda[count.row.variability,seq(4,(bootstrap.sample.model.lda*3)+1,3)]),probs=c(0,0.05,0.25,0.5,0.75,0.95,1))
-#        }
-
-
-		fun_length<-function(x) {length_var<-length(x[which(is.finite(x))]); return(length_var)}
-		fun_quantile<-function(x) {quantile_var<-t(quantile(x[which(is.finite(x))],probs=c(0,0.05,0.25,0.5,0.75,0.95,1))); return(quantile_var)}
-		ID.bootstrap.model.lda.count<-apply(matrix.bootstrap.model.lda[,grep("ID_Selection",colnames(matrix.bootstrap.model.lda))],MARGIN=1,FUN=fun_length)
-		bootstrap.model.lda.probability.mean<-apply(matrix.bootstrap.model.lda[,grep("Probability",colnames(matrix.bootstrap.model.lda))],MARGIN=1,FUN=mean,na.rm = TRUE)
-		bootstrap.model.lda.probability.sd<-apply(matrix.bootstrap.model.lda[,grep("Probability",colnames(matrix.bootstrap.model.lda))],MARGIN=1,FUN=sd,na.rm = TRUE)
-		bootstrap.model.lda.probability.min<-apply(matrix.bootstrap.model.lda[,grep("Probability",colnames(matrix.bootstrap.model.lda))],MARGIN=1,FUN=min,na.rm = TRUE)
-		bootstrap.model.lda.probability.max<-apply(matrix.bootstrap.model.lda[,grep("Probability",colnames(matrix.bootstrap.model.lda))],MARGIN=1,FUN=max,na.rm = TRUE)
-		bootstrap.model.lda.probability.sderror<-bootstrap.model.lda.probability.sd/bootstrap.sample.model.lda
-		bootstrap.model.lda.probability.quantiles<-apply(matrix.bootstrap.model.lda[,grep("Probability",colnames(matrix.bootstrap.model.lda))],MARGIN=1,FUN=fun_quantile)
-		bootstrap.model.lda.prediction.mean<-apply(matrix.bootstrap.model.lda[,grep("Prediction",colnames(matrix.bootstrap.model.lda))],MARGIN=1,FUN=mean,na.rm = TRUE)
-		bootstrap.model.lda.prediction.sd<-apply(matrix.bootstrap.model.lda[,grep("Prediction",colnames(matrix.bootstrap.model.lda))],MARGIN=1,FUN=sd,na.rm = TRUE)
-		bootstrap.model.lda.prediction.min<-apply(matrix.bootstrap.model.lda[,grep("Prediction",colnames(matrix.bootstrap.model.lda))],MARGIN=1,FUN=min,na.rm = TRUE)
-		bootstrap.model.lda.prediction.max<-apply(matrix.bootstrap.model.lda[,grep("Prediction",colnames(matrix.bootstrap.model.lda))],MARGIN=1,FUN=max,na.rm = TRUE)
-		bootstrap.model.lda.prediction.sderror<-bootstrap.model.lda.prediction.sd/bootstrap.sample.model.lda
-		bootstrap.model.lda.prediction.quantiles<-apply(matrix.bootstrap.model.lda[,grep("Prediction",colnames(matrix.bootstrap.model.lda))],MARGIN=1,FUN=fun_quantile)
-		
-
-		
-		
-		
+    #    for (count.row.variability in 1:dim(training.table)[1])
+    #        {
+    #        # Statistics on boostrapped probability
+    #        ID.bootstrap.model.lda.count[count.row.variability]<-length(na.omit(matrix.bootstrap.model.lda[count.row.variability,seq(2,(bootstrap.sample.model.lda*3)-1,3)]))
+    #        bootstrap.model.lda.probability.mean[count.row.variability]<-mean(na.omit(matrix.bootstrap.model.lda[count.row.variability,seq(3,(bootstrap.sample.model.lda*3),3)]))
+    #        bootstrap.model.lda.probability.sd[count.row.variability]<-sd(na.omit(matrix.bootstrap.model.lda[count.row.variability,seq(3,(bootstrap.sample.model.lda*3),3)]))
+    #        bootstrap.model.lda.probability.min[count.row.variability]<-min(na.omit(matrix.bootstrap.model.lda[count.row.variability,seq(3,(bootstrap.sample.model.lda*3),3)]))
+    #        bootstrap.model.lda.probability.max[count.row.variability]<-max(na.omit(matrix.bootstrap.model.lda[count.row.variability,seq(3,(bootstrap.sample.model.lda*3),3)]))
+    #        bootstrap.model.lda.probability.sderror[count.row.variability]<-bootstrap.model.lda.probability.sd[count.row.variability]/ID.bootstrap.model.lda.count[count.row.variability]
+    #        bootstrap.model.lda.probability.quantiles[count.row.variability,]<-quantile(na.omit(matrix.bootstrap.model.lda[count.row.variability,seq(3,(bootstrap.sample.model.lda*3),3)]),probs=c(0,0.05,0.25,0.5,0.75,0.95,1))
+    #        # Statistics on boostrapped prediction
+    #        bootstrap.model.lda.prediction.mean[count.row.variability]<-mean(matrix.bootstrap.model.lda[count.row.variability,seq(4,(bootstrap.sample.model.lda*3)+1,3)])
+    #        bootstrap.model.lda.prediction.sd[count.row.variability]<-sd(matrix.bootstrap.model.lda[count.row.variability,seq(4,(bootstrap.sample.model.lda*3)+1,3)])
+    #        bootstrap.model.lda.prediction.min[count.row.variability]<-min(matrix.bootstrap.model.lda[count.row.variability,seq(4,(bootstrap.sample.model.lda*3)+1,3)])
+    #        bootstrap.model.lda.prediction.max[count.row.variability]<-max(matrix.bootstrap.model.lda[count.row.variability,seq(4,(bootstrap.sample.model.lda*3)+1,3)])
+    #        bootstrap.model.lda.prediction.sderror[count.row.variability]<-bootstrap.model.lda.prediction.sd[count.row.variability]/bootstrap.sample.model.lda
+    #        bootstrap.model.lda.prediction.quantiles[count.row.variability,]<-quantile(na.omit(matrix.bootstrap.model.lda[count.row.variability,seq(4,(bootstrap.sample.model.lda*3)+1,3)]),probs=c(0,0.05,0.25,0.5,0.75,0.95,1))
+    #        }
+    
+    
+    fun_length<-function(x) {length_var<-length(x[which(is.finite(x))]); return(length_var)}
+    fun_quantile<-function(x) {quantile_var<-t(quantile(x[which(is.finite(x))],probs=c(0,0.05,0.25,0.5,0.75,0.95,1))); return(quantile_var)}
+    ID.bootstrap.model.lda.count<-apply(matrix.bootstrap.model.lda[,grep("ID_Selection",colnames(matrix.bootstrap.model.lda))],MARGIN=1,FUN=fun_length)
+    bootstrap.model.lda.probability.mean<-apply(matrix.bootstrap.model.lda[,grep("Probability",colnames(matrix.bootstrap.model.lda))],MARGIN=1,FUN=mean,na.rm = TRUE)
+    bootstrap.model.lda.probability.sd<-apply(matrix.bootstrap.model.lda[,grep("Probability",colnames(matrix.bootstrap.model.lda))],MARGIN=1,FUN=sd,na.rm = TRUE)
+    bootstrap.model.lda.probability.min<-apply(matrix.bootstrap.model.lda[,grep("Probability",colnames(matrix.bootstrap.model.lda))],MARGIN=1,FUN=min,na.rm = TRUE)
+    bootstrap.model.lda.probability.max<-apply(matrix.bootstrap.model.lda[,grep("Probability",colnames(matrix.bootstrap.model.lda))],MARGIN=1,FUN=max,na.rm = TRUE)
+    bootstrap.model.lda.probability.sderror<-bootstrap.model.lda.probability.sd/bootstrap.sample.model.lda
+    bootstrap.model.lda.probability.quantiles<-apply(matrix.bootstrap.model.lda[,grep("Probability",colnames(matrix.bootstrap.model.lda))],MARGIN=1,FUN=fun_quantile)
+    bootstrap.model.lda.prediction.mean<-apply(matrix.bootstrap.model.lda[,grep("Prediction",colnames(matrix.bootstrap.model.lda))],MARGIN=1,FUN=mean,na.rm = TRUE)
+    bootstrap.model.lda.prediction.sd<-apply(matrix.bootstrap.model.lda[,grep("Prediction",colnames(matrix.bootstrap.model.lda))],MARGIN=1,FUN=sd,na.rm = TRUE)
+    bootstrap.model.lda.prediction.min<-apply(matrix.bootstrap.model.lda[,grep("Prediction",colnames(matrix.bootstrap.model.lda))],MARGIN=1,FUN=min,na.rm = TRUE)
+    bootstrap.model.lda.prediction.max<-apply(matrix.bootstrap.model.lda[,grep("Prediction",colnames(matrix.bootstrap.model.lda))],MARGIN=1,FUN=max,na.rm = TRUE)
+    bootstrap.model.lda.prediction.sderror<-bootstrap.model.lda.prediction.sd/bootstrap.sample.model.lda
+    bootstrap.model.lda.prediction.quantiles<-apply(matrix.bootstrap.model.lda[,grep("Prediction",colnames(matrix.bootstrap.model.lda))],MARGIN=1,FUN=fun_quantile)
+    
+    
+    
+    
+    
     # Export of bootstrap sample statistics
     write.table(cbind("ID","LDA_NumberSelectedSamples","LDA_Probability_Mean","LDA_Probability_Sd","LDA_Probability_Min","LDA_Probability_Max","LDA_Probability_Sderror","LDA_Probability_Quantiles_0","LDA_Probability_Quantiles_0.05","LDA_Probability_Quantiles_0.25","LDA_Probability_Quantiles_0.5","LDA_Probability_Quantiles_0.75","LDA_Probability_Quantiles_0.95","LDA_Probability_Quantiles_1","LDA_Prediction_Mean","LDA_Prediction_Sd","LDA_Prediction_Min","LDA_Prediction_Max","LDA_Prediction_Sderror","LDA_Prediction_Quantiles_0","LDA_Prediction_Quantiles_0.05","LDA_Prediction_Quantiles_0.25","LDA_Prediction_Quantiles_0.5","LDA_Prediction_Quantiles_0.75","LDA_Prediction_Quantiles_0.95","LDA_Prediction_Quantiles_1"),file="result_LDA_BootstrapStatistics.txt", quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
     write.table(cbind(identification.value,ID.bootstrap.model.lda.count,bootstrap.model.lda.probability.mean,bootstrap.model.lda.probability.sd,bootstrap.model.lda.probability.min,bootstrap.model.lda.probability.max,bootstrap.model.lda.probability.sderror,t(bootstrap.model.lda.probability.quantiles),bootstrap.model.lda.prediction.mean,bootstrap.model.lda.prediction.sd,bootstrap.model.lda.prediction.min,bootstrap.model.lda.prediction.max,bootstrap.model.lda.prediction.sderror,t(bootstrap.model.lda.prediction.quantiles)),file="result_LDA_BootstrapStatistics.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
     
     if (enable_screen_plotting==TRUE)
     {
-    dev.new()
-    plot(bootstrap.model.lda.probability.mean,bootstrap.model.lda.prediction.mean,xlab="Probability mean",ylab="Prediction mean", type="p",main="LDA BOOTSTRAP: Mean Probability vs Mean Prediction")
-    abline(a=0,b=1,col="red",lty=1,lwd=1)
-    mtext(paste("Number of bootstrap samples: ",bootstrap.sample.model.lda,sep=""),side=3, padj=-0.5, adj=0.5, col="red",cex=0.8)
+      dev.new()
+      plot(bootstrap.model.lda.probability.mean,bootstrap.model.lda.prediction.mean,xlab="Probability mean",ylab="Prediction mean", type="p",main="LDA BOOTSTRAP: Mean Probability vs Mean Prediction")
+      abline(a=0,b=1,col="red",lty=1,lwd=1)
+      mtext(paste("Number of bootstrap samples: ",bootstrap.sample.model.lda,sep=""),side=3, padj=-0.5, adj=0.5, col="red",cex=0.8)
     }
     
     pdf(file = "result_LDA_BootstrapMeansComparison.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
@@ -909,7 +909,7 @@ if(model.run.matrix[1] == "YES")
     abline(a=0,b=1,col="red",lty=1,lwd=1)
     mtext(paste("Number of bootstrap samples: ",bootstrap.sample.model.lda,sep=""),side=3, padj=-0.5, adj=0.5, col="red",cex=0.8)
     dev.off()
-
+    
     #if (enable_screen_plotting==TRUE)
     #{
     #dev.new()
@@ -921,7 +921,7 @@ if(model.run.matrix[1] == "YES")
     parabola.probability.lda<-cbind(bootstrap.model.lda.probability.mean,2*bootstrap.model.lda.probability.sd)
     parabola.probability.lda<-na.omit(parabola.probability.lda[order(parabola.probability.lda[,1]),])
     colnames(parabola.probability.lda)<-c("abscissa","ordinate")
-
+    
     #If y has to be 0 in x=0 and x=1, this means that c=0 and a+b=0, so in our case since a<0, a has to be equal to -b
     fit.parabola.probability.lda <- nls(parabola.probability.lda[,"ordinate"] ~ coeff.a*(parabola.probability.lda[,"abscissa"]^2) + (-1)*coeff.a*parabola.probability.lda[,"abscissa"], start = c("coeff.a"=-1), control=list(maxiter=1000))
     value.parabola.probability.lda<-predict(fit.parabola.probability.lda)
@@ -929,14 +929,14 @@ if(model.run.matrix[1] == "YES")
     
     if (enable_screen_plotting==TRUE)
     {
-    dev.new()
-    plot(parabola.probability.lda[,"abscissa"],parabola.probability.lda[,"ordinate"],xlim=c(0,1),ylim=c(0,1),xlab="Bootstrapped probability mean",ylab="2 Standard Deviations", type="p",main="LDA Model Probability Variability (Bootstrap)")
-    lines(parabola.probability.lda[,"abscissa"],value.parabola.probability.lda,col="red",lwd=1.5)
-    mtext(paste("Number of bootstrap samples: ",bootstrap.sample.model.lda,sep=""),side=3, padj=-0.5, adj=0.5, col="blue",cex=1)
-    espr <- expression(Y == coeff.a %*% X ^2 + coeff.b %*% X)
-    list.espr.subs <- list(coeff.a = round(coef(fit.parabola.probability.lda),3),coeff.b= -round(coef(fit.parabola.probability.lda),3))
-    as.expression(do.call(substitute, list(as.call(espr), list.espr.subs))[[1]])
-    mtext(as.expression(do.call(substitute, list(as.call(espr), list.espr.subs))[[1]]),side=1, padj=-1.5, adj=0.5,col="red",cex=1)
+      dev.new()
+      plot(parabola.probability.lda[,"abscissa"],parabola.probability.lda[,"ordinate"],xlim=c(0,1),ylim=c(0,1),xlab="Bootstrapped probability mean",ylab="2 Standard Deviations", type="p",main="LDA Model Probability Variability (Bootstrap)")
+      lines(parabola.probability.lda[,"abscissa"],value.parabola.probability.lda,col="red",lwd=1.5)
+      mtext(paste("Number of bootstrap samples: ",bootstrap.sample.model.lda,sep=""),side=3, padj=-0.5, adj=0.5, col="blue",cex=1)
+      espr <- expression(Y == coeff.a %*% X ^2 + coeff.b %*% X)
+      list.espr.subs <- list(coeff.a = round(coef(fit.parabola.probability.lda),3),coeff.b= -round(coef(fit.parabola.probability.lda),3))
+      as.expression(do.call(substitute, list(as.call(espr), list.espr.subs))[[1]])
+      mtext(as.expression(do.call(substitute, list(as.call(espr), list.espr.subs))[[1]]),side=1, padj=-1.5, adj=0.5,col="red",cex=1)
     }
     
     pdf(file = "result_LDA_BootstrapProbabilityVariability.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
@@ -953,7 +953,7 @@ if(model.run.matrix[1] == "YES")
     parabola.prediction.lda<-cbind(bootstrap.model.lda.prediction.mean,2*bootstrap.model.lda.prediction.sd)
     parabola.prediction.lda<-parabola.prediction.lda[order(parabola.prediction.lda[,1]),]
     colnames(parabola.prediction.lda)<-c("abscissa","ordinate")
-
+    
     #If y has to be 0 in x=0 and x=1, this means that c=0 and a+b=0, so in our case since a<0, a has to be equal to -b
     fit.parabola.prediction.lda <- nls(parabola.prediction.lda[,"ordinate"] ~ coeff.a*(parabola.prediction.lda[,"abscissa"]^2) + (-1)*coeff.a*parabola.prediction.lda[,"abscissa"], start = c("coeff.a"=-1), control=list(maxiter=1000))
     value.parabola.prediction.lda<-predict(fit.parabola.prediction.lda)
@@ -961,14 +961,14 @@ if(model.run.matrix[1] == "YES")
     
     if (enable_screen_plotting==TRUE)
     {
-    dev.new()
-    plot(parabola.prediction.lda[,"abscissa"],parabola.prediction.lda[,"ordinate"],xlim=c(0,1),ylim=c(0,1),xlab="Bootstrapped prediction mean",ylab="2 Standard Deviations", type="p",main="LDA Model Prediction Variability (Bootstrap)")
-    lines(parabola.prediction.lda[,"abscissa"],value.parabola.prediction.lda,col="red",lwd=1.5)
-    mtext(paste("Number of bootstrap samples: ",bootstrap.sample.model.lda,sep=""),side=3, padj=-0.5, adj=0.5, col="blue",cex=1)
-    espr <- expression(Y == coeff.a %*% X ^2 + coeff.b %*% X)
-    list.espr.subs <- list(coeff.a = round(coef(fit.parabola.prediction.lda),3),coeff.b= -round(coef(fit.parabola.prediction.lda),3))
-    as.expression(do.call(substitute, list(as.call(espr), list.espr.subs))[[1]])
-    mtext(as.expression(do.call(substitute, list(as.call(espr), list.espr.subs))[[1]]),side=1, padj=-1.5, adj=0.5,col="red",cex=1)
+      dev.new()
+      plot(parabola.prediction.lda[,"abscissa"],parabola.prediction.lda[,"ordinate"],xlim=c(0,1),ylim=c(0,1),xlab="Bootstrapped prediction mean",ylab="2 Standard Deviations", type="p",main="LDA Model Prediction Variability (Bootstrap)")
+      lines(parabola.prediction.lda[,"abscissa"],value.parabola.prediction.lda,col="red",lwd=1.5)
+      mtext(paste("Number of bootstrap samples: ",bootstrap.sample.model.lda,sep=""),side=3, padj=-0.5, adj=0.5, col="blue",cex=1)
+      espr <- expression(Y == coeff.a %*% X ^2 + coeff.b %*% X)
+      list.espr.subs <- list(coeff.a = round(coef(fit.parabola.prediction.lda),3),coeff.b= -round(coef(fit.parabola.prediction.lda),3))
+      as.expression(do.call(substitute, list(as.call(espr), list.espr.subs))[[1]])
+      mtext(as.expression(do.call(substitute, list(as.call(espr), list.espr.subs))[[1]]),side=1, padj=-1.5, adj=0.5,col="red",cex=1)
     }
     
     pdf(file = "result_LDA_BootstrapPredictionVariability.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
@@ -981,7 +981,7 @@ if(model.run.matrix[1] == "YES")
     mtext(as.expression(do.call(substitute, list(as.call(espr), list.espr.subs))[[1]]),side=1, padj=-1.5, adj=0.5,col="red",cex=1)
     dev.off()
   }
-
+  
   ## Sensitivity, Specificity, Cohens kappa plot
   dev.new()
   roc.plot.lda.series<-roc.plot(verification.results.lda,binormal=bin,plot=FALSE,show.thres=plot_thres,thresholds=threshold_series)
@@ -989,23 +989,23 @@ if(model.run.matrix[1] == "YES")
   #str(roc.plot.lda.series)
   #roc.plot.lda.series$plot.data
   #str(roc.plot.lda.series$plot.data)
-
+  
   ###########################################
   # min(abs(TPR - (1-FPR)))
   if(enable_probability_optimal_binary_classification==FALSE)
-    {
+  {
     dev.new()
     roc.plot.lda.series<-roc.plot(verification.results.lda,binormal=bin,plot=FALSE,show.thres=FALSE,thresholds=threshold_series)
     dev.off()
-    } else
-    {
+  } else
+  {
     dev.new()
     roc.plot.lda.series<-roc.plot(verification.results.lda,binormal=bin,plot=FALSE,show.thres=FALSE)
     dev.off()  
-    }
+  }
   
   if(enable_probability_optimal_binary_classification==TRUE)
-    {
+  {
     lda.probability.classification.optimal<-data.frame(prob_thres=roc.plot.lda.series$plot.data[,1,1],tpr=roc.plot.lda.series$plot.data[,2,1],fpr=roc.plot.lda.series$plot.data[,3,1],tnr=(1-roc.plot.lda.series$plot.data[,3,1]),diff_abs_tpr_tnr=abs(roc.plot.lda.series$plot.data[,2,1]-(1-roc.plot.lda.series$plot.data[,3,1])),optimal_sel=NA,breaks_sel=NA)
     index.lda.filter<-which(lda.probability.classification.optimal$prob_thres>0 & lda.probability.classification.optimal$prob_thres<1) # removing strnge thresh values
     lda.probability.classification.optimal<-rbind(c(0,1,1,0,1,NA,NA),lda.probability.classification.optimal[index.lda.filter,],c(1,0,0,1,1,NA,NA))
@@ -1027,10 +1027,10 @@ if(model.run.matrix[1] == "YES")
     result.lda.matching.code.optimal<-as.numeric(result.lda.matching.code.optimal)
     
     if (enable_screen_plotting==TRUE)
-      {
+    {
       dev.new()
       fourfold(round(cross.classification.lda.optimal/sum(cross.classification.lda.optimal)*100,2), std="margin", main="LINEAR DISCRIMINANT ANALYSIS MODEL", conf_level=0.95, extended=TRUE, space = 0.2, margin=1, color = c(rgb(255,0,0,max=255), rgb(255,128,0,max=255), rgb(56,168,0,max=255), rgb(170,255,0,max=255), rgb(150,220,255,max=255), rgb(0,0,128,max=255)))
-      }
+    }
     # EXPORT OF PLOT FOR LDA MODEL
     pdf(file = "result_LDA_FourfoldPlot_Optimal.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
     fourfold(round(cross.classification.lda.optimal/sum(cross.classification.lda.optimal)*100,2), std="margin", main="LINEAR DISCRIMINANT ANALYSIS MODEL", conf_level=0.95, extended=TRUE, space = 0.2, margin=1, color = c(rgb(255,0,0,max=255), rgb(255,128,0,max=255), rgb(56,168,0,max=255), rgb(170,255,0,max=255), rgb(150,220,255,max=255), rgb(0,0,128,max=255)))
@@ -1039,58 +1039,58 @@ if(model.run.matrix[1] == "YES")
     
     ### Optimal susceptibility classes identification 
     if(enable_probability_optimal_classification==TRUE)
-      {
+    {
       lda.unexplained.errors<-round(1-(lda.probability.classification.optimal$tpr[lda.optimal.index]+lda.probability.classification.optimal$tpr[lda.optimal.index])/2,2)
-  
+      
       if(type_probability_optimal_classification=="proportional")
-        {
+      {
         lda.unexplained.errors.partition<-1-(lda.unexplained.errors/((length(breaks.histogram.values)/2)))*(1:((length(breaks.histogram.values)/2)))
         
         for(count_part in 1:(length(lda.unexplained.errors.partition)-1))
-          {
+        {
           #count_part<-1
           unexplained.errors.partition.sel<-lda.unexplained.errors.partition[count_part]
           index_tpr_sel<-max(which((lda.probability.classification.optimal$tpr>=unexplained.errors.partition.sel)))
           lda.probability.classification.optimal$breaks_sel[index_tpr_sel]<-TRUE
           index_tnr_sel<-min(which((lda.probability.classification.optimal$tnr>=unexplained.errors.partition.sel)))
           lda.probability.classification.optimal$breaks_sel[index_tnr_sel]<-TRUE
-          }
+        }
         lda.breaks.histogram.values.optimal<-c(0,lda.probability.classification.optimal$prob_thres[which(lda.probability.classification.optimal$breaks_sel==TRUE)],1)
         #lda.probability.classification.optimal[which(lda.probability.classification.optimal$breaks_sel==TRUE),]
-        }
+      }
       
       if(type_probability_optimal_classification=="fixed")
-        {
+      {
         step.lda.unexplained.fixed<-0.1
         if(lda.unexplained.errors<=0.1) step.lda.unexplained.fixed<-0.05
         if(lda.unexplained.errors<=0.05) step.lda.unexplained.fixed<-0.025
         lda.unexplained.errors.partition<-seq(step.lda.unexplained.fixed,1-step.lda.unexplained.fixed,step.lda.unexplained.fixed)[seq(step.lda.unexplained.fixed,1-step.lda.unexplained.fixed,step.lda.unexplained.fixed)>(1-lda.unexplained.errors)]
-  
+        
         for(count_part in 1:(length(lda.unexplained.errors.partition)-1))
-          {
+        {
           #count_part<-1
           unexplained.errors.partition.sel<-lda.unexplained.errors.partition[count_part]
           index_tpr_sel<-max(which((lda.probability.classification.optimal$tpr>=unexplained.errors.partition.sel)))
           lda.probability.classification.optimal$breaks_sel[index_tpr_sel]<-TRUE
           index_tnr_sel<-min(which((lda.probability.classification.optimal$tnr>=unexplained.errors.partition.sel)))
           lda.probability.classification.optimal$breaks_sel[index_tnr_sel]<-TRUE
-          }
+        }
         lda.breaks.histogram.values.optimal<-c(0,lda.probability.classification.optimal$prob_thres[which(lda.probability.classification.optimal$breaks_sel==TRUE)],1)
         #lda.probability.classification.optimal[which(lda.probability.classification.optimal$breaks_sel==TRUE),]
-        }
+      }
       
       if (enable_screen_plotting==TRUE)
-        {
+      {
         dev.new()
         hist(predict.result.lda$posterior[,2], breaks=lda.breaks.histogram.values.optimal,freq=TRUE, xlab="Susceptibility Class", ylab="Frequency", main="Histogram of optimal LDA susceptibility", col=color_ramp_palette_fun(length(lda.breaks.histogram.values.optimal)-1))
         plot(NA,NA,xlim=c(0,1),ylim=c(0,1),xlab="Probability threshold",ylab="Evaluation parameter", main=paste("LDA OPTIMAL MODEL EVALUATION PLOT: ",type_probability_optimal_classification,sep=""))
         mtext("SENSITIVITY",side=3, padj=-0.5, adj=0.01, col="dark red",cex=0.8)
         mtext("SPECIFICITY",side=3, padj=-0.5, adj=0.99, col="navy blue",cex=0.8)
         for (count in 1:(length(lda.breaks.histogram.values.optimal)-1))
-          {
+        {
           #count=1
           polygon(c(lda.breaks.histogram.values.optimal[count:(count+1)],rev(lda.breaks.histogram.values.optimal[count:(count+1)])),c(0,0,1,1),border="darkgray",lty="dotted",lwd=0.5,col=color_ramp_palette_fun(length(lda.breaks.histogram.values.optimal)-1)[count])  
-          }
+        }
         polygon(c(0,1,1,0),c(0,0,1,1),border="black",lty="solid",lwd=1,col=NULL)
         lines(lda.probability.classification.optimal$prob_thres,lda.probability.classification.optimal$tpr,lty=1,lwd=2,col="dark red")
         lines(lda.probability.classification.optimal$prob_thres,lda.probability.classification.optimal$tnr,lty=1,lwd=2,col="navy blue")
@@ -1099,21 +1099,21 @@ if(model.run.matrix[1] == "YES")
         text(lda.probability.classification.optimal[index_points_plot[1:floor(length(lda.breaks.histogram.values.optimal)/2)],c("prob_thres","tpr")],labels=with(round(lda.probability.classification.optimal[index_points_plot[1:floor(length(lda.breaks.histogram.values.optimal)/2)],],3), paste("(",prob_thres,";",tpr,")",sep="")),cex=0.7,pos=c(3,rep(2,floor(length(lda.breaks.histogram.values.optimal)/2)-1)))
         points(lda.probability.classification.optimal[index_points_plot[ceiling(length(lda.breaks.histogram.values.optimal)/2):length(lda.breaks.histogram.values.optimal)],c("prob_thres","tnr")],pch=19,cex=1,col="black")
         text(lda.probability.classification.optimal[index_points_plot[ceiling(length(lda.breaks.histogram.values.optimal)/2):length(lda.breaks.histogram.values.optimal)],c("prob_thres","tnr")],labels=with(round(lda.probability.classification.optimal[index_points_plot[ceiling(length(lda.breaks.histogram.values.optimal)/2):length(lda.breaks.histogram.values.optimal)],],3),paste("(",prob_thres,";",tnr,")",sep="")),cex=0.7,pos=c(rep(4,length(lda.breaks.histogram.values.optimal)-ceiling(length(lda.breaks.histogram.values.optimal)/2)),3))
-        }
-  
+      }
+      
       pdf(file = "result_LDA_Histogram_Optimal.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
       hist(predict.result.lda$posterior[,2], breaks=lda.breaks.histogram.values.optimal,freq=TRUE, xlab="Susceptibility Class", ylab="Frequency", main="Histogram of optimal LDA susceptibility", col=color_ramp_palette_fun(length(lda.breaks.histogram.values.optimal)-1))
       dev.off()
-  
+      
       pdf(file = "result_LDA_ModelEvaluationPlot_Optimal.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
       plot(NA,NA,xlim=c(0,1),ylim=c(0,1),xlab="Probability threshold",ylab="Evaluation parameter", main=paste("LDA OPTIMAL MODEL EVALUATION PLOT: ",type_probability_optimal_classification,sep=""))
       mtext("SENSITIVITY",side=3, padj=-0.5, adj=0.01, col="dark red",cex=0.8)
       mtext("SPECIFICITY",side=3, padj=-0.5, adj=0.99, col="navy blue",cex=0.8)
       for (count in 1:(length(lda.breaks.histogram.values.optimal)-1))
-        {
+      {
         #count=1
         polygon(c(lda.breaks.histogram.values.optimal[count:(count+1)],rev(lda.breaks.histogram.values.optimal[count:(count+1)])),c(0,0,1,1),border="darkgray",lty="dotted",lwd=0.5,col=color_ramp_palette_fun(length(lda.breaks.histogram.values.optimal)-1)[count])  
-        }
+      }
       polygon(c(0,1,1,0),c(0,0,1,1),border="black",lty="solid",lwd=1,col=NULL)
       lines(lda.probability.classification.optimal$prob_thres,lda.probability.classification.optimal$tpr,lty=1,lwd=2,col="dark red")
       lines(lda.probability.classification.optimal$prob_thres,lda.probability.classification.optimal$tnr,lty=1,lwd=2,col="navy blue")
@@ -1126,10 +1126,10 @@ if(model.run.matrix[1] == "YES")
       text(lda.probability.classification.optimal[lda.optimal.index,c("prob_thres","tpr")],labels=with(round(lda.probability.classification.optimal[lda.optimal.index,c("prob_thres","tpr")],3),paste("(",prob_thres,";",tpr,")",sep="")),cex=0.7,pos=c(4))
       dev.off()
     }
-    }
-    
+  }
+  
   ###########################################
-
+  
   contingency.table.matrix.lda<-matrix(nrow=dim(roc.plot.lda.series$plot.data)[1],ncol=8)
   colnames(contingency.table.matrix.lda)<-c("Threshold","TP","TN","FP","FN","TPR","FPR","COHEN_KAPPA")
   contingency.table.matrix.lda[,1]<-roc.plot.lda.series$plot.data[,1,1]
@@ -1138,47 +1138,47 @@ if(model.run.matrix[1] == "YES")
   values.observed<-training.table[,2]
   values.predicted<-predict.result.lda$posterior[,2]
   for (count.threshold.series in 1:dim(roc.plot.lda.series$plot.data)[1])
-      {
-      value.threshold<-contingency.table.matrix.lda[count.threshold.series,1]
-      values.probability.reclassified<-NULL
-      values.probability.reclassified<-as.numeric(values.predicted>value.threshold) 
-      #sum(values.probability.reclassified-round(values.predicted)) # Check sum: It has to be 0 if threshold is equal to 1
-      series.pasted<-paste(values.observed,values.probability.reclassified,sep="")
-      series.pasted<-gsub("00","1",series.pasted)
-      series.pasted<-gsub("01","2",series.pasted)
-      series.pasted<-gsub("10","3",series.pasted)
-      series.pasted<-gsub("11","4",series.pasted)
-      series.pasted<-as.numeric(series.pasted)
-      TP<-as.numeric(sum(series.pasted>=4)) # True Positive
-      FN<-as.numeric(sum(series.pasted>=3 & series.pasted<4)) # False Negative
-      FP<-as.numeric(sum(series.pasted>=2 & series.pasted<3)) # False Positive
-      TN<-as.numeric(sum(series.pasted>=1 & series.pasted<2)) # True Negative              
-      #TPR<-TP/(TP+FN) # Hit Rate or True Positive Rate or Sensitivity - Assigned before the for cicle using rocplot data
-      #FPR<-FP/(FP+TN) # False Alarm Rate or False Positive Rate or 1-Specificity
-      # Cohen's Kappa = (agreement-chance)/(1-chance)  where agreement=(TP+TN)/(TP+TN+FP+FN) and chance=((((TN+FN)*(TN+FP))/(TP+TN+FP+FN))+(((TP+FP)*(TP+FN))/(TP+TN+FP+FN)))/(TP+TN+FP+FN)
-      agreement=(TP+TN)/(TP+TN+FP+FN)
-      chance=((((TN+FN)*(TN+FP))/(TP+TN+FP+FN))+(((TP+FP)*(TP+FN))/(TP+TN+FP+FN)))/(TP+TN+FP+FN)
-      cohen.kappa.value<-(agreement-chance)/(1-chance)
-      #Other
-      #library(vcd)
-      #cohen.kappa.value<-Kappa(cross.classification.table)
-      contingency.table.matrix.lda[count.threshold.series,2]<-TP
-      contingency.table.matrix.lda[count.threshold.series,3]<-TN
-      contingency.table.matrix.lda[count.threshold.series,4]<-FP
-      contingency.table.matrix.lda[count.threshold.series,5]<-FN
-      contingency.table.matrix.lda[count.threshold.series,8]<-cohen.kappa.value
-      print(value.threshold)
-      }
-
+  {
+    value.threshold<-contingency.table.matrix.lda[count.threshold.series,1]
+    values.probability.reclassified<-NULL
+    values.probability.reclassified<-as.numeric(values.predicted>value.threshold) 
+    #sum(values.probability.reclassified-round(values.predicted)) # Check sum: It has to be 0 if threshold is equal to 1
+    series.pasted<-paste(values.observed,values.probability.reclassified,sep="")
+    series.pasted<-gsub("00","1",series.pasted)
+    series.pasted<-gsub("01","2",series.pasted)
+    series.pasted<-gsub("10","3",series.pasted)
+    series.pasted<-gsub("11","4",series.pasted)
+    series.pasted<-as.numeric(series.pasted)
+    TP<-as.numeric(sum(series.pasted>=4)) # True Positive
+    FN<-as.numeric(sum(series.pasted>=3 & series.pasted<4)) # False Negative
+    FP<-as.numeric(sum(series.pasted>=2 & series.pasted<3)) # False Positive
+    TN<-as.numeric(sum(series.pasted>=1 & series.pasted<2)) # True Negative              
+    #TPR<-TP/(TP+FN) # Hit Rate or True Positive Rate or Sensitivity - Assigned before the for cicle using rocplot data
+    #FPR<-FP/(FP+TN) # False Alarm Rate or False Positive Rate or 1-Specificity
+    # Cohen's Kappa = (agreement-chance)/(1-chance)  where agreement=(TP+TN)/(TP+TN+FP+FN) and chance=((((TN+FN)*(TN+FP))/(TP+TN+FP+FN))+(((TP+FP)*(TP+FN))/(TP+TN+FP+FN)))/(TP+TN+FP+FN)
+    agreement=(TP+TN)/(TP+TN+FP+FN)
+    chance=((((TN+FN)*(TN+FP))/(TP+TN+FP+FN))+(((TP+FP)*(TP+FN))/(TP+TN+FP+FN)))/(TP+TN+FP+FN)
+    cohen.kappa.value<-(agreement-chance)/(1-chance)
+    #Other
+    #library(vcd)
+    #cohen.kappa.value<-Kappa(cross.classification.table)
+    contingency.table.matrix.lda[count.threshold.series,2]<-TP
+    contingency.table.matrix.lda[count.threshold.series,3]<-TN
+    contingency.table.matrix.lda[count.threshold.series,4]<-FP
+    contingency.table.matrix.lda[count.threshold.series,5]<-FN
+    contingency.table.matrix.lda[count.threshold.series,8]<-cohen.kappa.value
+    print(value.threshold)
+  }
+  
   if (enable_screen_plotting==TRUE)
   {
-  dev.new()
-  plot(roc.plot.lda.series$plot.data[,1,1],roc.plot.lda.series$plot.data[,2,1],type="l",lty=1,lwd=1,col="red",xlim=c(0,1),ylim=c(0,1),xlab="Probability threshold",ylab="Evaluation parameter", main="LDA MODEL EVALUATION PLOT")
-  lines(roc.plot.lda.series$plot.data[,1,1],1-roc.plot.lda.series$plot.data[,3,1],col="dark green",lty=1,lwd=1)
-  lines(roc.plot.lda.series$plot.data[,1,1], contingency.table.matrix.lda[,8],col="blue",lty=1,lwd=1)
-  mtext("SENSITIVITY",side=3, padj=-0.5, adj=0.01, col="red",cex=0.8)
-  mtext("COHEN'S KAPPA",side=3, padj=-0.5, adj=0.5, col="blue",cex=0.8)
-  mtext("SPECIFICITY",side=3, padj=-0.5, adj=0.99, col="dark green",cex=0.8)
+    dev.new()
+    plot(roc.plot.lda.series$plot.data[,1,1],roc.plot.lda.series$plot.data[,2,1],type="l",lty=1,lwd=1,col="red",xlim=c(0,1),ylim=c(0,1),xlab="Probability threshold",ylab="Evaluation parameter", main="LDA MODEL EVALUATION PLOT")
+    lines(roc.plot.lda.series$plot.data[,1,1],1-roc.plot.lda.series$plot.data[,3,1],col="dark green",lty=1,lwd=1)
+    lines(roc.plot.lda.series$plot.data[,1,1], contingency.table.matrix.lda[,8],col="blue",lty=1,lwd=1)
+    mtext("SENSITIVITY",side=3, padj=-0.5, adj=0.01, col="red",cex=0.8)
+    mtext("COHEN'S KAPPA",side=3, padj=-0.5, adj=0.5, col="blue",cex=0.8)
+    mtext("SPECIFICITY",side=3, padj=-0.5, adj=0.99, col="dark green",cex=0.8)
   }
   pdf(file = "result_LDA_ModelEvaluationPlot.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
   plot(roc.plot.lda.series$plot.data[,1,1],roc.plot.lda.series$plot.data[,2,1],type="l",lty=1,lwd=1,col="red",xlim=c(0,1),ylim=c(0,1),xlab="Probability threshold",ylab="Evaluation parameter", main="LDA MODEL EVALUATION PLOT")
@@ -1188,7 +1188,7 @@ if(model.run.matrix[1] == "YES")
   mtext("COHEN'S KAPPA",side=3, padj=-0.5, adj=0.5, col="blue",cex=0.8)
   mtext("SPECIFICITY",side=3, padj=-0.5, adj=0.99, col="dark green",cex=0.8)
   dev.off()
-
+  
   ## VALIDATION OF LDA MODEL (Matching LDA posterior probability results and validation grouping variable)
   
   # Result Predicted
@@ -1201,30 +1201,30 @@ if(model.run.matrix[1] == "YES")
   str(cross.classification.validation.lda)
   #cross.classification.lda.validation<-table(validation.grouping.variable,predict.result.lda$class,dnn=c("Observed","Predicted"))
   
- 
+  
   #Elaboration of Coefficient of association for contingency table
   #load package (vcd)
   library(vcd)
-
+  
   #help(package=vcd)
   contingency.table.validation.lda<-table2d_summary(cross.classification.validation.lda)
   test.table.validation.lda<-assocstats(cross.classification.validation.lda)
-
+  
   #Different plots for contingency table
   if (enable_screen_plotting==TRUE)
   {
-  dev.new()
-  fourfold(round(cross.classification.validation.lda/sum(cross.classification.validation.lda)*100,2), std="margin", main="VALIDATION LDA MODEL", conf_level=0.95, extended=TRUE, space = 0.2, margin=1, color = c(rgb(255,0,0,max=255), rgb(255,128,0,max=255), rgb(56,168,0,max=255), rgb(170,255,0,max=255), rgb(170,135,210,max=255), rgb(115,70,155,max=255)))
-  #fourfold(cross.classification.validation.lda, std="margin", main="VALIDATION LDA MODEL", extended=TRUE, space = 0.2, margin=1, color = c(rgb(255,0,0,max=255), rgb(255,128,0,max=255), rgb(56,168,0,max=255), rgb(170,255,0,max=255), rgb(170,135,210,max=255), rgb(115,70,155,max=255)))
+    dev.new()
+    fourfold(round(cross.classification.validation.lda/sum(cross.classification.validation.lda)*100,2), std="margin", main="VALIDATION LDA MODEL", conf_level=0.95, extended=TRUE, space = 0.2, margin=1, color = c(rgb(255,0,0,max=255), rgb(255,128,0,max=255), rgb(56,168,0,max=255), rgb(170,255,0,max=255), rgb(170,135,210,max=255), rgb(115,70,155,max=255)))
+    #fourfold(cross.classification.validation.lda, std="margin", main="VALIDATION LDA MODEL", extended=TRUE, space = 0.2, margin=1, color = c(rgb(255,0,0,max=255), rgb(255,128,0,max=255), rgb(56,168,0,max=255), rgb(170,255,0,max=255), rgb(170,135,210,max=255), rgb(115,70,155,max=255)))
   }
   #Receiver Operating Characteristic (ROC) plots for one or more models.
   #load package (verification)
   library(verification)
-
+  
   # 2nd method using verify function
   verification.validation.lda<-verify(validation.table[,2],predict.result.lda.validation$posterior[,2], frcst.type="prob", obs.type="binary")
   #summary(verification.validation.lda)
-
+  
   # showing confidence intervals.  MAY BE SLOW
   area.under.roc.curve.validation.lda<-roc.area(validation.table[,2],predict.result.lda.validation$posterior[,2])
   
@@ -1232,28 +1232,28 @@ if(model.run.matrix[1] == "YES")
   
   if (enable_screen_plotting==TRUE)
   {
-  dev.new()
-  roc.plot(verification.validation.lda, main = "ROC PLOT: VALIDATION LDA MODEL", binormal=bin, plot=bin_plot, CI=enable_rocplot_confidenceinterval, n.boot=bootstrap.sample.values[1] , alpha = 0.05, extra=TRUE, legend=TRUE, show.thres=plot_thres,thresholds=threshold_series)
-  mtext(paste("ROC area = ",round(area.under.roc.curve.validation.lda$A,2),";  Sample size = ",area.under.roc.curve.validation.lda$n.total,";  Bootstrap samples = ",bootstrap.sample.values[1], sep=""), side=3, col="red", cex=0.8)
+    dev.new()
+    roc.plot(verification.validation.lda, main = "ROC PLOT: VALIDATION LDA MODEL", binormal=bin, plot=bin_plot, CI=enable_rocplot_confidenceinterval, n.boot=bootstrap.sample.values[1] , alpha = 0.05, extra=TRUE, legend=TRUE, show.thres=plot_thres,thresholds=threshold_series)
+    mtext(paste("ROC area = ",round(area.under.roc.curve.validation.lda$A,2),";  Sample size = ",area.under.roc.curve.validation.lda$n.total,";  Bootstrap samples = ",bootstrap.sample.values[1], sep=""), side=3, col="red", cex=0.8)
   }
-
+  
   # EXPORT OF PLOT FOR VALIDATION OF LDA MODEL
-
+  
   pdf(file = "result_LDA_FourfoldPlot_Validation.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
   fourfold(round(cross.classification.validation.lda/sum(cross.classification.validation.lda)*100,2), std="margin", main="VALIDATION LDA MODEL", conf_level=0.95, extended=TRUE, space = 0.2, margin=1, color = c(rgb(255,0,0,max=255), rgb(255,128,0,max=255), rgb(56,168,0,max=255), rgb(170,255,0,max=255), rgb(170,135,210,max=255), rgb(115,70,155,max=255)))
   #fourfold(cross.classification.validation.lda, std="margin", main="VALIDATION LDA MODEL", extended=TRUE, space = 0.2, margin=1, color = c(rgb(255,0,0,max=255), rgb(255,128,0,max=255), rgb(56,168,0,max=255), rgb(170,255,0,max=255),  rgb(170,135,210,max=255), rgb(115,70,155,max=255)))
   dev.off()
-
+  
   #pdf(file = "result_LDA_ROCPlot_Validation.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
   #roc.plot(verification.validation.lda, main = "ROC PLOT: VALIDATION LDA MODEL", binormal = TRUE, plot = "both", extra=TRUE, legend=TRUE)
   #area.under.roc.curve.validation.lda<-roc.area(training.table[,2],predict.result.lda.validation$posterior[,2])
   #dev.off()
-
+  
   pdf(file = "result_LDA_ROCPlot_bootstrap_Validation.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
   roc.plot(verification.validation.lda, main = "ROC PLOT: VALIDATION LDA MODEL", binormal=bin, plot=bin_plot, CI=enable_rocplot_confidenceinterval, n.boot=bootstrap.sample.values[1] , alpha = 0.05, extra=TRUE, legend=TRUE, show.thres=plot_thres,thresholds=NULL)
   mtext(paste("ROC area = ",round(area.under.roc.curve.validation.lda$A,2),";  Sample size = ",area.under.roc.curve.validation.lda$n.total,";  Bootstrap samples = ",bootstrap.sample.values[1], sep=""), side=3, col="red", cex=0.8)
   dev.off()
-
+  
   # Assignation of a matching code between observed and predicted values calculated using the validation dataset
   validation.lda.matching.code<-paste(validation.grouping.variable,as.numeric(levels(predict.result.lda.validation$class))[predict.result.lda.validation$class],sep="")
   validation.lda.matching.code<-gsub("00","1",validation.lda.matching.code)
@@ -1261,21 +1261,21 @@ if(model.run.matrix[1] == "YES")
   validation.lda.matching.code<-gsub("10","3",validation.lda.matching.code)
   validation.lda.matching.code<-gsub("11","4",validation.lda.matching.code)
   validation.lda.matching.code<-as.numeric(validation.lda.matching.code)
-
+  
   ##########################################
   if(enable_probability_optimal_binary_classification==TRUE)
-    {
+  {
     cross.classification.validation.lda.optimal<-table(validation.grouping.variable,as.numeric(predict.result.lda.validation$posterior[,2]>lda.probability.optimal.binary.threshold),dnn=c("Observed","Predicted"))
     rownames(cross.classification.validation.lda.optimal)<-list("No Landslide","Landslide") # Observed
     colnames(cross.classification.validation.lda.optimal)<-list("No Landslide","Landslide") # Predicted
     
     #Different plots for contingency table
     if (enable_screen_plotting==TRUE)
-      {
+    {
       dev.new()
       fourfold(round(cross.classification.validation.lda.optimal/sum(cross.classification.validation.lda.optimal)*100,2), std="margin", main="VALIDATION LDA MODEL OPTIMAL", conf_level=0.95, extended=TRUE, space = 0.2, margin=1, color = c(rgb(255,0,0,max=255), rgb(255,128,0,max=255), rgb(56,168,0,max=255), rgb(170,255,0,max=255), rgb(170,135,210,max=255), rgb(115,70,155,max=255)))
       #fourfold(cross.classification.validation.lda, std="margin", main="VALIDATION LDA MODEL", extended=TRUE, space = 0.2, margin=1, color = c(rgb(255,0,0,max=255), rgb(255,128,0,max=255), rgb(56,168,0,max=255), rgb(170,255,0,max=255), rgb(170,135,210,max=255), rgb(115,70,155,max=255)))
-      }
+    }
     if (cross.classification.validation.lda.optimal[1,2]==0 | cross.classification.validation.lda.optimal[2,1]==0) {bin=FALSE; bin_plot="emp"; plot_thres=FALSE} else {bin=TRUE; bin_plot="both"; plot_thres=TRUE}
     pdf(file = "result_LDA_FourfoldPlot_Validation_Optimal.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
     fourfold(round(cross.classification.validation.lda.optimal/sum(cross.classification.validation.lda.optimal)*100,2), std="margin", main="VALIDATION LDA MODEL OPTIMAL", conf_level=0.95, extended=TRUE, space = 0.2, margin=1, color = c(rgb(255,0,0,max=255), rgb(255,128,0,max=255), rgb(56,168,0,max=255), rgb(170,255,0,max=255), rgb(170,135,210,max=255), rgb(115,70,155,max=255)))
@@ -1290,10 +1290,10 @@ if(model.run.matrix[1] == "YES")
     validation.lda.matching.code.optimal<-gsub("10","3",validation.lda.matching.code.optimal)
     validation.lda.matching.code.optimal<-gsub("11","4",validation.lda.matching.code.optimal)
     validation.lda.matching.code.optimal<-as.numeric(validation.lda.matching.code.optimal)
-    }
+  }
   #########################################
   
-
+  
   # EXPORT OF LDA MODEL RESULTS
   write.table("RESULTS OF LINEAR DISCRIMINANT ANALYSIS",file="result_LDA.txt", quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
   write.table("",file="result_LDA.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
@@ -1334,7 +1334,7 @@ if(model.run.matrix[1] == "YES")
   write.table(cbind(c("","OBSERVED NO LANDSLIDES: 0","OBSERVED LANDSLIDES: 1"), c("PREDICTED NO LANDSLIDES: 0","00 -> Code 1","10 -> Code 3"), c("PREDICTED LANDSLIDES: 1","01 -> Code 2","11 -> Code 4")),file="result_LDA.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
   ########
   if(enable_probability_optimal_binary_classification==FALSE) 
-    {
+  {
     write.table("",file="result_LDA.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
     write.table("",file="result_LDA.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
     write.table("FINAL RESULTS",file="result_LDA.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
@@ -1343,19 +1343,19 @@ if(model.run.matrix[1] == "YES")
     write.table("",file="result_LDA.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
     write.table("FINAL RESULTS VALIDATION",file="result_LDA.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
     write.table(rbind(c("ID","VALIDATION GROUPING VARIABLE","VALIDATION POSTERIOR PROBABILITY","VALIDATION CLASSIFICATION","LDA VALIDATION MATCHING CODE"),cbind(validation.table[,1],validation.table[,2],predict.result.lda.validation$posterior[,2],as.numeric(levels(predict.result.lda.validation$class))[predict.result.lda.validation$class],validation.lda.matching.code)),file="result_LDA.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
-    } else
-    {
+  } else
+  {
     write.table("",file="result_LDA.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
     write.table("",file="result_LDA.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
     if(enable_probability_optimal_classification==TRUE) 
-      {
+    {
       write.table(paste("OPTIMAL SUSCEPTIBILITY PARTITION -> Method: ",type_probability_optimal_classification,sep=""),file="result_LDA.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
       write.table(data.frame(lda.probability.classification.optimal[index_points_plot,c("prob_thres","tnr","tpr")]),file="result_LDA.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=TRUE)
-      } else
-      {
+    } else
+    {
       write.table(paste("OPTIMAL SUSCEPTIBILITY BINARY PARTITION",sep=""),file="result_LDA.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
       write.table(data.frame(lda.probability.classification.optimal[lda.optimal.index,c("prob_thres","tnr","tpr")]),file="result_LDA.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=TRUE)
-      }
+    }
     write.table("",file="result_LDA.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
     write.table("",file="result_LDA.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
     write.table("FINAL RESULTS",file="result_LDA.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
@@ -1364,287 +1364,347 @@ if(model.run.matrix[1] == "YES")
     write.table("",file="result_LDA.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
     write.table("FINAL RESULTS VALIDATION",file="result_LDA.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
     write.table(rbind(c("ID","VALIDATION GROUPING VARIABLE","VALIDATION POSTERIOR PROBABILITY","VALIDATION CLASSIFICATION","LDA VALIDATION MATCHING CODE","OPTIMAL VALIDATION CLASSIFICATION","OPTIMAL LDA VALIDATION MATCHING CODE"),cbind(validation.table[,1],validation.table[,2],predict.result.lda.validation$posterior[,2],as.numeric(levels(predict.result.lda.validation$class))[predict.result.lda.validation$class],validation.lda.matching.code,as.numeric(predict.result.lda.validation$posterior[,2]>lda.probability.optimal.binary.threshold),validation.lda.matching.code.optimal)),file="result_LDA.txt", append=TRUE, quote = FALSE,sep = "\t", row.names=FALSE, col.names=FALSE)
-    }
+  }
   ########
-
+  
   # PLOT AND EXPORT OF LDA MODEL MAPS
   if(configuration.spatial.data.table$PRESENCE == "YES" & configuration.spatial.data.table$GEOMETRY=="POLYGONS")
-	    {
-      ################################################
-      ### Prima di cancellare testare con polygoni
-      ##############################################
-	    #shape_training_lda<-shape_training
-	    #result_training_lda_shape<-cbind(identification.value,training.table[,2],predict.result.lda$posterior[,2],as.numeric(levels(predict.result.lda$class))[predict.result.lda$class],result.lda.matching.code)
-	    #colnames(result_training_lda_shape)<-c("ID","MOD_GROUP","MOD_PROB","MOD_CLASS","MOD_MATCH")
-		  #shape_training_lda@data <- merge(x=shape_training_lda@data,y=result_training_lda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
-		  ##writeOGR(shape_training_lda,dsn="result_LDA_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-	    #writeOGR(shape_training_lda,dsn="result_LDA_training",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
-	            
-	    #shape_validation_lda<-shape_validation
-	    #result_validation_lda_shape<-cbind(validation.table[,1],validation.table[,2],predict.result.lda.validation$posterior[,2],as.numeric(levels(predict.result.lda.validation$class))[predict.result.lda.validation$class],validation.lda.matching.code)
-	    #colnames(result_validation_lda_shape)<-c("ID","GROUP_VAR","VAL_PROB","VAL_CLASS","VAL_MATCH")
-	  	#shape_validation_lda@data <- merge(x=shape_validation_lda@data,y=result_validation_lda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
-	    ##writeOGR(shape_validation_lda,dsn="result_LDA_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-	  	#writeOGR(shape_validation_lda,dsn="result_LDA_validation",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
-	    ##################################################################
-      ### DA qui Nuovo
-      ##################################################################   
-      #### aggiungere a poligoni colonna incertezza ed esportazione pdf incertezza
-	    shape_training_lda<-shape_training
-	    result_training_lda_shape<-cbind(identification.value,training.table[,2],predict.result.lda$posterior[,2],as.numeric(levels(predict.result.lda$class))[predict.result.lda$class],result.lda.matching.code,ID.bootstrap.model.lda.count,bootstrap.model.lda.probability.mean,bootstrap.model.lda.probability.sd,bootstrap.model.lda.probability.min,bootstrap.model.lda.probability.max,bootstrap.model.lda.probability.sderror,t(bootstrap.model.lda.probability.quantiles),bootstrap.model.lda.prediction.mean,bootstrap.model.lda.prediction.sd,bootstrap.model.lda.prediction.min,bootstrap.model.lda.prediction.max,bootstrap.model.lda.prediction.sderror,t(bootstrap.model.lda.prediction.quantiles))
-	    colnames(result_training_lda_shape)<-c("ID","MOD_GROUP","MOD_PROB","MOD_CLASS","MOD_MATCH","LDA_SAMP","LDA_PMean","LDA_PSd","LDA_PMin","LDA_PMax","LDA_PSder","LDA_PQ0","LDA_PQ_005","LDA_PQ_025","LDA_PQ05","LDA_PQ_075","LDA_PQ095","LDA_PQ1","LDA_PrMean","LDA_PrSd","LDA_PrMin","LDA_PrMax","LDA_PrSder","LDA_PrQ0","LDA_PrQ005","LDA_PrQ025","LDA_PrQ05","LDA_PrQ075","LDA_PrQ095","LDA_PrQ1")
-	    ###########
-	    if(enable_probability_optimal_binary_classification==TRUE) 
-	      {
-	      result_training_lda_shape<-cbind(result_training_lda_shape,as.numeric(predict.result.lda$posterior[,2]>lda.probability.optimal.binary.threshold),result.lda.matching.code.optimal)
-	      colnames(result_training_lda_shape)<-c("ID","MOD_GROUP","MOD_PROB","MOD_CLASS","MOD_MATCH","LDA_SAMP","LDA_PMean","LDA_PSd","LDA_PMin","LDA_PMax","LDA_PSder","LDA_PQ0","LDA_PQ_005","LDA_PQ_025","LDA_PQ05","LDA_PQ_075","LDA_PQ095","LDA_PQ1","LDA_PrMean","LDA_PrSd","LDA_PrMin","LDA_PrMax","LDA_PrSder","LDA_PrQ0","LDA_PrQ005","LDA_PrQ025","LDA_PrQ05","LDA_PrQ075","LDA_PrQ095","LDA_PrQ1","OPT_CLASS","OPT_MATCH")
-	      }
-	    #############
-	    
-	    shape_training_lda@data <- merge(x=shape_training_lda@data,y=result_training_lda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
-	    #writeOGR(shape_training_lda,dsn="result_LDA_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-	    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_lda,dsn=getwd(),layer="training_LDA",driver="ESRI Shapefile",overwrite_layer=TRUE)
+  {
+    ################################################
+    ### Prima di cancellare testare con polygoni
+    ##############################################
+    #shape_training_lda<-shape_training
+    #result_training_lda_shape<-cbind(identification.value,training.table[,2],predict.result.lda$posterior[,2],as.numeric(levels(predict.result.lda$class))[predict.result.lda$class],result.lda.matching.code)
+    #colnames(result_training_lda_shape)<-c("ID","MOD_GROUP","MOD_PROB","MOD_CLASS","MOD_MATCH")
+    #shape_training_lda@data <- merge(x=shape_training_lda@data,y=result_training_lda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
+    ##writeOGR(shape_training_lda,dsn="result_LDA_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
+    #writeOGR(shape_training_lda,dsn="result_LDA_training",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
-	    # WARNING: The validation does't have the unvertainty estimation: probably this can be daone using the parabolic error function 
-	    shape_validation_lda<-shape_validation
-	    result_validation_lda_shape<-cbind(validation.table[,1],validation.table[,2],predict.result.lda.validation$posterior[,2],as.numeric(levels(predict.result.lda.validation$class))[predict.result.lda.validation$class],validation.lda.matching.code)
-	    colnames(result_validation_lda_shape)<-c("ID","VAL_GROUP","VAL_PROB","VAL_CLASS","VAL_MATCH")
-	    ###########
-	    if(enable_probability_optimal_binary_classification==TRUE) 
-	      {
-	      result_validation_lda_shape<-cbind(result_validation_lda_shape,as.numeric(predict.result.lda.validation$posterior[,2]>lda.probability.optimal.binary.threshold),validation.lda.matching.code.optimal)
-	      colnames(result_validation_lda_shape)<-c("ID","VAL_GROUP","VAL_PROB","VAL_CLASS","VAL_MATCH","OPT_CLASS","OPT_MATCH")
-	      }
-	    ############
-	    shape_validation_lda@data <- merge(x=shape_validation_lda@data,y=result_validation_lda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
-	    shape_validation_lda@data <- cbind(shape_validation_lda@data,PROB_SDMOD=(coefficients(fit.parabola.probability.lda)*(shape_validation_lda@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.lda)*shape_validation_lda@data$VAL_PROB))
-	    #writeOGR(shape_validation_lda,dsn="result_LDA_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-	    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_lda,dsn=getwd(),layer="validation_LDA",driver="ESRI Shapefile",overwrite_layer=TRUE)
-		
-	    # Plot and export of maps
-	    # LDA Susceptibility
-	    #dev.new()
-	    pdf(file = "result_LDA_Model_Susceptibility_Map.pdf",onefile = TRUE, pagecentre=TRUE)
-	    print(spplot(obj=shape_training_lda, zcol=c("MOD_PROB"), names.attr=c("LDA MODEL PROBABILITY"), main="LDA MODEL PROBABILITY", sp.layout=list(arrow.training,scale.training,text.scale1.training,text.scale2.training), scales = list(draw = TRUE), at=breaks.map.susceptibility, regions=TRUE, colorkey=list(space="bottom"), col.regions=color.vector.susceptibility))
-	    dev.off()
-      
-  
-	    # LDA Model Matching Code
-	    #dev.new()
-	    pdf(file = "result_LDA_Model_MatchingCode_Map.pdf",onefile = TRUE, pagecentre=TRUE)
-	    print(spplot(obj=shape_training_lda, zcol=c("MOD_MATCH"), names.attr=c("LDA MODEL MATCHING CODE"), main="LDA MODEL MATCHING CODE",  sp.layout=list(arrow.training,scale.training,text.scale1.training,text.scale2.training), scales = list(draw = TRUE), at=breaks.map.matching.code, regions=TRUE, colorkey=list(space="bottom"), col.regions=color.vector.matching))
-	    dev.off()
-	    
-      
-	    # LDA ValidationSusceptibility
-	    #dev.new()
-	    pdf(file = "result_LDA_Validation_Susceptibility_Map.pdf")
-	    print(spplot(obj=shape_validation_lda, zcol=c("VAL_PROB"), names.attr=c("LDA VALIDATION PROBABILITY"), main="LDA VALIDATION PROBABILITY", sp.layout=list(arrow.validation,scale.validation,text.scale1.validation,text.scale2.validation), scales = list(draw = TRUE), at=breaks.map.susceptibility, regions=TRUE, colorkey=list(space="bottom"), col.regions=color.vector.susceptibility))
-	    dev.off()
-	    
-	    # LDA Model Matching Code
-	    #dev.new()
-	    pdf(file = "result_LDA_Validation_MatchingCode_Map.pdf",onefile = TRUE, pagecentre=TRUE)
-	    print(spplot(obj=shape_validation_lda, zcol=c("VAL_MATCH"), names.attr=c("LDA VALIDATION MATCHING CODE"), main="LDA VALIDATION MATCHING CODE",  sp.layout=list(arrow.validation,scale.validation,text.scale1.validation,text.scale2.validation), scales = list(draw = TRUE), at=breaks.map.matching.code, regions=TRUE, colorkey=list(space="bottom"), col.regions=color.vector.matching))
-	    dev.off()
-      
-		  ########### TBT
-		  if(enable_probability_optimal_binary_classification==TRUE) 
-  		  {
-		    # LDA Model Matching Code
-		    #dev.new()
-		    pdf(file = "result_LDA_Model_MatchingCode_Map_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
-		    print(spplot(obj=shape_training_lda, zcol=c("OPT_MATCH"), names.attr=c("LDA MODEL MATCHING CODE"), main="LDA MODEL MATCHING CODE",  sp.layout=list(arrow.training,scale.training,text.scale1.training,text.scale2.training), scales = list(draw = TRUE), at=breaks.map.matching.code, regions=TRUE, colorkey=list(space="bottom"), col.regions=color.vector.matching))
-		    dev.off()
-        
-		    # LDA Model Matching Code
-		    #dev.new()
-		    pdf(file = "result_LDA_Validation_MatchingCode_Map_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
-		    print(spplot(obj=shape_validation_lda, zcol=c("OPT_MATCH"), names.attr=c("LDA VALIDATION MATCHING CODE"), main="LDA VALIDATION MATCHING CODE",  sp.layout=list(arrow.validation,scale.validation,text.scale1.validation,text.scale2.validation), scales = list(draw = TRUE), at=breaks.map.matching.code, regions=TRUE, colorkey=list(space="bottom"), col.regions=color.vector.matching))
-		    dev.off()
-		    		    
-		    if(enable_probability_optimal_classification==TRUE)
-		      {
-		      pdf(file = "result_LDA_Model_Susceptibility_Map_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
-		      print(spplot(obj=shape_training_lda, zcol=c("MOD_PROB"), names.attr=c("LDA MODEL PROBABILITY"), main="LDA MODEL PROBABILITY", sp.layout=list(arrow.training,scale.training,text.scale1.training,text.scale2.training), scales = list(draw = TRUE), at=(lda.breaks.histogram.values.optimal)+c(rep(0,(length(lda.breaks.histogram.values.optimal)-1)),0.0001), regions=TRUE, colorkey=list(space="bottom"), col.regions=color_ramp_palette_fun(length(lda.breaks.histogram.values.optimal)-1)))
-		      dev.off()
-          
-		      pdf(file = "result_LDA_Validation_Susceptibility_Map_Optimal.pdf")
-		      print(spplot(obj=shape_validation_lda, zcol=c("VAL_PROB"), names.attr=c("LDA VALIDATION PROBABILITY"), main="LDA VALIDATION PROBABILITY", sp.layout=list(arrow.validation,scale.validation,text.scale1.validation,text.scale2.validation), scales = list(draw = TRUE), at=(lda.breaks.histogram.values.optimal)+c(rep(0,(length(lda.breaks.histogram.values.optimal)-1)),0.0001), regions=TRUE, colorkey=list(space="bottom"), col.regions=color_ramp_palette_fun(length(lda.breaks.histogram.values.optimal)-1)))
-		      dev.off()
-          }
-		    }
-		  ###########
-      
-	    
-	 
-	    ### Success & prediction rate curve
-	    susc_values_lda<-c(1,0.8,0.55,0.45,0.2,0)
-	    
-	    # ordering data for susceptibility
-	    ind_col_succ_pred_rate<-which(colnames(shape_training_lda@data) %in% c(configuration.spatial.data.table[c(5,6)],"MOD_PROB"))
-	    shape_training_lda@data<-shape_training_lda@data[order(shape_training_lda@data[,ind_col_succ_pred_rate[3]],decreasing=TRUE),ind_col_succ_pred_rate]
-	    shape_training_lda@data[,1]<-cumsum(shape_training_lda@data[,1])/sum(shape_training_lda@data[,1])*100
-	    shape_training_lda@data[,2]<-cumsum(shape_training_lda@data[,2])/sum(shape_training_lda@data[,2])*100
-	    
-	    ind_pro_fun_mod<-approxfun(shape_training_lda@data[,3],shape_training_lda@data[,1])
-	    area_susc_values_lda_mod<-c(0,ind_pro_fun_mod(susc_values_lda[-c(1,length(susc_values_lda))]),100)
-	    
-	    #dev.new()
-	    pdf(file = "result_LDA_SuccessRateCurve.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
-	    plot(0,0,col="transparent",main="LDA SUCCESS RATE CURVE",xlab="Cumulative percentage study area ",ylab="Cumulative percentage landslide area",xlim=c(0,100),ylim=c(0,100))
-	    for (count in 1:(length(susc_values_lda)-1))
-	      {
-	      #count=1
-	      polygon(c(area_susc_values_lda_mod[count:(count+1)],rev(area_susc_values_lda_mod[count:(count+1)])),c(0,0,100,100),border="darkgray",lty="dotted",lwd=0.5,col=rev(color.vector.susceptibility)[count])  
-	      }
-	    polygon(c(0,100,100,0),c(0,0,100,100),border="black",lty="solid",lwd=1,col=NULL)
-	    lines(shape_training_lda@data[,1],shape_training_lda@data[,2],col="black")
-	    dev.off()
-      
-      
-		  ########### TBT
-		  if(enable_probability_optimal_classification==TRUE) 
-		  {
-		    area_susc_values_lda_mod_optimal<-c(0,ind_pro_fun_mod(rev(lda.breaks.histogram.values.optimal)[-c(1,length(lda.breaks.histogram.values.optimal))]),100)
-		    pdf(file = "result_LDA_SuccessRateCurve_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
-		    plot(0,0,col="transparent",main="LDA SUCCESS RATE CURVE",xlab="Cumulative percentage study area ",ylab="Cumulative percentage landslide area",xlim=c(0,100),ylim=c(0,100))
-		    for (count in 1:(length(rev(lda.breaks.histogram.values.optimal))-1))
-		    {
-		      #count=1
-		      polygon(c(area_susc_values_lda_mod_optimal[count:(count+1)],rev(area_susc_values_lda_mod_optimal[count:(count+1)])),c(0,0,100,100),border="darkgray",lty="dotted",lwd=0.5,col=rev(color_ramp_palette_fun(length(lda.breaks.histogram.values.optimal)-1))[count])  
-		    }
-		    polygon(c(0,100,100,0),c(0,0,100,100),border="black",lty="solid",lwd=1,col=NULL)
-		    lines(shape_training_lda@data[,1],shape_training_lda@data[,2],col="black")
-		    dev.off()
-		  }
-		  ############
-	    
-	    
-	    ind_col_succ_pred_rate<-which(colnames(shape_validation_lda@data) %in% c(configuration.spatial.data.table[c(5,6)],"VAL_PROB"))
-	    shape_validation_lda@data<-shape_validation_lda@data[order(shape_validation_lda@data[,ind_col_succ_pred_rate[3]],decreasing=TRUE),ind_col_succ_pred_rate]
-	    shape_validation_lda@data[,1]<-cumsum(shape_validation_lda@data[,1])/sum(shape_validation_lda@data[,1])*100
-	    shape_validation_lda@data[,2]<-cumsum(shape_validation_lda@data[,2])/sum(shape_validation_lda@data[,2])*100
-	    
-	    ind_pro_fun_val<-approxfun(shape_validation_lda@data[,3],shape_validation_lda@data[,1])
-	    area_susc_values_lda_val<-c(0,ind_pro_fun_val(susc_values_lda[-c(1,length(susc_values_lda))]),100)
-	    
-	    #dev.new()
-	    pdf(file = "result_LDA_PredictionRateCurve.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
-	    plot(0,0,col="transparent",main="LDA PREDICTION RATE CURVE",xlab="Cumulative percentage study area ",ylab="Cumulative percentage landslide area",xlim=c(0,100),ylim=c(0,100))
-	    for (count in 1:(length(susc_values_lda)-1))
-	      {
-	      #count=1
-	      polygon(c(area_susc_values_lda_val[count:(count+1)],rev(area_susc_values_lda_val[count:(count+1)])),c(0,0,100,100),border="darkgray",lty="dotted",lwd=0.5,col=rev(color.vector.susceptibility)[count])  
-	      }
-	    polygon(c(0,100,100,0),c(0,0,100,100),border="black",lty="solid",lwd=1,col=NULL)
-	    lines(shape_validation_lda@data[,1],shape_validation_lda@data[,2],col="black")
-	    dev.off()
-            
-		  ########### TBT
-		  if(enable_probability_optimal_classification==TRUE) 
-		    {
-		    area_susc_values_lda_val_optimal<-c(0,ind_pro_fun_val(rev(lda.breaks.histogram.values.optimal)[-c(1,length(lda.breaks.histogram.values.optimal))]),100)
-		    pdf(file = "result_LDA_PredictionRateCurve_Optimal.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
-		    plot(0,0,col="transparent",main="LDA PREDICTION RATE CURVE",xlab="Cumulative percentage study area ",ylab="Cumulative percentage landslide area",xlim=c(0,100),ylim=c(0,100))
-		    for (count in 1:(length(rev(lda.breaks.histogram.values.optimal))-1))
-		      {
-		      #count=1
-		      polygon(c(area_susc_values_lda_val_optimal[count:(count+1)],rev(area_susc_values_lda_val_optimal[count:(count+1)])),c(0,0,100,100),border="darkgray",lty="dotted",lwd=0.5,col=rev(color_ramp_palette_fun(length(lda.breaks.histogram.values.optimal)-1))[count])  
-		      }
-		    polygon(c(0,100,100,0),c(0,0,100,100),border="black",lty="solid",lwd=1,col=NULL)
-		    lines(shape_validation_lda@data[,1],shape_validation_lda@data[,2],col="black")
-		    dev.off()
-		    }
-		  ############
-		  }
-	
-
-	if(configuration.spatial.data.table$PRESENCE == "YES" & configuration.spatial.data.table$GEOMETRY=="POINTS")
-		{
-		shape_training_lda<-shape_training
-		result_training_lda_shape<-cbind(identification.value,training.table[,2],predict.result.lda$posterior[,2],as.numeric(levels(predict.result.lda$class))[predict.result.lda$class],result.lda.matching.code,ID.bootstrap.model.lda.count,bootstrap.model.lda.probability.mean,bootstrap.model.lda.probability.sd,bootstrap.model.lda.probability.min,bootstrap.model.lda.probability.max,bootstrap.model.lda.probability.sderror,t(bootstrap.model.lda.probability.quantiles),bootstrap.model.lda.prediction.mean,bootstrap.model.lda.prediction.sd,bootstrap.model.lda.prediction.min,bootstrap.model.lda.prediction.max,bootstrap.model.lda.prediction.sderror,t(bootstrap.model.lda.prediction.quantiles))
-		colnames(result_training_lda_shape)<-c("ID","MOD_GROUP","MOD_PROB","MOD_CLASS","MOD_MATCH","LDA_SAMP","LDA_PMean","LDA_PSd","LDA_PMin","LDA_PMax","LDA_PSder","LDA_PQ0","LDA_PQ_005","LDA_PQ_025","LDA_PQ05","LDA_PQ_075","LDA_PQ095","LDA_PQ1","LDA_PrMean","LDA_PrSd","LDA_PrMin","LDA_PrMax","LDA_PrSder","LDA_PrQ0","LDA_PrQ005","LDA_PrQ025","LDA_PrQ05","LDA_PrQ075","LDA_PrQ095","LDA_PrQ1")
-		###########
-		if(enable_probability_optimal_binary_classification==TRUE) 
-		  {
-		  result_training_lda_shape<-cbind(result_training_lda_shape,as.numeric(predict.result.lda$posterior[,2]>lda.probability.optimal.binary.threshold),result.lda.matching.code.optimal)
-		  colnames(result_training_lda_shape)<-c("ID","MOD_GROUP","MOD_PROB","MOD_CLASS","MOD_MATCH","LDA_SAMP","LDA_PMean","LDA_PSd","LDA_PMin","LDA_PMax","LDA_PSder","LDA_PQ0","LDA_PQ_005","LDA_PQ_025","LDA_PQ05","LDA_PQ_075","LDA_PQ095","LDA_PQ1","LDA_PrMean","LDA_PrSd","LDA_PrMin","LDA_PrMax","LDA_PrSder","LDA_PrQ0","LDA_PrQ005","LDA_PrQ025","LDA_PrQ05","LDA_PrQ075","LDA_PrQ095","LDA_PrQ1","OPT_CLASS","OPT_MATCH")
-		  }
-		#############
-		
-		shape_training_lda@data <- merge(x=shape_training_lda@data,y=result_training_lda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
-		#writeOGR(shape_training_lda,dsn="result_LDA_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-		if(enable_detailed_data_export==TRUE) writeOGR(shape_training_lda,dsn=getwd(),layer="training_LDA",driver="ESRI Shapefile",overwrite_layer=TRUE)
-		
-		
-		# WARNING: The validation does't have the unvertainty estimation: probably this can be daone using the parabolic error function 
-		shape_validation_lda<-shape_validation
-		result_validation_lda_shape<-cbind(validation.table[,1],validation.table[,2],predict.result.lda.validation$posterior[,2],as.numeric(levels(predict.result.lda.validation$class))[predict.result.lda.validation$class],validation.lda.matching.code)
-		colnames(result_validation_lda_shape)<-c("ID","VAL_GROUP","VAL_PROB","VAL_CLASS","VAL_MATCH")
-		###########
-		if(enable_probability_optimal_binary_classification==TRUE) 
-		  {
-		  result_validation_lda_shape<-cbind(result_validation_lda_shape,as.numeric(predict.result.lda.validation$posterior[,2]>lda.probability.optimal.binary.threshold),validation.lda.matching.code.optimal)
-		  colnames(result_validation_lda_shape)<-c("ID","VAL_GROUP","VAL_PROB","VAL_CLASS","VAL_MATCH","OPT_CLASS","OPT_MATCH")
-		  }
-		############
-		
-		shape_validation_lda@data <- merge(x=shape_validation_lda@data,y=result_validation_lda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
-		shape_validation_lda@data <- cbind(shape_validation_lda@data,PROB_SDMOD=(coefficients(fit.parabola.probability.lda)*(shape_validation_lda@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.lda)*shape_validation_lda@data$VAL_PROB))
-		#writeOGR(shape_validation_lda,dsn="result_LDA_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-		if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_lda,dsn=getwd(),layer="validation_LDA",driver="ESRI Shapefile",overwrite_layer=TRUE)
-		
-		require(raster)
-		
-		# Plot and export of maps
-		# LDA Susceptibility
-		#dev.new()
-		pdf(file = "result_LDA_Model_Susceptibility_Map.pdf",onefile = TRUE, pagecentre=TRUE)
-		layer_gridded<-shape_training_lda
-		layer_gridded@data<-as.data.frame(layer_gridded@data[,"MOD_PROB"])
-		gridded(layer_gridded)<-TRUE
-		layer_gridded_raster<-raster(layer_gridded)
-		#res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
-		res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
-		print(plot(layer_gridded_raster,col=color.vector.susceptibility,breaks=round(breaks.map.susceptibility,2)))
-		#zoom(layer_gridded_raster)		
-		dev.off()
-		
-		writeRaster(layer_gridded_raster, filename="result_LDA_Model_Susceptibility_Map.tif", format="GTiff", overwrite=TRUE)
-    
-		###########
-		if(enable_probability_optimal_classification==TRUE) 
-		  {
-		  pdf(file = "result_LDA_Model_Susceptibility_Map_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
-  	  print(plot(layer_gridded_raster,col=color_ramp_palette_fun(length(lda.breaks.histogram.values.optimal)-1),breaks=round(lda.breaks.histogram.values.optimal,3)))
-		  dev.off()
-		  }
-		############
-		
-		
-		if(enable_detailed_data_export_tiff==TRUE)
-		{
-		# LDA Model Matching Code
-		#dev.new()
-		pdf(file = "result_LDA_Model_MatchingCode_Map.pdf",onefile = TRUE, pagecentre=TRUE)
-		layer_gridded<-shape_training_lda
-		layer_gridded@data<-as.data.frame(layer_gridded@data[,"MOD_MATCH"])
-		gridded(layer_gridded)<-TRUE
-		layer_gridded_raster<-raster(layer_gridded)
-		#res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
-		res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
-		index_col_macthing<-as.numeric(names(table(layer_gridded_raster@data@values)))
-		print(plot(layer_gridded_raster,col=color.vector.matching[index_col_macthing],legend=FALSE))
-		legend("topright", legend = c("1: TN","2: FP","3: FN","4: TP"), cex=0.8,fill = color.vector.matching,xjust=1.1,bg="transparent",box.col="transparent")
-		dev.off()
-
-    writeRaster(layer_gridded_raster, filename="result_LDA_Model_MatchingCode_Map.tif", format="GTiff", overwrite=TRUE)
-		}
-		
+    #shape_validation_lda<-shape_validation
+    #result_validation_lda_shape<-cbind(validation.table[,1],validation.table[,2],predict.result.lda.validation$posterior[,2],as.numeric(levels(predict.result.lda.validation$class))[predict.result.lda.validation$class],validation.lda.matching.code)
+    #colnames(result_validation_lda_shape)<-c("ID","GROUP_VAR","VAL_PROB","VAL_CLASS","VAL_MATCH")
+    #shape_validation_lda@data <- merge(x=shape_validation_lda@data,y=result_validation_lda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
+    ##writeOGR(shape_validation_lda,dsn="result_LDA_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
+    #writeOGR(shape_validation_lda,dsn="result_LDA_validation",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    ##################################################################
+    ### DA qui Nuovo
+    ##################################################################   
+    #### aggiungere a poligoni colonna incertezza ed esportazione pdf incertezza
+    shape_training_lda<-shape_training
+    result_training_lda_shape<-cbind(identification.value,training.table[,2],predict.result.lda$posterior[,2],as.numeric(levels(predict.result.lda$class))[predict.result.lda$class],result.lda.matching.code,ID.bootstrap.model.lda.count,bootstrap.model.lda.probability.mean,bootstrap.model.lda.probability.sd,bootstrap.model.lda.probability.min,bootstrap.model.lda.probability.max,bootstrap.model.lda.probability.sderror,t(bootstrap.model.lda.probability.quantiles),bootstrap.model.lda.prediction.mean,bootstrap.model.lda.prediction.sd,bootstrap.model.lda.prediction.min,bootstrap.model.lda.prediction.max,bootstrap.model.lda.prediction.sderror,t(bootstrap.model.lda.prediction.quantiles))
+    colnames(result_training_lda_shape)<-c("ID","MOD_GROUP","MOD_PROB","MOD_CLASS","MOD_MATCH","LDA_SAMP","LDA_PMean","LDA_PSd","LDA_PMin","LDA_PMax","LDA_PSder","LDA_PQ0","LDA_PQ_005","LDA_PQ_025","LDA_PQ05","LDA_PQ_075","LDA_PQ095","LDA_PQ1","LDA_PrMean","LDA_PrSd","LDA_PrMin","LDA_PrMax","LDA_PrSder","LDA_PrQ0","LDA_PrQ005","LDA_PrQ025","LDA_PrQ05","LDA_PrQ075","LDA_PrQ095","LDA_PrQ1")
     ###########
     if(enable_probability_optimal_binary_classification==TRUE) 
+    {
+      result_training_lda_shape<-cbind(result_training_lda_shape,as.numeric(predict.result.lda$posterior[,2]>lda.probability.optimal.binary.threshold),result.lda.matching.code.optimal)
+      colnames(result_training_lda_shape)<-c("ID","MOD_GROUP","MOD_PROB","MOD_CLASS","MOD_MATCH","LDA_SAMP","LDA_PMean","LDA_PSd","LDA_PMin","LDA_PMax","LDA_PSder","LDA_PQ0","LDA_PQ_005","LDA_PQ_025","LDA_PQ05","LDA_PQ_075","LDA_PQ095","LDA_PQ1","LDA_PrMean","LDA_PrSd","LDA_PrMin","LDA_PrMax","LDA_PrSder","LDA_PrQ0","LDA_PrQ005","LDA_PrQ025","LDA_PrQ05","LDA_PrQ075","LDA_PrQ095","LDA_PrQ1","OPT_CLASS","OPT_MATCH")
+    }
+    #############
+    
+    shape_training_lda@data <- merge(x=shape_training_lda@data,y=result_training_lda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
+    #writeOGR(shape_training_lda,dsn="result_LDA_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_lda,dsn="result_LDA_training",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    
+    # WARNING: The validation does't have the unvertainty estimation: probably this can be daone using the parabolic error function 
+    shape_validation_lda<-shape_validation
+    result_validation_lda_shape<-cbind(validation.table[,1],validation.table[,2],predict.result.lda.validation$posterior[,2],as.numeric(levels(predict.result.lda.validation$class))[predict.result.lda.validation$class],validation.lda.matching.code)
+    colnames(result_validation_lda_shape)<-c("ID","VAL_GROUP","VAL_PROB","VAL_CLASS","VAL_MATCH")
+    ###########
+    if(enable_probability_optimal_binary_classification==TRUE) 
+    {
+      result_validation_lda_shape<-cbind(result_validation_lda_shape,as.numeric(predict.result.lda.validation$posterior[,2]>lda.probability.optimal.binary.threshold),validation.lda.matching.code.optimal)
+      colnames(result_validation_lda_shape)<-c("ID","VAL_GROUP","VAL_PROB","VAL_CLASS","VAL_MATCH","OPT_CLASS","OPT_MATCH")
+    }
+    ############
+    shape_validation_lda@data <- merge(x=shape_validation_lda@data,y=result_validation_lda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
+    shape_validation_lda@data <- cbind(shape_validation_lda@data,PROB_SDMOD=(coefficients(fit.parabola.probability.lda)*(shape_validation_lda@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.lda)*shape_validation_lda@data$VAL_PROB))
+    #writeOGR(shape_validation_lda,dsn="result_LDA_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_lda,dsn="result_LDA_validation",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    
+    # Plot and export of maps
+    # LDA Susceptibility
+    #dev.new()
+    pdf(file = "result_LDA_Model_Susceptibility_Map.pdf",onefile = TRUE, pagecentre=TRUE)
+    print(spplot(obj=shape_training_lda, zcol=c("MOD_PROB"), names.attr=c("LDA MODEL PROBABILITY"), main="LDA MODEL PROBABILITY", sp.layout=list(arrow.training,scale.training,text.scale1.training,text.scale2.training), scales = list(draw = TRUE), at=breaks.map.susceptibility, regions=TRUE, colorkey=list(space="bottom"), col.regions=color.vector.susceptibility))
+    dev.off()
+    
+    
+    # LDA Model Matching Code
+    #dev.new()
+    pdf(file = "result_LDA_Model_MatchingCode_Map.pdf",onefile = TRUE, pagecentre=TRUE)
+    print(spplot(obj=shape_training_lda, zcol=c("MOD_MATCH"), names.attr=c("LDA MODEL MATCHING CODE"), main="LDA MODEL MATCHING CODE",  sp.layout=list(arrow.training,scale.training,text.scale1.training,text.scale2.training), scales = list(draw = TRUE), at=breaks.map.matching.code, regions=TRUE, colorkey=list(space="bottom"), col.regions=color.vector.matching))
+    dev.off()
+    
+    
+    # LDA ValidationSusceptibility
+    #dev.new()
+    pdf(file = "result_LDA_Validation_Susceptibility_Map.pdf")
+    print(spplot(obj=shape_validation_lda, zcol=c("VAL_PROB"), names.attr=c("LDA VALIDATION PROBABILITY"), main="LDA VALIDATION PROBABILITY", sp.layout=list(arrow.validation,scale.validation,text.scale1.validation,text.scale2.validation), scales = list(draw = TRUE), at=breaks.map.susceptibility, regions=TRUE, colorkey=list(space="bottom"), col.regions=color.vector.susceptibility))
+    dev.off()
+    
+    # LDA Model Matching Code
+    #dev.new()
+    pdf(file = "result_LDA_Validation_MatchingCode_Map.pdf",onefile = TRUE, pagecentre=TRUE)
+    print(spplot(obj=shape_validation_lda, zcol=c("VAL_MATCH"), names.attr=c("LDA VALIDATION MATCHING CODE"), main="LDA VALIDATION MATCHING CODE",  sp.layout=list(arrow.validation,scale.validation,text.scale1.validation,text.scale2.validation), scales = list(draw = TRUE), at=breaks.map.matching.code, regions=TRUE, colorkey=list(space="bottom"), col.regions=color.vector.matching))
+    dev.off()
+    
+    ########### TBT
+    if(enable_probability_optimal_binary_classification==TRUE) 
+    {
+      # LDA Model Matching Code
+      #dev.new()
+      pdf(file = "result_LDA_Model_MatchingCode_Map_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
+      print(spplot(obj=shape_training_lda, zcol=c("OPT_MATCH"), names.attr=c("LDA MODEL MATCHING CODE"), main="LDA MODEL MATCHING CODE",  sp.layout=list(arrow.training,scale.training,text.scale1.training,text.scale2.training), scales = list(draw = TRUE), at=breaks.map.matching.code, regions=TRUE, colorkey=list(space="bottom"), col.regions=color.vector.matching))
+      dev.off()
+      
+      # LDA Model Matching Code
+      #dev.new()
+      pdf(file = "result_LDA_Validation_MatchingCode_Map_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
+      print(spplot(obj=shape_validation_lda, zcol=c("OPT_MATCH"), names.attr=c("LDA VALIDATION MATCHING CODE"), main="LDA VALIDATION MATCHING CODE",  sp.layout=list(arrow.validation,scale.validation,text.scale1.validation,text.scale2.validation), scales = list(draw = TRUE), at=breaks.map.matching.code, regions=TRUE, colorkey=list(space="bottom"), col.regions=color.vector.matching))
+      dev.off()
+      
+      if(enable_probability_optimal_classification==TRUE)
       {
+        pdf(file = "result_LDA_Model_Susceptibility_Map_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
+        print(spplot(obj=shape_training_lda, zcol=c("MOD_PROB"), names.attr=c("LDA MODEL PROBABILITY"), main="LDA MODEL PROBABILITY", sp.layout=list(arrow.training,scale.training,text.scale1.training,text.scale2.training), scales = list(draw = TRUE), at=(lda.breaks.histogram.values.optimal)+c(rep(0,(length(lda.breaks.histogram.values.optimal)-1)),0.0001), regions=TRUE, colorkey=list(space="bottom"), col.regions=color_ramp_palette_fun(length(lda.breaks.histogram.values.optimal)-1)))
+        dev.off()
+        
+        pdf(file = "result_LDA_Validation_Susceptibility_Map_Optimal.pdf")
+        print(spplot(obj=shape_validation_lda, zcol=c("VAL_PROB"), names.attr=c("LDA VALIDATION PROBABILITY"), main="LDA VALIDATION PROBABILITY", sp.layout=list(arrow.validation,scale.validation,text.scale1.validation,text.scale2.validation), scales = list(draw = TRUE), at=(lda.breaks.histogram.values.optimal)+c(rep(0,(length(lda.breaks.histogram.values.optimal)-1)),0.0001), regions=TRUE, colorkey=list(space="bottom"), col.regions=color_ramp_palette_fun(length(lda.breaks.histogram.values.optimal)-1)))
+        dev.off()
+      }
+    }
+    ###########
+    
+    
+    
+    ### Success & prediction rate curve
+    susc_values_lda<-c(1,0.8,0.55,0.45,0.2,0)
+    
+    # ordering data for susceptibility
+    ind_col_succ_pred_rate<-which(colnames(shape_training_lda@data) %in% c(configuration.spatial.data.table[c(5,6)],"MOD_PROB"))
+    shape_training_lda@data<-shape_training_lda@data[order(shape_training_lda@data[,ind_col_succ_pred_rate[3]],decreasing=TRUE),ind_col_succ_pred_rate]
+    shape_training_lda@data[,1]<-cumsum(shape_training_lda@data[,1])/sum(shape_training_lda@data[,1])*100
+    shape_training_lda@data[,2]<-cumsum(shape_training_lda@data[,2])/sum(shape_training_lda@data[,2])*100
+    
+    ind_pro_fun_mod<-approxfun(shape_training_lda@data[,3],shape_training_lda@data[,1])
+    area_susc_values_lda_mod<-c(0,ind_pro_fun_mod(susc_values_lda[-c(1,length(susc_values_lda))]),100)
+    
+    #dev.new()
+    pdf(file = "result_LDA_SuccessRateCurve.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
+    plot(0,0,col="transparent",main="LDA SUCCESS RATE CURVE",xlab="Cumulative percentage study area ",ylab="Cumulative percentage landslide area",xlim=c(0,100),ylim=c(0,100))
+    for (count in 1:(length(susc_values_lda)-1))
+    {
+      #count=1
+      polygon(c(area_susc_values_lda_mod[count:(count+1)],rev(area_susc_values_lda_mod[count:(count+1)])),c(0,0,100,100),border="darkgray",lty="dotted",lwd=0.5,col=rev(color.vector.susceptibility)[count])  
+    }
+    polygon(c(0,100,100,0),c(0,0,100,100),border="black",lty="solid",lwd=1,col=NULL)
+    lines(shape_training_lda@data[,1],shape_training_lda@data[,2],col="black")
+    dev.off()
+    
+    
+    ########### TBT
+    if(enable_probability_optimal_classification==TRUE) 
+    {
+      area_susc_values_lda_mod_optimal<-c(0,ind_pro_fun_mod(rev(lda.breaks.histogram.values.optimal)[-c(1,length(lda.breaks.histogram.values.optimal))]),100)
+      pdf(file = "result_LDA_SuccessRateCurve_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
+      plot(0,0,col="transparent",main="LDA SUCCESS RATE CURVE",xlab="Cumulative percentage study area ",ylab="Cumulative percentage landslide area",xlim=c(0,100),ylim=c(0,100))
+      for (count in 1:(length(rev(lda.breaks.histogram.values.optimal))-1))
+      {
+        #count=1
+        polygon(c(area_susc_values_lda_mod_optimal[count:(count+1)],rev(area_susc_values_lda_mod_optimal[count:(count+1)])),c(0,0,100,100),border="darkgray",lty="dotted",lwd=0.5,col=rev(color_ramp_palette_fun(length(lda.breaks.histogram.values.optimal)-1))[count])  
+      }
+      polygon(c(0,100,100,0),c(0,0,100,100),border="black",lty="solid",lwd=1,col=NULL)
+      lines(shape_training_lda@data[,1],shape_training_lda@data[,2],col="black")
+      dev.off()
+    }
+    ############
+    
+    
+    ind_col_succ_pred_rate<-which(colnames(shape_validation_lda@data) %in% c(configuration.spatial.data.table[c(5,6)],"VAL_PROB"))
+    shape_validation_lda@data<-shape_validation_lda@data[order(shape_validation_lda@data[,ind_col_succ_pred_rate[3]],decreasing=TRUE),ind_col_succ_pred_rate]
+    shape_validation_lda@data[,1]<-cumsum(shape_validation_lda@data[,1])/sum(shape_validation_lda@data[,1])*100
+    shape_validation_lda@data[,2]<-cumsum(shape_validation_lda@data[,2])/sum(shape_validation_lda@data[,2])*100
+    
+    ind_pro_fun_val<-approxfun(shape_validation_lda@data[,3],shape_validation_lda@data[,1])
+    area_susc_values_lda_val<-c(0,ind_pro_fun_val(susc_values_lda[-c(1,length(susc_values_lda))]),100)
+    
+    #dev.new()
+    pdf(file = "result_LDA_PredictionRateCurve.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
+    plot(0,0,col="transparent",main="LDA PREDICTION RATE CURVE",xlab="Cumulative percentage study area ",ylab="Cumulative percentage landslide area",xlim=c(0,100),ylim=c(0,100))
+    for (count in 1:(length(susc_values_lda)-1))
+    {
+      #count=1
+      polygon(c(area_susc_values_lda_val[count:(count+1)],rev(area_susc_values_lda_val[count:(count+1)])),c(0,0,100,100),border="darkgray",lty="dotted",lwd=0.5,col=rev(color.vector.susceptibility)[count])  
+    }
+    polygon(c(0,100,100,0),c(0,0,100,100),border="black",lty="solid",lwd=1,col=NULL)
+    lines(shape_validation_lda@data[,1],shape_validation_lda@data[,2],col="black")
+    dev.off()
+    
+    ########### TBT
+    if(enable_probability_optimal_classification==TRUE) 
+    {
+      area_susc_values_lda_val_optimal<-c(0,ind_pro_fun_val(rev(lda.breaks.histogram.values.optimal)[-c(1,length(lda.breaks.histogram.values.optimal))]),100)
+      pdf(file = "result_LDA_PredictionRateCurve_Optimal.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
+      plot(0,0,col="transparent",main="LDA PREDICTION RATE CURVE",xlab="Cumulative percentage study area ",ylab="Cumulative percentage landslide area",xlim=c(0,100),ylim=c(0,100))
+      for (count in 1:(length(rev(lda.breaks.histogram.values.optimal))-1))
+      {
+        #count=1
+        polygon(c(area_susc_values_lda_val_optimal[count:(count+1)],rev(area_susc_values_lda_val_optimal[count:(count+1)])),c(0,0,100,100),border="darkgray",lty="dotted",lwd=0.5,col=rev(color_ramp_palette_fun(length(lda.breaks.histogram.values.optimal)-1))[count])  
+      }
+      polygon(c(0,100,100,0),c(0,0,100,100),border="black",lty="solid",lwd=1,col=NULL)
+      lines(shape_validation_lda@data[,1],shape_validation_lda@data[,2],col="black")
+      dev.off()
+    }
+    ############
+  }
+  
+  
+  if(configuration.spatial.data.table$PRESENCE == "YES" & configuration.spatial.data.table$GEOMETRY=="POINTS")
+  {
+    shape_training_lda<-shape_training
+    result_training_lda_shape<-cbind(identification.value,training.table[,2],predict.result.lda$posterior[,2],as.numeric(levels(predict.result.lda$class))[predict.result.lda$class],result.lda.matching.code,ID.bootstrap.model.lda.count,bootstrap.model.lda.probability.mean,bootstrap.model.lda.probability.sd,bootstrap.model.lda.probability.min,bootstrap.model.lda.probability.max,bootstrap.model.lda.probability.sderror,t(bootstrap.model.lda.probability.quantiles),bootstrap.model.lda.prediction.mean,bootstrap.model.lda.prediction.sd,bootstrap.model.lda.prediction.min,bootstrap.model.lda.prediction.max,bootstrap.model.lda.prediction.sderror,t(bootstrap.model.lda.prediction.quantiles))
+    colnames(result_training_lda_shape)<-c("ID","MOD_GROUP","MOD_PROB","MOD_CLASS","MOD_MATCH","LDA_SAMP","LDA_PMean","LDA_PSd","LDA_PMin","LDA_PMax","LDA_PSder","LDA_PQ0","LDA_PQ_005","LDA_PQ_025","LDA_PQ05","LDA_PQ_075","LDA_PQ095","LDA_PQ1","LDA_PrMean","LDA_PrSd","LDA_PrMin","LDA_PrMax","LDA_PrSder","LDA_PrQ0","LDA_PrQ005","LDA_PrQ025","LDA_PrQ05","LDA_PrQ075","LDA_PrQ095","LDA_PrQ1")
+    ###########
+    if(enable_probability_optimal_binary_classification==TRUE) 
+    {
+      result_training_lda_shape<-cbind(result_training_lda_shape,as.numeric(predict.result.lda$posterior[,2]>lda.probability.optimal.binary.threshold),result.lda.matching.code.optimal)
+      colnames(result_training_lda_shape)<-c("ID","MOD_GROUP","MOD_PROB","MOD_CLASS","MOD_MATCH","LDA_SAMP","LDA_PMean","LDA_PSd","LDA_PMin","LDA_PMax","LDA_PSder","LDA_PQ0","LDA_PQ_005","LDA_PQ_025","LDA_PQ05","LDA_PQ_075","LDA_PQ095","LDA_PQ1","LDA_PrMean","LDA_PrSd","LDA_PrMin","LDA_PrMax","LDA_PrSder","LDA_PrQ0","LDA_PrQ005","LDA_PrQ025","LDA_PrQ05","LDA_PrQ075","LDA_PrQ095","LDA_PrQ1","OPT_CLASS","OPT_MATCH")
+    }
+    #############
+    
+    shape_training_lda@data <- merge(x=shape_training_lda@data,y=result_training_lda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
+    #writeOGR(shape_training_lda,dsn="result_LDA_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_lda,dsn="result_LDA_training",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    
+    
+    # WARNING: The validation does't have the unvertainty estimation: probably this can be daone using the parabolic error function 
+    shape_validation_lda<-shape_validation
+    result_validation_lda_shape<-cbind(validation.table[,1],validation.table[,2],predict.result.lda.validation$posterior[,2],as.numeric(levels(predict.result.lda.validation$class))[predict.result.lda.validation$class],validation.lda.matching.code)
+    colnames(result_validation_lda_shape)<-c("ID","VAL_GROUP","VAL_PROB","VAL_CLASS","VAL_MATCH")
+    ###########
+    if(enable_probability_optimal_binary_classification==TRUE) 
+    {
+      result_validation_lda_shape<-cbind(result_validation_lda_shape,as.numeric(predict.result.lda.validation$posterior[,2]>lda.probability.optimal.binary.threshold),validation.lda.matching.code.optimal)
+      colnames(result_validation_lda_shape)<-c("ID","VAL_GROUP","VAL_PROB","VAL_CLASS","VAL_MATCH","OPT_CLASS","OPT_MATCH")
+    }
+    ############
+    
+    shape_validation_lda@data <- merge(x=shape_validation_lda@data,y=result_validation_lda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
+    shape_validation_lda@data <- cbind(shape_validation_lda@data,PROB_SDMOD=(coefficients(fit.parabola.probability.lda)*(shape_validation_lda@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.lda)*shape_validation_lda@data$VAL_PROB))
+    #writeOGR(shape_validation_lda,dsn="result_LDA_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_lda,dsn="result_LDA_validation",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    
+    require(raster)
+    
+    # Plot and export of maps
+    # LDA Susceptibility
+    #dev.new()
+    pdf(file = "result_LDA_Model_Susceptibility_Map.pdf",onefile = TRUE, pagecentre=TRUE)
+    layer_gridded<-shape_training_lda
+    layer_gridded@data<-as.data.frame(layer_gridded@data[,"MOD_PROB"])
+    gridded(layer_gridded)<-TRUE
+    layer_gridded_raster<-raster(layer_gridded)
+    #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+    res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+    print(plot(layer_gridded_raster,col=color.vector.susceptibility,breaks=round(breaks.map.susceptibility,2)))
+    #zoom(layer_gridded_raster)		
+    dev.off()
+    
+    writeRaster(layer_gridded_raster, filename="result_LDA_Model_Susceptibility_Map.tif", format="GTiff", overwrite=TRUE)
+    
+    ###########################################
+    require(rgdal)
+    ### Reprojecting
+    export_EPSG_code<-"4326"
+    layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+    layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+    fullgrid(layer_gridded_raster_reproject)
+    ### Reclassifying 
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.8 & layer_gridded_raster_reproject@data[,1]<=1]<-5
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.55 & layer_gridded_raster_reproject@data[,1]<=0.8]<-4
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.45 & layer_gridded_raster_reproject@data[,1]<=0.55]<-3
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.2 & layer_gridded_raster_reproject@data[,1]<=0.45]<-2
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0 & layer_gridded_raster_reproject@data[,1]<=0.2]<-1
+    pngcolors<-round(as.matrix(data.frame(color_ramp_fun(breaks.histogram.values[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]),alpha=rep(255,length(table(layer_gridded_raster_reproject@data[,1]))))))
+    colnames(pngcolors)<-c("red","green","blue","alpha")
+    pngcolors<-rgb(pngcolors,maxColorValue = 255)
+    pnglabels<-c("1: 0-0.20","2: 0.20-0.45","3: 0.45-0.55","4: 0.55-0.80","5: 0.80-1")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+    ### Writing .png .pngw files 
+    writeGDAL(layer_gridded_raster_reproject,"result_LDA_Model_Susceptibility_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=6,options=c("WORLDFILE=YES"))
+    file.rename(from="result_LDA_Model_Susceptibility_Map.wld", to="result_LDA_Model_Susceptibility_Map.pngw")
+    ### Writing .properties files 
+    pngid<-1
+    pngtitle<-"LDA Susceptibility map"
+    pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+    pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+    pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_susceptibility.PNG"
+    propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+    write.table(propertiesstring,"result_LDA_Model_Susceptibility_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+    ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+    ###########################################
+    
+    
+    ###########
+    if(enable_probability_optimal_classification==TRUE) 
+    {
+      pdf(file = "result_LDA_Model_Susceptibility_Map_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
+      print(plot(layer_gridded_raster,col=color_ramp_palette_fun(length(lda.breaks.histogram.values.optimal)-1),breaks=round(lda.breaks.histogram.values.optimal,3)))
+      dev.off()
+    }
+    ############
+    
+    
+    if(enable_detailed_data_export_tiff==TRUE)
+    {
+      # LDA Model Matching Code
+      #dev.new()
+      pdf(file = "result_LDA_Model_MatchingCode_Map.pdf",onefile = TRUE, pagecentre=TRUE)
+      layer_gridded<-shape_training_lda
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"MOD_MATCH"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      index_col_macthing<-as.numeric(names(table(layer_gridded_raster@data@values)))
+      print(plot(layer_gridded_raster,col=color.vector.matching[index_col_macthing],legend=FALSE))
+      legend("topright", legend = c("1: TN","2: FP","3: FN","4: TP"), cex=0.8,fill = color.vector.matching,xjust=1.1,bg="transparent",box.col="transparent")
+      dev.off()
+      
+      writeRaster(layer_gridded_raster, filename="result_LDA_Model_MatchingCode_Map.tif", format="GTiff", overwrite=TRUE)
+      
+      ###########################################
+      require(rgdal)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>3.5 & layer_gridded_raster_reproject@data[,1]<=4]<-4
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>2.5 & layer_gridded_raster_reproject@data[,1]<=3.5]<-3
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>1.5 & layer_gridded_raster_reproject@data[,1]<=2.5]<-2
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0.5 & layer_gridded_raster_reproject@data[,1]<=1.5]<-1
+      pngcolors<-color.vector.matching[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      pnglabels<-c("1: TN","2: FP","3: FN","4: TP")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_LDA_Model_MatchingCode_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=6,options=c("WORLDFILE=YES"))
+      file.rename(from="result_LDA_Model_MatchingCode_Map.wld", to="result_LDA_Model_MatchingCode_Map.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"LDA Matching code map"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_matchingcode.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_LDA_Model_MatchingCode_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+      ###########################################
+    }
+    
+    ###########
+    if(enable_probability_optimal_binary_classification==TRUE) 
+    {
       #dev.new()
       pdf(file = "result_LDA_Model_MatchingCode_Map_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
       layer_gridded<-shape_training_lda
@@ -1659,7 +1719,7 @@ if(model.run.matrix[1] == "YES")
       dev.off()
       
       writeRaster(layer_gridded_raster, filename="result_LDA_Model_MatchingCode_Map_Optimal.tif", format="GTiff", overwrite=TRUE)
-
+      
       #dev.new()
       pdf(file = "result_LDA_Model_SusceptibilityBinary_Map_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
       layer_gridded<-shape_training_lda
@@ -1674,250 +1734,375 @@ if(model.run.matrix[1] == "YES")
       
       writeRaster(layer_gridded_raster, filename="result_LDA_Model_SusceptibilityBinary_Map_Optimal.tif", format="GTiff", overwrite=TRUE)
       
-      }
+    }
     ############
-		if(enable_detailed_data_export_tiff==TRUE)
-		{
-  	# LDA Model uncertainity
-		#dev.new()
-		pdf(file = "result_LDA_Model_Uncertainty_Map.pdf",onefile = TRUE, pagecentre=TRUE)
-		layer_gridded<-shape_training_lda
-		layer_gridded@data<-as.data.frame(layer_gridded@data[,"LDA_PrSd"])
-		gridded(layer_gridded)<-TRUE
-		layer_gridded_raster<-raster(layer_gridded)
-		#res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
-		res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
-		print(plot(layer_gridded_raster,col=color.vector.uncertainty,breaks.map.uncertainty))
-    #zoom(layer_gridded_raster)		
-		dev.off()
-    
-		writeRaster(layer_gridded_raster, filename="result_LDA_Model_Uncertainty_Map.tif", format="GTiff", overwrite=TRUE)
-		}
-
-    # LDA Validation Susceptibility
-		#dev.new()
-		pdf(file = "result_LDA_Validation_Susceptibility_Map.pdf")
-		layer_gridded<-shape_validation_lda
-		layer_gridded@data<-as.data.frame(layer_gridded@data[,"VAL_PROB"])
-		gridded(layer_gridded)<-TRUE
-		layer_gridded_raster<-raster(layer_gridded)
-		#res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
-		res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
-		print(plot(layer_gridded_raster,col=color.vector.susceptibility,breaks=round(breaks.map.susceptibility,2)))
-		#zoom(layer_gridded_raster)		
-		dev.off()
-		
-		writeRaster(layer_gridded_raster, filename="result_LDA_Validation_Susceptibility_Map.tif", format="GTiff", overwrite=TRUE)
-		    
-		###########
-		if(enable_probability_optimal_classification==TRUE) 
-		  {
-		  pdf(file = "result_LDA_Validation_Susceptibility_Map_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
-		  print(plot(layer_gridded_raster,col=color_ramp_palette_fun(length(lda.breaks.histogram.values.optimal)-1),breaks=round(lda.breaks.histogram.values.optimal,3)))
-		  dev.off()
-	  	}
-		############
-		if(enable_detailed_data_export_tiff==TRUE)
-		{
-		# LDA Validation Matching Code
-		#dev.new()
-		pdf(file = "result_LDA_Validation_MatchingCode_Map.pdf",onefile = TRUE, pagecentre=TRUE)
-		layer_gridded<-shape_validation_lda
-		layer_gridded@data<-as.data.frame(layer_gridded@data[,"VAL_MATCH"])
-		gridded(layer_gridded)<-TRUE
-		layer_gridded_raster<-raster(layer_gridded)
-		#res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
-		res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
-		print(plot(layer_gridded_raster,col=color.vector.matching,round(breaks.map.matching.code),legend=FALSE))
-		legend("topright", legend = c("1: TN","2: FP","3: FN","4: TP"), cex=0.8,fill = color.vector.matching,xjust=1.1,bg="transparent",box.col="transparent")
-    #zoom(layer_gridded_raster)  	
-		dev.off()
-    
-		writeRaster(layer_gridded_raster, filename="result_LDA_Validation_MatchingCode_Map.tif", format="GTiff", overwrite=TRUE)
-		}
-		
-    ########
-		if(enable_probability_optimal_binary_classification==TRUE) 
-		{
-		  #dev.new()
-		  pdf(file = "result_LDA_Validation_MatchingCode_Map_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
-		  layer_gridded<-shape_validation_lda
-		  layer_gridded@data<-as.data.frame(layer_gridded@data[,"OPT_MATCH"])
-		  gridded(layer_gridded)<-TRUE
-		  layer_gridded_raster<-raster(layer_gridded)
-		  #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
-		  res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
-		  print(plot(layer_gridded_raster,col=color.vector.matching,round(breaks.map.matching.code),legend=FALSE))
-		  legend("topright", legend = c("1: TN","2: FP","3: FN","4: TP"), cex=0.8,fill = color.vector.matching,xjust=1.1,bg="transparent",box.col="transparent")
-		  #zoom(layer_gridded_raster)  	
-		  dev.off()
-		  writeRaster(layer_gridded_raster, filename="result_LDA_Validation_MatchingCode_Map_Optimal.tif", format="GTiff", overwrite=TRUE)
-
-		  #dev.new()
-		  pdf(file = "result_LDA_Validation_SusceptibilityBinary_Map_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
-		  layer_gridded<-shape_validation_lda
-		  layer_gridded@data<-as.data.frame(layer_gridded@data[,"OPT_CLASS"])
-		  gridded(layer_gridded)<-TRUE
-		  layer_gridded_raster<-raster(layer_gridded)
-		  #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
-		  res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
-		  print(plot(layer_gridded_raster,col=color_ramp_palette_fun(2),legend=FALSE))
-		  legend("topright", legend = c("0: Not susceptible","1: Susceptible"), cex=0.8,fill = color_ramp_palette_fun(2),xjust=1.1,bg="transparent",box.col="transparent")
-		  dev.off()
-		  
-		  writeRaster(layer_gridded_raster, filename="result_LDA_Validation_SusceptibilityBinary_Map_Optimal.tif", format="GTiff", overwrite=TRUE)
-		  
+    if(enable_detailed_data_export_tiff==TRUE)
+    {
+      # LDA Model uncertainity
+      #dev.new()
+      pdf(file = "result_LDA_Model_Uncertainty_Map.pdf",onefile = TRUE, pagecentre=TRUE)
+      layer_gridded<-shape_training_lda
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"LDA_PrSd"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      print(plot(layer_gridded_raster,col=color.vector.uncertainty,breaks.map.uncertainty))
+      #zoom(layer_gridded_raster)		
+      dev.off()
       
-		  }
-		#######
-		if(enable_detailed_data_export_tiff==TRUE)
-		{
-		# LDA Model uncertainity
-		#dev.new()
-		pdf(file = "result_LDA_Validation_Uncertainty_Map.pdf",onefile = TRUE, pagecentre=TRUE)
-		layer_gridded<-shape_validation_lda
-		layer_gridded@data<-as.data.frame(layer_gridded@data[,"PROB_SDMOD"])
-		gridded(layer_gridded)<-TRUE
-		layer_gridded_raster<-raster(layer_gridded)
-		#res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
-		res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
-		print(plot(layer_gridded_raster,col=color.vector.uncertainty,breaks.map.uncertainty))
-		#zoom(layer_gridded_raster)		
-		dev.off()
+      writeRaster(layer_gridded_raster, filename="result_LDA_Model_Uncertainty_Map.tif", format="GTiff", overwrite=TRUE)
+      
+      ###########################################
+      require(rgdal)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[7] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[8]]<-7
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[6] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[7]]<-6
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[5] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[6]]<-5
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[4] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[5]]<-4
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[3] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[4]]<-3
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[2] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[3]]<-2
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=breaks.map.uncertainty[1] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[2]]<-1
+      pngcolors<-color.vector.uncertainty[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      pnglabels<-paste(1:7,paste(breaks.map.uncertainty[1:7],breaks.map.uncertainty[2:8],sep="-"),sep=": ")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_LDA_Model_Uncertainty_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=8,options=c("WORLDFILE=YES"))
+      file.rename(from="result_LDA_Model_Uncertainty_Map.wld", to="result_LDA_Model_Uncertainty_Map.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"LDA Uncertainty map"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_uncertainty.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_LDA_Model_Uncertainty_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+      ###########################################
+      
+    }
     
-		writeRaster(layer_gridded_raster, filename="result_LDA_Validation_Uncertainty_Map.tif", format="GTiff", overwrite=TRUE)
-		}
-		
-		### Success & prediction rate curve
-		susc_values_lda<-c(1,0.8,0.55,0.45,0.2,0)
-		
-		# ordering data for susceptibility
-		ind_col_succ_pred_rate<-which(colnames(shape_training_lda@data) %in% c("MOD_GROUP","MOD_PROB"))
-		shape_training_lda@data<-cbind(PIXEL_AREA=rep(configuration.spatial.data.table[c(8)]^2,dim(shape_training_lda@data)[1]),shape_training_lda@data[order(shape_training_lda@data[,ind_col_succ_pred_rate[2]],decreasing=TRUE),ind_col_succ_pred_rate])
-		shape_training_lda@data$MOD_GROUP<-shape_training_lda@data$MOD_GROUP*configuration.spatial.data.table[c(8)]^2
-		shape_training_lda@data[,1]<-cumsum(shape_training_lda@data[,1])/sum(shape_training_lda@data[,1])*100
-		shape_training_lda@data[,2]<-cumsum(shape_training_lda@data[,2])/sum(shape_training_lda@data[,2])*100
-		
-		ind_pro_fun_mod<-approxfun(shape_training_lda@data[,3],shape_training_lda@data[,1])
-		area_susc_values_lda_mod<-c(0,ind_pro_fun_mod(susc_values_lda[-c(1,length(susc_values_lda))]),100)
-		
-		#dev.new()
-		pdf(file = "result_LDA_SuccessRateCurve.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
-		plot(0,0,col="transparent",main="LDA SUCCESS RATE CURVE",xlab="Cumulative percentage study area ",ylab="Cumulative percentage landslide area",xlim=c(0,100),ylim=c(0,100))
-		for (count in 1:(length(susc_values_lda)-1))
-			{
-			#count=1
-			polygon(c(area_susc_values_lda_mod[count:(count+1)],rev(area_susc_values_lda_mod[count:(count+1)])),c(0,0,100,100),border="darkgray",lty="dotted",lwd=0.5,col=rev(color.vector.susceptibility)[count])  
-			}
-		polygon(c(0,100,100,0),c(0,0,100,100),border="black",lty="solid",lwd=1,col=NULL)
-		lines(shape_training_lda@data[,1],shape_training_lda@data[,2],col="black")
-		dev.off()
-		
-		###########
-		if(enable_probability_optimal_classification==TRUE) 
-  		{
-		  area_susc_values_lda_mod_optimal<-c(0,ind_pro_fun_mod(rev(lda.breaks.histogram.values.optimal)[-c(1,length(lda.breaks.histogram.values.optimal))]),100)
-		  pdf(file = "result_LDA_SuccessRateCurve_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
-		  plot(0,0,col="transparent",main="LDA SUCCESS RATE CURVE",xlab="Cumulative percentage study area ",ylab="Cumulative percentage landslide area",xlim=c(0,100),ylim=c(0,100))
-		  for (count in 1:(length(rev(lda.breaks.histogram.values.optimal))-1))
-		    {
-		    #count=1
-		    polygon(c(area_susc_values_lda_mod_optimal[count:(count+1)],rev(area_susc_values_lda_mod_optimal[count:(count+1)])),c(0,0,100,100),border="darkgray",lty="dotted",lwd=0.5,col=rev(color_ramp_palette_fun(length(lda.breaks.histogram.values.optimal)-1))[count])  
-		    }
-		  polygon(c(0,100,100,0),c(0,0,100,100),border="black",lty="solid",lwd=1,col=NULL)
-		  lines(shape_training_lda@data[,1],shape_training_lda@data[,2],col="black")
-		  dev.off()
-	  	}
-		############
-		
-		
-		ind_col_succ_pred_rate<-which(colnames(shape_validation_lda@data) %in% c("VAL_GROUP","VAL_PROB"))
-		shape_validation_lda@data<-cbind(PIXEL_AREA=rep(as.numeric(configuration.spatial.data.table[c(8)])^2,dim(shape_validation_lda@data)[1]),shape_validation_lda@data[order(shape_validation_lda@data[,ind_col_succ_pred_rate[2]],decreasing=TRUE),ind_col_succ_pred_rate])
-		shape_validation_lda@data$VAL_GROUP<-shape_validation_lda@data$VAL_GROUP*as.numeric(configuration.spatial.data.table[c(8)])^2
-		shape_validation_lda@data[,1]<-cumsum(shape_validation_lda@data[,1])/sum(shape_validation_lda@data[,1])*100
-		shape_validation_lda@data[,2]<-cumsum(shape_validation_lda@data[,2])/sum(shape_validation_lda@data[,2])*100
-	
-		ind_pro_fun_val<-approxfun(shape_validation_lda@data[,3],shape_validation_lda@data[,1])
-		area_susc_values_lda_val<-c(0,ind_pro_fun_val(susc_values_lda[-c(1,length(susc_values_lda))]),100)
-		
-		#dev.new()
-		pdf(file = "result_LDA_PredictionRateCurve.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
-		plot(0,0,col="transparent",main="LDA PREDICTION RATE CURVE",xlab="Cumulative percentage study area ",ylab="Cumulative percentage landslide area",xlim=c(0,100),ylim=c(0,100))
-		for (count in 1:(length(susc_values_lda)-1))
-			{
-			#count=1
-			polygon(c(area_susc_values_lda_val[count:(count+1)],rev(area_susc_values_lda_val[count:(count+1)])),c(0,0,100,100),border="darkgray",lty="dotted",lwd=0.5,col=rev(color.vector.susceptibility)[count])  
-			}
-		polygon(c(0,100,100,0),c(0,0,100,100),border="black",lty="solid",lwd=1,col=NULL)
-		lines(shape_validation_lda@data[,1],shape_validation_lda@data[,2],col="black")
-		dev.off()
-		
-		###########
-		
-		if(enable_probability_optimal_classification==TRUE) 
-	  	{
-		  area_susc_values_lda_val_optimal<-c(0,ind_pro_fun_val(rev(lda.breaks.histogram.values.optimal)[-c(1,length(lda.breaks.histogram.values.optimal))]),100)
-		  pdf(file = "result_LDA_PredictionRateCurve_Optimal.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
-		  plot(0,0,col="transparent",main="LDA PREDICTION RATE CURVE",xlab="Cumulative percentage study area ",ylab="Cumulative percentage landslide area",xlim=c(0,100),ylim=c(0,100))
-		  for (count in 1:(length(rev(lda.breaks.histogram.values.optimal))-1))
-		    {
-		    #count=1
-		    polygon(c(area_susc_values_lda_val_optimal[count:(count+1)],rev(area_susc_values_lda_val_optimal[count:(count+1)])),c(0,0,100,100),border="darkgray",lty="dotted",lwd=0.5,col=rev(color_ramp_palette_fun(length(lda.breaks.histogram.values.optimal)-1))[count])  
-		    }
-		  polygon(c(0,100,100,0),c(0,0,100,100),border="black",lty="solid",lwd=1,col=NULL)
-		  lines(shape_validation_lda@data[,1],shape_validation_lda@data[,2],col="black")
-		  dev.off()
-		  }
-		############
-		}
-		
-	}
+    # LDA Validation Susceptibility
+    #dev.new()
+    pdf(file = "result_LDA_Validation_Susceptibility_Map.pdf")
+    layer_gridded<-shape_validation_lda
+    layer_gridded@data<-as.data.frame(layer_gridded@data[,"VAL_PROB"])
+    gridded(layer_gridded)<-TRUE
+    layer_gridded_raster<-raster(layer_gridded)
+    #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+    res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+    print(plot(layer_gridded_raster,col=color.vector.susceptibility,breaks=round(breaks.map.susceptibility,2)))
+    #zoom(layer_gridded_raster)		
+    dev.off()
+    
+    writeRaster(layer_gridded_raster, filename="result_LDA_Validation_Susceptibility_Map.tif", format="GTiff", overwrite=TRUE)
+    
+    ###########################################
+    require(rgdal)
+    ### Reprojecting
+    export_EPSG_code<-"4326"
+    layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+    layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+    fullgrid(layer_gridded_raster_reproject)
+    ### Reclassifying 
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.8 & layer_gridded_raster_reproject@data[,1]<=1]<-5
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.55 & layer_gridded_raster_reproject@data[,1]<=0.8]<-4
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.45 & layer_gridded_raster_reproject@data[,1]<=0.55]<-3
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.2 & layer_gridded_raster_reproject@data[,1]<=0.45]<-2
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0 & layer_gridded_raster_reproject@data[,1]<=0.2]<-1
+    pngcolors<-round(as.matrix(data.frame(color_ramp_fun(breaks.histogram.values[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]),alpha=rep(255,length(table(layer_gridded_raster_reproject@data[,1]))))))
+    colnames(pngcolors)<-c("red","green","blue","alpha")
+    pngcolors<-rgb(pngcolors,maxColorValue = 255)
+    pnglabels<-c("1: 0-0.20","2: 0.20-0.45","3: 0.45-0.55","4: 0.55-0.80","5: 0.80-1")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+    ### Writing .png .pngw files 
+    writeGDAL(layer_gridded_raster_reproject,"result_LDA_Validation_Susceptibility_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=6,options=c("WORLDFILE=YES"))
+    file.rename(from="result_LDA_Validation_Susceptibility_Map.wld", to="result_LDA_Validation_Susceptibility_Map.pngw")
+    ### Writing .properties files 
+    pngid<-1
+    pngtitle<-"LDA Validation Susceptibility map"
+    pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+    pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+    pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_susceptibility.PNG"
+    propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+    write.table(propertiesstring,"result_LDA_Validation_Susceptibility_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+    ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+    ###########################################
+    
+    
+    ###########
+    if(enable_probability_optimal_classification==TRUE) 
+    {
+      pdf(file = "result_LDA_Validation_Susceptibility_Map_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
+      print(plot(layer_gridded_raster,col=color_ramp_palette_fun(length(lda.breaks.histogram.values.optimal)-1),breaks=round(lda.breaks.histogram.values.optimal,3)))
+      dev.off()
+    }
+    ############
+    if(enable_detailed_data_export_tiff==TRUE)
+    {
+      # LDA Validation Matching Code
+      #dev.new()
+      pdf(file = "result_LDA_Validation_MatchingCode_Map.pdf",onefile = TRUE, pagecentre=TRUE)
+      layer_gridded<-shape_validation_lda
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"VAL_MATCH"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      print(plot(layer_gridded_raster,col=color.vector.matching,round(breaks.map.matching.code),legend=FALSE))
+      legend("topright", legend = c("1: TN","2: FP","3: FN","4: TP"), cex=0.8,fill = color.vector.matching,xjust=1.1,bg="transparent",box.col="transparent")
+      #zoom(layer_gridded_raster)  	
+      dev.off()
+      
+      writeRaster(layer_gridded_raster, filename="result_LDA_Validation_MatchingCode_Map.tif", format="GTiff", overwrite=TRUE)
+      
+      ###########################################
+      require(rgdal)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>3.5 & layer_gridded_raster_reproject@data[,1]<=4]<-4
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>2.5 & layer_gridded_raster_reproject@data[,1]<=3.5]<-3
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>1.5 & layer_gridded_raster_reproject@data[,1]<=2.5]<-2
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0.5 & layer_gridded_raster_reproject@data[,1]<=1.5]<-1
+      pngcolors<-color.vector.matching[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      pnglabels<-c("1: TN","2: FP","3: FN","4: TP")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_LDA_Validation_MatchingCode_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=6,options=c("WORLDFILE=YES"))
+      file.rename(from="result_LDA_Validation_MatchingCode_Map.wld", to="result_LDA_Validation_MatchingCode_Map.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"LDA Validation Matching code map"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_matchingcode.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_LDA_Validation_MatchingCode_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+      ###########################################
+      
+    }
+    
+    ########
+    if(enable_probability_optimal_binary_classification==TRUE) 
+    {
+      #dev.new()
+      pdf(file = "result_LDA_Validation_MatchingCode_Map_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
+      layer_gridded<-shape_validation_lda
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"OPT_MATCH"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      print(plot(layer_gridded_raster,col=color.vector.matching,round(breaks.map.matching.code),legend=FALSE))
+      legend("topright", legend = c("1: TN","2: FP","3: FN","4: TP"), cex=0.8,fill = color.vector.matching,xjust=1.1,bg="transparent",box.col="transparent")
+      #zoom(layer_gridded_raster)  	
+      dev.off()
+      writeRaster(layer_gridded_raster, filename="result_LDA_Validation_MatchingCode_Map_Optimal.tif", format="GTiff", overwrite=TRUE)
+      
+      #dev.new()
+      pdf(file = "result_LDA_Validation_SusceptibilityBinary_Map_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
+      layer_gridded<-shape_validation_lda
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"OPT_CLASS"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      print(plot(layer_gridded_raster,col=color_ramp_palette_fun(2),legend=FALSE))
+      legend("topright", legend = c("0: Not susceptible","1: Susceptible"), cex=0.8,fill = color_ramp_palette_fun(2),xjust=1.1,bg="transparent",box.col="transparent")
+      dev.off()
+      
+      writeRaster(layer_gridded_raster, filename="result_LDA_Validation_SusceptibilityBinary_Map_Optimal.tif", format="GTiff", overwrite=TRUE)
+      
+      
+    }
+    #######
+    if(enable_detailed_data_export_tiff==TRUE)
+    {
+      # LDA Model uncertainity
+      #dev.new()
+      pdf(file = "result_LDA_Validation_Uncertainty_Map.pdf",onefile = TRUE, pagecentre=TRUE)
+      layer_gridded<-shape_validation_lda
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"PROB_SDMOD"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      print(plot(layer_gridded_raster,col=color.vector.uncertainty,breaks.map.uncertainty))
+      #zoom(layer_gridded_raster)		
+      dev.off()
+      
+      writeRaster(layer_gridded_raster, filename="result_LDA_Validation_Uncertainty_Map.tif", format="GTiff", overwrite=TRUE)
+      
+      ###########################################
+      require(rgdal)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[7] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[8]]<-7
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[6] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[7]]<-6
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[5] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[6]]<-5
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[4] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[5]]<-4
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[3] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[4]]<-3
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[2] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[3]]<-2
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=breaks.map.uncertainty[1] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[2]]<-1
+      pngcolors<-color.vector.uncertainty[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      pnglabels<-paste(1:7,paste(breaks.map.uncertainty[1:7],breaks.map.uncertainty[2:8],sep="-"),sep=": ")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_LDA_Validation_Uncertainty_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=8,options=c("WORLDFILE=YES"))
+      file.rename(from="result_LDA_Validation_Uncertainty_Map.wld", to="result_LDA_Validation_Uncertainty_Map.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"LDA Validation Uncertainty map"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_uncertainty.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_LDA_Validation_Uncertainty_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+      ###########################################
+      
+    }
+    
+    ### Success & prediction rate curve
+    susc_values_lda<-c(1,0.8,0.55,0.45,0.2,0)
+    
+    # ordering data for susceptibility
+    ind_col_succ_pred_rate<-which(colnames(shape_training_lda@data) %in% c("MOD_GROUP","MOD_PROB"))
+    shape_training_lda@data<-cbind(PIXEL_AREA=rep(configuration.spatial.data.table[c(8)]^2,dim(shape_training_lda@data)[1]),shape_training_lda@data[order(shape_training_lda@data[,ind_col_succ_pred_rate[2]],decreasing=TRUE),ind_col_succ_pred_rate])
+    shape_training_lda@data$MOD_GROUP<-shape_training_lda@data$MOD_GROUP*configuration.spatial.data.table[c(8)]^2
+    shape_training_lda@data[,1]<-cumsum(shape_training_lda@data[,1])/sum(shape_training_lda@data[,1])*100
+    shape_training_lda@data[,2]<-cumsum(shape_training_lda@data[,2])/sum(shape_training_lda@data[,2])*100
+    
+    ind_pro_fun_mod<-approxfun(shape_training_lda@data[,3],shape_training_lda@data[,1])
+    area_susc_values_lda_mod<-c(0,ind_pro_fun_mod(susc_values_lda[-c(1,length(susc_values_lda))]),100)
+    
+    #dev.new()
+    pdf(file = "result_LDA_SuccessRateCurve.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
+    plot(0,0,col="transparent",main="LDA SUCCESS RATE CURVE",xlab="Cumulative percentage study area ",ylab="Cumulative percentage landslide area",xlim=c(0,100),ylim=c(0,100))
+    for (count in 1:(length(susc_values_lda)-1))
+    {
+      #count=1
+      polygon(c(area_susc_values_lda_mod[count:(count+1)],rev(area_susc_values_lda_mod[count:(count+1)])),c(0,0,100,100),border="darkgray",lty="dotted",lwd=0.5,col=rev(color.vector.susceptibility)[count])  
+    }
+    polygon(c(0,100,100,0),c(0,0,100,100),border="black",lty="solid",lwd=1,col=NULL)
+    lines(shape_training_lda@data[,1],shape_training_lda@data[,2],col="black")
+    dev.off()
+    
+    ###########
+    if(enable_probability_optimal_classification==TRUE) 
+    {
+      area_susc_values_lda_mod_optimal<-c(0,ind_pro_fun_mod(rev(lda.breaks.histogram.values.optimal)[-c(1,length(lda.breaks.histogram.values.optimal))]),100)
+      pdf(file = "result_LDA_SuccessRateCurve_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
+      plot(0,0,col="transparent",main="LDA SUCCESS RATE CURVE",xlab="Cumulative percentage study area ",ylab="Cumulative percentage landslide area",xlim=c(0,100),ylim=c(0,100))
+      for (count in 1:(length(rev(lda.breaks.histogram.values.optimal))-1))
+      {
+        #count=1
+        polygon(c(area_susc_values_lda_mod_optimal[count:(count+1)],rev(area_susc_values_lda_mod_optimal[count:(count+1)])),c(0,0,100,100),border="darkgray",lty="dotted",lwd=0.5,col=rev(color_ramp_palette_fun(length(lda.breaks.histogram.values.optimal)-1))[count])  
+      }
+      polygon(c(0,100,100,0),c(0,0,100,100),border="black",lty="solid",lwd=1,col=NULL)
+      lines(shape_training_lda@data[,1],shape_training_lda@data[,2],col="black")
+      dev.off()
+    }
+    ############
+    
+    
+    ind_col_succ_pred_rate<-which(colnames(shape_validation_lda@data) %in% c("VAL_GROUP","VAL_PROB"))
+    shape_validation_lda@data<-cbind(PIXEL_AREA=rep(as.numeric(configuration.spatial.data.table[c(8)])^2,dim(shape_validation_lda@data)[1]),shape_validation_lda@data[order(shape_validation_lda@data[,ind_col_succ_pred_rate[2]],decreasing=TRUE),ind_col_succ_pred_rate])
+    shape_validation_lda@data$VAL_GROUP<-shape_validation_lda@data$VAL_GROUP*as.numeric(configuration.spatial.data.table[c(8)])^2
+    shape_validation_lda@data[,1]<-cumsum(shape_validation_lda@data[,1])/sum(shape_validation_lda@data[,1])*100
+    shape_validation_lda@data[,2]<-cumsum(shape_validation_lda@data[,2])/sum(shape_validation_lda@data[,2])*100
+    
+    ind_pro_fun_val<-approxfun(shape_validation_lda@data[,3],shape_validation_lda@data[,1])
+    area_susc_values_lda_val<-c(0,ind_pro_fun_val(susc_values_lda[-c(1,length(susc_values_lda))]),100)
+    
+    #dev.new()
+    pdf(file = "result_LDA_PredictionRateCurve.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
+    plot(0,0,col="transparent",main="LDA PREDICTION RATE CURVE",xlab="Cumulative percentage study area ",ylab="Cumulative percentage landslide area",xlim=c(0,100),ylim=c(0,100))
+    for (count in 1:(length(susc_values_lda)-1))
+    {
+      #count=1
+      polygon(c(area_susc_values_lda_val[count:(count+1)],rev(area_susc_values_lda_val[count:(count+1)])),c(0,0,100,100),border="darkgray",lty="dotted",lwd=0.5,col=rev(color.vector.susceptibility)[count])  
+    }
+    polygon(c(0,100,100,0),c(0,0,100,100),border="black",lty="solid",lwd=1,col=NULL)
+    lines(shape_validation_lda@data[,1],shape_validation_lda@data[,2],col="black")
+    dev.off()
+    
+    ###########
+    
+    if(enable_probability_optimal_classification==TRUE) 
+    {
+      area_susc_values_lda_val_optimal<-c(0,ind_pro_fun_val(rev(lda.breaks.histogram.values.optimal)[-c(1,length(lda.breaks.histogram.values.optimal))]),100)
+      pdf(file = "result_LDA_PredictionRateCurve_Optimal.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
+      plot(0,0,col="transparent",main="LDA PREDICTION RATE CURVE",xlab="Cumulative percentage study area ",ylab="Cumulative percentage landslide area",xlim=c(0,100),ylim=c(0,100))
+      for (count in 1:(length(rev(lda.breaks.histogram.values.optimal))-1))
+      {
+        #count=1
+        polygon(c(area_susc_values_lda_val_optimal[count:(count+1)],rev(area_susc_values_lda_val_optimal[count:(count+1)])),c(0,0,100,100),border="darkgray",lty="dotted",lwd=0.5,col=rev(color_ramp_palette_fun(length(lda.breaks.histogram.values.optimal)-1))[count])  
+      }
+      polygon(c(0,100,100,0),c(0,0,100,100),border="black",lty="solid",lwd=1,col=NULL)
+      lines(shape_validation_lda@data[,1],shape_validation_lda@data[,2],col="black")
+      dev.off()
+    }
+    ############
+  }
+  
+}
 
 
 #----------------- QUADRATIC DISCRIMINANT ANALISYS ------------------#
 
 if(model.run.matrix[2] == "YES")
+{
+  # Changing of Dummy Explanatory Variables in Numeric variable
+  if (analysis.parameter.matrix[2] == "DUM")
   {
-    # Changing of Dummy Explanatory Variables in Numeric variable
-    if (analysis.parameter.matrix[2] == "DUM")
+    print("The Quadratic Discriminant Analsysis (QDA) will be performed using dummy variables, but a random variation in these variables will be introduced")
+    for (count.variables in 1:dim(explanatory.variables)[2])
     {
-      print("The Quadratic Discriminant Analsysis (QDA) will be performed using dummy variables, but a random variation in these variables will be introduced")
-      for (count.variables in 1:dim(explanatory.variables)[2])
-      {
-        #print(range(explanatory.variables[,count.variables]))
-        if (min(explanatory.variables[,count.variables])==0 & max(explanatory.variables[,count.variables])==1 & length(table(explanatory.variables[,count.variables]))==2)  
-        { 
-          set.seed(seed.value)
-          explanatory.variables[,count.variables]<-explanatory.variables[,count.variables]+runif(dim(explanatory.variables)[1],-0.1,0.1)  
-          #validation.explanatory.variables[,count.variables]<-explanatory.variables[,count.variables] # Meaningful only for temporal validation
-        }   
-      }
-      #print("Performing 0 value correction")
-      #indexbootstrapcosntant_training<-which(explanatory.variables==0,arr.ind=TRUE)
-      #if(length(indexbootstrapcosntant_training)>0) explanatory.variables[indexbootstrapcosntant_training]<-runif(length(indexbootstrapcosntant_training)/2, min = 0.00001, max = 0.01)
-      #indexbootstrapcosntant_validation<-which(validation.explanatory.variables==0,arr.ind=TRUE)
-      #if(length(indexbootstrapcosntant_validation)>0) validation.explanatory.variables[indexbootstrapcosntant_validation]<-runif(length(indexbootstrapcosntant_validation)/2, min = 0.00001, max = 0.01)
+      #print(range(explanatory.variables[,count.variables]))
+      if (min(explanatory.variables[,count.variables])==0 & max(explanatory.variables[,count.variables])==1 & length(table(explanatory.variables[,count.variables]))==2)  
+      { 
+        set.seed(seed.value)
+        explanatory.variables[,count.variables]<-explanatory.variables[,count.variables]+runif(dim(explanatory.variables)[1],-0.1,0.1)  
+        #validation.explanatory.variables[,count.variables]<-explanatory.variables[,count.variables] # Meaningful only for temporal validation
+      }   
     }
-    
-    
-    if (analysis.parameter.matrix[2] == "SEL")
-    {
-      print("The Quadratic Discriminant Analsysis (QDA) will be performed excluding dummy variables")
-      index.variables.dummy<-NULL
-      for (count.variables in 1:dim(explanatory.variables)[2])
-      {
-        print(range(explanatory.variables[,count.variables]))
-        if (min(explanatory.variables[,count.variables])==0 & max(explanatory.variables[,count.variables])==1 & length(table(explanatory.variables[,count.variables]))==2)  
-        { 
-          index.variables.dummy<-c(index.variables.dummy,count.variables)
-        }      
-      }
-      if(length(index.variables.dummy)>0) {explanatory.variables<-explanatory.variables[,-index.variables.dummy]}
-      if(length(index.variables.dummy)>0) {validation.explanatory.variables<-validation.explanatory.variables[,-index.variables.dummy]}
-      #str(explanatory.variables)
-    }
+    #print("Performing 0 value correction")
+    #indexbootstrapcosntant_training<-which(explanatory.variables==0,arr.ind=TRUE)
+    #if(length(indexbootstrapcosntant_training)>0) explanatory.variables[indexbootstrapcosntant_training]<-runif(length(indexbootstrapcosntant_training)/2, min = 0.00001, max = 0.01)
+    #indexbootstrapcosntant_validation<-which(validation.explanatory.variables==0,arr.ind=TRUE)
+    #if(length(indexbootstrapcosntant_validation)>0) validation.explanatory.variables[indexbootstrapcosntant_validation]<-runif(length(indexbootstrapcosntant_validation)/2, min = 0.00001, max = 0.01)
+  }
   
-
+  
+  if (analysis.parameter.matrix[2] == "SEL")
+  {
+    print("The Quadratic Discriminant Analsysis (QDA) will be performed excluding dummy variables")
+    index.variables.dummy<-NULL
+    for (count.variables in 1:dim(explanatory.variables)[2])
+    {
+      print(range(explanatory.variables[,count.variables]))
+      if (min(explanatory.variables[,count.variables])==0 & max(explanatory.variables[,count.variables])==1 & length(table(explanatory.variables[,count.variables]))==2)  
+      { 
+        index.variables.dummy<-c(index.variables.dummy,count.variables)
+      }      
+    }
+    if(length(index.variables.dummy)>0) {explanatory.variables<-explanatory.variables[,-index.variables.dummy]}
+    if(length(index.variables.dummy)>0) {validation.explanatory.variables<-validation.explanatory.variables[,-index.variables.dummy]}
+    #str(explanatory.variables)
+  }
+  
+  
   if (class(try(qda(explanatory.variables, grouping.variable, method="moment")))=="try-error")  
   { 
     #qda(explanatory.variables, grouping.variable, method="moment")
@@ -2293,12 +2478,12 @@ if(model.run.matrix[2] == "YES")
       }
       
       if(type_probability_optimal_classification=="fixed")
-        {
+      {
         step.qda.unexplained.fixed<-0.1
         if(qda.unexplained.errors<=0.1) step.qda.unexplained.fixed<-0.05
         if(qda.unexplained.errors<=0.05) step.qda.unexplained.fixed<-0.025
         qda.unexplained.errors.partition<-seq(step.qda.unexplained.fixed,1-step.qda.unexplained.fixed,step.qda.unexplained.fixed)[seq(step.qda.unexplained.fixed,1-step.qda.unexplained.fixed,step.qda.unexplained.fixed)>(1-qda.unexplained.errors)]
-                
+        
         for(count_part in 1:(length(qda.unexplained.errors.partition)-1))
         {
           #count_part<-1
@@ -2404,13 +2589,13 @@ if(model.run.matrix[2] == "YES")
   
   if (enable_screen_plotting==TRUE)
   {
-  dev.new()
-  plot(roc.plot.qda.series$plot.data[,1,1],roc.plot.qda.series$plot.data[,2,1],type="l",lty=1,lwd=1,col="red",xlim=c(0,1),ylim=c(0,1),xlab="Probability threshold",ylab="Evaluation parameter", main="QDA MODEL EVALUATION PLOT")
-  lines(roc.plot.qda.series$plot.data[,1,1],1-roc.plot.qda.series$plot.data[,3,1],col="dark green",lty=1,lwd=1)
-  lines(roc.plot.qda.series$plot.data[,1,1], contingency.table.matrix.qda[,8],col="blue",lty=1,lwd=1)
-  mtext("SENSITIVITY",side=3, padj=-0.5, adj=0.01, col="red",cex=0.8)
-  mtext("COHEN'S KAPPA",side=3, padj=-0.5, adj=0.5, col="blue",cex=0.8)
-  mtext("SPECIFICITY",side=3, padj=-0.5, adj=0.99, col="dark green",cex=0.8)
+    dev.new()
+    plot(roc.plot.qda.series$plot.data[,1,1],roc.plot.qda.series$plot.data[,2,1],type="l",lty=1,lwd=1,col="red",xlim=c(0,1),ylim=c(0,1),xlab="Probability threshold",ylab="Evaluation parameter", main="QDA MODEL EVALUATION PLOT")
+    lines(roc.plot.qda.series$plot.data[,1,1],1-roc.plot.qda.series$plot.data[,3,1],col="dark green",lty=1,lwd=1)
+    lines(roc.plot.qda.series$plot.data[,1,1], contingency.table.matrix.qda[,8],col="blue",lty=1,lwd=1)
+    mtext("SENSITIVITY",side=3, padj=-0.5, adj=0.01, col="red",cex=0.8)
+    mtext("COHEN'S KAPPA",side=3, padj=-0.5, adj=0.5, col="blue",cex=0.8)
+    mtext("SPECIFICITY",side=3, padj=-0.5, adj=0.99, col="dark green",cex=0.8)
   }
   pdf(file = "result_QDA_ModelEvaluationPlot.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
   plot(roc.plot.qda.series$plot.data[,1,1],roc.plot.qda.series$plot.data[,2,1],type="l",lty=1,lwd=1,col="red",xlim=c(0,1),ylim=c(0,1),xlab="Probability threshold",ylab="Evaluation parameter", main="QDA MODEL EVALUATION PLOT")
@@ -2420,7 +2605,7 @@ if(model.run.matrix[2] == "YES")
   mtext("COHEN'S KAPPA",side=3, padj=-0.5, adj=0.5, col="blue",cex=0.8)
   mtext("SPECIFICITY",side=3, padj=-0.5, adj=0.99, col="dark green",cex=0.8)
   dev.off()
-
+  
   
   
   
@@ -2639,10 +2824,10 @@ if(model.run.matrix[2] == "YES")
       colnames(result_training_qda_shape)<-c("ID","MOD_GROUP","MOD_PROB","MOD_CLASS","MOD_MATCH","QDA_SAMP","QDA_PMean","QDA_PSd","QDA_PMin","QDA_PMax","QDA_PSder","QDA_PQ0","QDA_PQ_005","QDA_PQ_025","QDA_PQ05","QDA_PQ_075","QDA_PQ095","QDA_PQ1","QDA_PrMean","QDA_PrSd","QDA_PrMin","QDA_PrMax","QDA_PrSder","QDA_PrQ0","QDA_PrQ005","QDA_PrQ025","QDA_PrQ05","QDA_PrQ075","QDA_PrQ095","QDA_PrQ1","OPT_CLASS","OPT_MATCH")
     }
     #############
-
+    
     shape_training_qda@data <- merge(x=shape_training_qda@data,y=result_training_qda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     #writeOGR(shape_training_qda,dsn="result_QDA_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_qda,dsn=getwd(),layer="training_QDA",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_qda,dsn="result_QDA_training",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
     # WARNING: The validation does't have the unvertainty estimation: probably this can be daone using the parabolic error function 
     shape_validation_qda<-shape_validation
@@ -2658,7 +2843,7 @@ if(model.run.matrix[2] == "YES")
     shape_validation_qda@data <- merge(x=shape_validation_qda@data,y=result_validation_qda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_qda@data <- cbind(shape_validation_qda@data,PROB_SDMOD=(coefficients(fit.parabola.probability.qda)*(shape_validation_qda@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.qda)*shape_validation_qda@data$VAL_PROB))
     #writeOGR(shape_validation_qda,dsn="result_QDA_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_qda,dsn=getwd(),layer="validation_QDA",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_qda,dsn="result_QDA_validation",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
     ##################################################################
     ##################################################################
     
@@ -2812,7 +2997,7 @@ if(model.run.matrix[2] == "YES")
     
     shape_training_qda@data <- merge(x=shape_training_qda@data,y=result_training_qda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     #writeOGR(shape_training_qda,dsn="result_QDA_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_qda,dsn=getwd(),layer="training_QDA",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_qda,dsn="result_QDA_training",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
     
     # WARNING: The validation does't have the unvertainty estimation: probabilty this can be daone using the parabolic error function 
@@ -2830,7 +3015,7 @@ if(model.run.matrix[2] == "YES")
     shape_validation_qda@data <- merge(x=shape_validation_qda@data,y=result_validation_qda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_qda@data <- cbind(shape_validation_qda@data,PROB_SDMOD=(coefficients(fit.parabola.probability.qda)*(shape_validation_qda@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.qda)*shape_validation_qda@data$VAL_PROB))
     #writeOGR(shape_validation_qda,dsn="result_QDA_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_qda,dsn=getwd(),layer="validation_QDA",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_qda,dsn="result_QDA_validation",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
     require(raster)
     
@@ -2850,6 +3035,38 @@ if(model.run.matrix[2] == "YES")
     
     writeRaster(layer_gridded_raster, filename="result_QDA_Model_Susceptibility_Map.tif", format="GTiff", overwrite=TRUE)
     
+    ###########################################
+    require(rgdal)
+    ### Reprojecting
+    export_EPSG_code<-"4326"
+    layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+    layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+    fullgrid(layer_gridded_raster_reproject)
+    ### Reclassifying 
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.8 & layer_gridded_raster_reproject@data[,1]<=1]<-5
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.55 & layer_gridded_raster_reproject@data[,1]<=0.8]<-4
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.45 & layer_gridded_raster_reproject@data[,1]<=0.55]<-3
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.2 & layer_gridded_raster_reproject@data[,1]<=0.45]<-2
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0 & layer_gridded_raster_reproject@data[,1]<=0.2]<-1
+    pngcolors<-round(as.matrix(data.frame(color_ramp_fun(breaks.histogram.values[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]),alpha=rep(255,length(table(layer_gridded_raster_reproject@data[,1]))))))
+    colnames(pngcolors)<-c("red","green","blue","alpha")
+    pngcolors<-rgb(pngcolors,maxColorValue = 255)
+    pnglabels<-c("1: 0-0.20","2: 0.20-0.45","3: 0.45-0.55","4: 0.55-0.80","5: 0.80-1")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+    ### Writing .png .pngw files 
+    writeGDAL(layer_gridded_raster_reproject,"result_QDA_Model_Susceptibility_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=6,options=c("WORLDFILE=YES"))
+    file.rename(from="result_QDA_Model_Susceptibility_Map.wld", to="result_QDA_Model_Susceptibility_Map.pngw")
+    ### Writing .properties files 
+    pngid<-1
+    pngtitle<-"QDA Susceptibility map"
+    pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+    pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+    pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_susceptibility.PNG"
+    propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+    write.table(propertiesstring,"result_QDA_Model_Susceptibility_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+    ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+    ###########################################
+    
+    
     ###########
     if(enable_probability_optimal_classification==TRUE) 
     {
@@ -2861,20 +3078,48 @@ if(model.run.matrix[2] == "YES")
     
     if(enable_detailed_data_export_tiff==TRUE)
     {
-    # QDA Model Matching Code
-    #dev.new()
-    pdf(file = "result_QDA_Model_MatchingCode_Map.pdf",onefile = TRUE, pagecentre=TRUE)
-    layer_gridded<-shape_training_qda
-    layer_gridded@data<-as.data.frame(layer_gridded@data[,"MOD_MATCH"])
-    gridded(layer_gridded)<-TRUE
-    layer_gridded_raster<-raster(layer_gridded)
-    #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
-    res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
-    index_col_macthing<-as.numeric(names(table(layer_gridded_raster@data@values)))
-    print(plot(layer_gridded_raster,col=color.vector.matching[index_col_macthing],legend=FALSE))
-    legend("topright", legend = c("1: TN","2: FP","3: FN","4: TP"), cex=0.8,fill = color.vector.matching,xjust=1.1,bg="transparent",box.col="transparent")
-    
-    writeRaster(layer_gridded_raster, filename="result_QDA_Model_MatchingCode_Map.tif", format="GTiff", overwrite=TRUE)
+      # QDA Model Matching Code
+      #dev.new()
+      pdf(file = "result_QDA_Model_MatchingCode_Map.pdf",onefile = TRUE, pagecentre=TRUE)
+      layer_gridded<-shape_training_qda
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"MOD_MATCH"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      index_col_macthing<-as.numeric(names(table(layer_gridded_raster@data@values)))
+      print(plot(layer_gridded_raster,col=color.vector.matching[index_col_macthing],legend=FALSE))
+      legend("topright", legend = c("1: TN","2: FP","3: FN","4: TP"), cex=0.8,fill = color.vector.matching,xjust=1.1,bg="transparent",box.col="transparent")
+      
+      writeRaster(layer_gridded_raster, filename="result_QDA_Model_MatchingCode_Map.tif", format="GTiff", overwrite=TRUE)
+      
+      ###########################################
+      require(rgdal)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>3.5 & layer_gridded_raster_reproject@data[,1]<=4]<-4
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>2.5 & layer_gridded_raster_reproject@data[,1]<=3.5]<-3
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>1.5 & layer_gridded_raster_reproject@data[,1]<=2.5]<-2
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0.5 & layer_gridded_raster_reproject@data[,1]<=1.5]<-1
+      pngcolors<-color.vector.matching[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      pnglabels<-c("1: TN","2: FP","3: FN","4: TP")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_QDA_Model_MatchingCode_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=6,options=c("WORLDFILE=YES"))
+      file.rename(from="result_QDA_Model_MatchingCode_Map.wld", to="result_QDA_Model_MatchingCode_Map.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"QDA Matching code map"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_matchingcode.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_QDA_Model_MatchingCode_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+      ###########################################
     }
     
     ###########
@@ -2894,7 +3139,7 @@ if(model.run.matrix[2] == "YES")
       dev.off()
       
       writeRaster(layer_gridded_raster, filename="result_QDA_Model_MatchingCode_Map_Optimal.tif", format="GTiff", overwrite=TRUE)
-
+      
       #dev.new()
       pdf(file = "result_QDA_Model_SusceptibilityBinary_Map_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
       layer_gridded<-shape_training_qda
@@ -2914,20 +3159,52 @@ if(model.run.matrix[2] == "YES")
     
     if(enable_detailed_data_export_tiff==TRUE)
     {
-    # QDA Model uncertainity
-    #dev.new()
-    pdf(file = "result_QDA_Model_Uncertainty_Map.pdf",onefile = TRUE, pagecentre=TRUE)
-    layer_gridded<-shape_training_qda
-    layer_gridded@data<-as.data.frame(layer_gridded@data[,"QDA_PrSd"])
-    gridded(layer_gridded)<-TRUE
-    layer_gridded_raster<-raster(layer_gridded)
-    #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
-    res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
-    print(plot(layer_gridded_raster,col=color.vector.uncertainty,breaks.map.uncertainty))
-    #zoom(layer_gridded_raster)		
-    dev.off()
-    
-    writeRaster(layer_gridded_raster, filename="result_QDA_Model_Uncertainty_Map.tif", format="GTiff", overwrite=TRUE)
+      # QDA Model uncertainity
+      #dev.new()
+      pdf(file = "result_QDA_Model_Uncertainty_Map.pdf",onefile = TRUE, pagecentre=TRUE)
+      layer_gridded<-shape_training_qda
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"QDA_PrSd"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      print(plot(layer_gridded_raster,col=color.vector.uncertainty,breaks.map.uncertainty))
+      #zoom(layer_gridded_raster)		
+      dev.off()
+      
+      writeRaster(layer_gridded_raster, filename="result_QDA_Model_Uncertainty_Map.tif", format="GTiff", overwrite=TRUE)
+      
+      ###########################################
+      require(rgdal)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[7] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[8]]<-7
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[6] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[7]]<-6
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[5] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[6]]<-5
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[4] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[5]]<-4
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[3] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[4]]<-3
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[2] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[3]]<-2
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=breaks.map.uncertainty[1] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[2]]<-1
+      pngcolors<-color.vector.uncertainty[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      pnglabels<-paste(1:7,paste(breaks.map.uncertainty[1:7],breaks.map.uncertainty[2:8],sep="-"),sep=": ")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_QDA_Model_Uncertainty_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=8,options=c("WORLDFILE=YES"))
+      file.rename(from="result_QDA_Model_Uncertainty_Map.wld", to="result_QDA_Model_Uncertainty_Map.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"QDA Uncertainty map"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_uncertainty.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_QDA_Model_Uncertainty_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+      ###########################################
+      
     }
     
     # QDA Validation Susceptibility
@@ -2945,6 +3222,38 @@ if(model.run.matrix[2] == "YES")
     
     writeRaster(layer_gridded_raster, filename="result_QDA_Validation_Susceptibility_Map.tif", format="GTiff", overwrite=TRUE)
     
+    ###########################################
+    require(rgdal)
+    ### Reprojecting
+    export_EPSG_code<-"4326"
+    layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+    layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+    fullgrid(layer_gridded_raster_reproject)
+    ### Reclassifying 
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.8 & layer_gridded_raster_reproject@data[,1]<=1]<-5
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.55 & layer_gridded_raster_reproject@data[,1]<=0.8]<-4
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.45 & layer_gridded_raster_reproject@data[,1]<=0.55]<-3
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.2 & layer_gridded_raster_reproject@data[,1]<=0.45]<-2
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0 & layer_gridded_raster_reproject@data[,1]<=0.2]<-1
+    pngcolors<-round(as.matrix(data.frame(color_ramp_fun(breaks.histogram.values[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]),alpha=rep(255,length(table(layer_gridded_raster_reproject@data[,1]))))))
+    colnames(pngcolors)<-c("red","green","blue","alpha")
+    pngcolors<-rgb(pngcolors,maxColorValue = 255)
+    pnglabels<-c("1: 0-0.20","2: 0.20-0.45","3: 0.45-0.55","4: 0.55-0.80","5: 0.80-1")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+    ### Writing .png .pngw files 
+    writeGDAL(layer_gridded_raster_reproject,"result_QDA_Validation_Susceptibility_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=6,options=c("WORLDFILE=YES"))
+    file.rename(from="result_QDA_Validation_Susceptibility_Map.wld", to="result_QDA_Validation_Susceptibility_Map.pngw")
+    ### Writing .properties files 
+    pngid<-1
+    pngtitle<-"QDA Validation Susceptibility map"
+    pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+    pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+    pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_susceptibility.PNG"
+    propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+    write.table(propertiesstring,"result_QDA_Validation_Susceptibility_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+    ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+    ###########################################
+    
+    
     ###########
     if(enable_probability_optimal_classification==TRUE) 
     {
@@ -2957,21 +3266,50 @@ if(model.run.matrix[2] == "YES")
     
     if(enable_detailed_data_export_tiff==TRUE)
     {
-    # QDA Validation Matching Code
-    #dev.new()
-    pdf(file = "result_QDA_Validation_MatchingCode_Map.pdf",onefile = TRUE, pagecentre=TRUE)
-    layer_gridded<-shape_validation_qda
-    layer_gridded@data<-as.data.frame(layer_gridded@data[,"VAL_MATCH"])
-    gridded(layer_gridded)<-TRUE
-    layer_gridded_raster<-raster(layer_gridded)
-    #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
-    res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
-    print(plot(layer_gridded_raster,col=color.vector.matching,round(breaks.map.matching.code),legend=FALSE))
-    legend("topright", legend = c("1: TN","2: FP","3: FN","4: TP"), cex=0.8,fill = color.vector.matching,xjust=1.1,bg="transparent",box.col="transparent")
-    #zoom(layer_gridded_raster)  	
-    dev.off()
-    
-    writeRaster(layer_gridded_raster, filename="result_QDA_Validation_MatchingCode_Map.tif", format="GTiff", overwrite=TRUE)
+      # QDA Validation Matching Code
+      #dev.new()
+      pdf(file = "result_QDA_Validation_MatchingCode_Map.pdf",onefile = TRUE, pagecentre=TRUE)
+      layer_gridded<-shape_validation_qda
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"VAL_MATCH"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      print(plot(layer_gridded_raster,col=color.vector.matching,round(breaks.map.matching.code),legend=FALSE))
+      legend("topright", legend = c("1: TN","2: FP","3: FN","4: TP"), cex=0.8,fill = color.vector.matching,xjust=1.1,bg="transparent",box.col="transparent")
+      #zoom(layer_gridded_raster)  	
+      dev.off()
+      
+      writeRaster(layer_gridded_raster, filename="result_QDA_Validation_MatchingCode_Map.tif", format="GTiff", overwrite=TRUE)
+      
+      ###########################################
+      require(rgdal)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>3.5 & layer_gridded_raster_reproject@data[,1]<=4]<-4
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>2.5 & layer_gridded_raster_reproject@data[,1]<=3.5]<-3
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>1.5 & layer_gridded_raster_reproject@data[,1]<=2.5]<-2
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0.5 & layer_gridded_raster_reproject@data[,1]<=1.5]<-1
+      pngcolors<-color.vector.matching[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      pnglabels<-c("1: TN","2: FP","3: FN","4: TP")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_QDA_Validation_MatchingCode_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=6,options=c("WORLDFILE=YES"))
+      file.rename(from="result_QDA_Validation_MatchingCode_Map.wld", to="result_QDA_Validation_MatchingCode_Map.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"QDA Validation Matching code map"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_matchingcode.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_QDA_Validation_MatchingCode_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+      ###########################################
+      
     }
     
     ########
@@ -2990,7 +3328,7 @@ if(model.run.matrix[2] == "YES")
       #zoom(layer_gridded_raster)  	
       dev.off()
       writeRaster(layer_gridded_raster, filename="result_QDA_Validation_MatchingCode_Map_Optimal.tif", format="GTiff", overwrite=TRUE)
-
+      
       #dev.new()
       pdf(file = "result_QDA_Validation_SusceptibilityBinary_Map_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
       layer_gridded<-shape_validation_qda
@@ -3011,20 +3349,52 @@ if(model.run.matrix[2] == "YES")
     
     if(enable_detailed_data_export_tiff==TRUE)
     {
-    # QDA Model uncertainity
-    #dev.new()
-    pdf(file = "result_QDA_Validation_Uncertainty_Map.pdf",onefile = TRUE, pagecentre=TRUE)
-    layer_gridded<-shape_validation_qda
-    layer_gridded@data<-as.data.frame(layer_gridded@data[,"PROB_SDMOD"])
-    gridded(layer_gridded)<-TRUE
-    layer_gridded_raster<-raster(layer_gridded)
-    #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
-    res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
-    print(plot(layer_gridded_raster,col=color.vector.uncertainty,breaks.map.uncertainty))
-    #zoom(layer_gridded_raster)		
-    dev.off()
-    
-    writeRaster(layer_gridded_raster, filename="result_QDA_Validation_Uncertainty_Map.tif", format="GTiff", overwrite=TRUE)
+      # QDA Model uncertainity
+      #dev.new()
+      pdf(file = "result_QDA_Validation_Uncertainty_Map.pdf",onefile = TRUE, pagecentre=TRUE)
+      layer_gridded<-shape_validation_qda
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"PROB_SDMOD"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      print(plot(layer_gridded_raster,col=color.vector.uncertainty,breaks.map.uncertainty))
+      #zoom(layer_gridded_raster)		
+      dev.off()
+      
+      writeRaster(layer_gridded_raster, filename="result_QDA_Validation_Uncertainty_Map.tif", format="GTiff", overwrite=TRUE)
+      
+      ###########################################
+      require(rgdal)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[7] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[8]]<-7
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[6] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[7]]<-6
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[5] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[6]]<-5
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[4] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[5]]<-4
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[3] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[4]]<-3
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[2] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[3]]<-2
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=breaks.map.uncertainty[1] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[2]]<-1
+      pngcolors<-color.vector.uncertainty[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      pnglabels<-paste(1:7,paste(breaks.map.uncertainty[1:7],breaks.map.uncertainty[2:8],sep="-"),sep=": ")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_QDA_Validation_Uncertainty_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=8,options=c("WORLDFILE=YES"))
+      file.rename(from="result_QDA_Validation_Uncertainty_Map.wld", to="result_QDA_Validation_Uncertainty_Map.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"QDA Validation Uncertainty map"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_uncertainty.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_QDA_Validation_Uncertainty_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+      ###########################################
+      
     }
     
     ### Success & prediction rate curve
@@ -3119,7 +3489,7 @@ if(model.run.matrix[2] == "YES")
 #-------------------- LOGISTIC REGRESSION MODEL ---------------------#
 
 if(model.run.matrix[3] == "YES")
-  {
+{
   #library(Zelig)
   #if (class(try(zelig(as.formula(paste(names(data.variables)[1],"~",paste(names(data.variables[,2:dim(data.variables)[2]]),collapse= collapse_string))), data=data.variables, model="logit",cite=FALSE)))=="try-error")
   collapse_string<-"+"
@@ -3898,7 +4268,7 @@ if(model.run.matrix[3] == "YES")
     
     shape_training_lrm@data <- merge(x=shape_training_lrm@data,y=result_training_lrm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     #writeOGR(shape_training_lrm,dsn="result_LRM_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_lrm,dsn=getwd(),layer="training_LRM",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_lrm,dsn="result_LRM_training",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
     # WARNING: The validation does't have the unvertainty estimation: probably this can be daone using the parabolic error function 
     shape_validation_lrm<-shape_validation
@@ -3916,7 +4286,7 @@ if(model.run.matrix[3] == "YES")
     shape_validation_lrm@data <- merge(x=shape_validation_lrm@data,y=result_validation_lrm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_lrm@data <- cbind(shape_validation_lrm@data,PROB_SDMOD=(coefficients(fit.parabola.probability.lrm)*(shape_validation_lrm@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.lrm)*shape_validation_lrm@data$VAL_PROB))
     #writeOGR(shape_validation_lrm,dsn="result_LRM_validation.shp",layer="validation",driver="ESRI Shapefile")  # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_lrm,dsn=getwd(),layer="validation_LRM",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_lrm,dsn="result_LRM_validation",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
     ##################################################################
     ##################################################################
     
@@ -4074,7 +4444,7 @@ if(model.run.matrix[3] == "YES")
     shape_training_lrm@data <- merge(x=shape_training_lrm@data,y=result_training_lrm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     #writeOGR(shape_training_lrm,dsn="result_LRM_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
     
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_lrm,dsn=getwd(),layer="training_LRM",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_lrm,dsn="result_LRM_training",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
     
     # WARNING: The validation does't have the unvertainty estimation: probabilty this can be daone using the parabolic error function 
@@ -4091,7 +4461,7 @@ if(model.run.matrix[3] == "YES")
     shape_validation_lrm@data <- merge(x=shape_validation_lrm@data,y=result_validation_lrm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_lrm@data <- cbind(shape_validation_lrm@data,PROB_SDMOD=(coefficients(fit.parabola.probability.lrm)*(shape_validation_lrm@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.lrm)*shape_validation_lrm@data$VAL_PROB))
     #writeOGR(shape_validation_lrm,dsn="result_LRM_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_lrm,dsn=getwd(),layer="validation_LRM",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_lrm,dsn="result_LRM_validation",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
     require(raster)
     
@@ -4111,6 +4481,38 @@ if(model.run.matrix[3] == "YES")
     
     writeRaster(layer_gridded_raster, filename="result_LRM_Model_Susceptibility_Map.tif", format="GTiff", overwrite=TRUE)
     
+    ###########################################
+    require(rgdal)
+    ### Reprojecting
+    export_EPSG_code<-"4326"
+    layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+    layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+    fullgrid(layer_gridded_raster_reproject)
+    ### Reclassifying 
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.8 & layer_gridded_raster_reproject@data[,1]<=1]<-5
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.55 & layer_gridded_raster_reproject@data[,1]<=0.8]<-4
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.45 & layer_gridded_raster_reproject@data[,1]<=0.55]<-3
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.2 & layer_gridded_raster_reproject@data[,1]<=0.45]<-2
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0 & layer_gridded_raster_reproject@data[,1]<=0.2]<-1
+    pngcolors<-round(as.matrix(data.frame(color_ramp_fun(breaks.histogram.values[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]),alpha=rep(255,length(table(layer_gridded_raster_reproject@data[,1]))))))
+    colnames(pngcolors)<-c("red","green","blue","alpha")
+    pngcolors<-rgb(pngcolors,maxColorValue = 255)
+    pnglabels<-c("1: 0-0.20","2: 0.20-0.45","3: 0.45-0.55","4: 0.55-0.80","5: 0.80-1")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+    ### Writing .png .pngw files 
+    writeGDAL(layer_gridded_raster_reproject,"result_LRM_Model_Susceptibility_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=6,options=c("WORLDFILE=YES"))
+    file.rename(from="result_LRM_Model_Susceptibility_Map.wld", to="result_LRM_Model_Susceptibility_Map.pngw")
+    ### Writing .properties files 
+    pngid<-1
+    pngtitle<-"LRM Susceptibility map"
+    pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+    pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+    pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_susceptibility.PNG"
+    propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+    write.table(propertiesstring,"result_LRM_Model_Susceptibility_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+    ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+    ###########################################
+    
+    
     ###########
     if(enable_probability_optimal_classification==TRUE) 
     {
@@ -4122,20 +4524,51 @@ if(model.run.matrix[3] == "YES")
     
     if(enable_detailed_data_export_tiff==TRUE)
     {
-    # LRM Model Matching Code
-    #dev.new()
-    pdf(file = "result_LRM_Model_MatchingCode_Map.pdf",onefile = TRUE, pagecentre=TRUE)
-    layer_gridded<-shape_training_lrm
-    layer_gridded@data<-as.data.frame(layer_gridded@data[,"MOD_MATCH"])
-    gridded(layer_gridded)<-TRUE
-    layer_gridded_raster<-raster(layer_gridded)
-    #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
-    res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
-    index_col_macthing<-as.numeric(names(table(layer_gridded_raster@data@values)))
-    print(plot(layer_gridded_raster,col=color.vector.matching[index_col_macthing],legend=FALSE))
-    legend("topright", legend = c("1: TN","2: FP","3: FN","4: TP"), cex=0.8,fill = color.vector.matching,xjust=1.1,bg="transparent",box.col="transparent")
-    
-    writeRaster(layer_gridded_raster, filename="result_LRM_Model_MatchingCode_Map.tif", format="GTiff", overwrite=TRUE)
+      # LRM Model Matching Code
+      #dev.new()
+      pdf(file = "result_LRM_Model_MatchingCode_Map.pdf",onefile = TRUE, pagecentre=TRUE)
+      layer_gridded<-shape_training_lrm
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"MOD_MATCH"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      index_col_macthing<-as.numeric(names(table(layer_gridded_raster@data@values)))
+      print(plot(layer_gridded_raster,col=color.vector.matching[index_col_macthing],legend=FALSE))
+      legend("topright", legend = c("1: TN","2: FP","3: FN","4: TP"), cex=0.8,fill = color.vector.matching,xjust=1.1,bg="transparent",box.col="transparent")
+      dev.off()
+      
+      writeRaster(layer_gridded_raster, filename="result_LRM_Model_MatchingCode_Map.tif", format="GTiff", overwrite=TRUE)
+      
+      ###########################################
+      require(rgdal)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>3.5 & layer_gridded_raster_reproject@data[,1]<=4]<-4
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>2.5 & layer_gridded_raster_reproject@data[,1]<=3.5]<-3
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>1.5 & layer_gridded_raster_reproject@data[,1]<=2.5]<-2
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0.5 & layer_gridded_raster_reproject@data[,1]<=1.5]<-1
+      pngcolors<-color.vector.matching[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      pnglabels<-c("1: TN","2: FP","3: FN","4: TP")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_LRM_Model_MatchingCode_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=6,options=c("WORLDFILE=YES"))
+      file.rename(from="result_LRM_Model_MatchingCode_Map.wld", to="result_LRM_Model_MatchingCode_Map.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"LRM Matching code map"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_matchingcode.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_LRM_Model_MatchingCode_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+      ###########################################
+      
+      
     }
     
     ###########
@@ -4155,7 +4588,7 @@ if(model.run.matrix[3] == "YES")
       dev.off()
       
       writeRaster(layer_gridded_raster, filename="result_LRM_Model_MatchingCode_Map_Optimal.tif", format="GTiff", overwrite=TRUE)
-
+      
       #dev.new()
       pdf(file = "result_LRM_Model_SusceptibilityBinary_Map_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
       layer_gridded<-shape_training_lrm
@@ -4174,20 +4607,53 @@ if(model.run.matrix[3] == "YES")
     ############
     if(enable_detailed_data_export_tiff==TRUE)
     {
-    # LRM Model uncertainity
-    #dev.new()
-    pdf(file = "result_LRM_Model_Uncertainty_Map.pdf",onefile = TRUE, pagecentre=TRUE)
-    layer_gridded<-shape_training_lrm
-    layer_gridded@data<-as.data.frame(layer_gridded@data[,"LRM_PrSd"])
-    gridded(layer_gridded)<-TRUE
-    layer_gridded_raster<-raster(layer_gridded)
-    #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
-    res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
-    print(plot(layer_gridded_raster,col=color.vector.uncertainty,breaks.map.uncertainty))
-    #zoom(layer_gridded_raster)		
-    dev.off()
-    
-    writeRaster(layer_gridded_raster, filename="result_LRM_Model_Uncertainty_Map.tif", format="GTiff", overwrite=TRUE)
+      # LRM Model uncertainity
+      #dev.new()
+      pdf(file = "result_LRM_Model_Uncertainty_Map.pdf",onefile = TRUE, pagecentre=TRUE)
+      layer_gridded<-shape_training_lrm
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"LRM_PrSd"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      print(plot(layer_gridded_raster,col=color.vector.uncertainty,breaks.map.uncertainty))
+      #zoom(layer_gridded_raster)		
+      dev.off()
+      
+      writeRaster(layer_gridded_raster, filename="result_LRM_Model_Uncertainty_Map.tif", format="GTiff", overwrite=TRUE)
+      
+      ###########################################
+      require(rgdal)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[7] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[8]]<-7
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[6] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[7]]<-6
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[5] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[6]]<-5
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[4] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[5]]<-4
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[3] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[4]]<-3
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[2] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[3]]<-2
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=breaks.map.uncertainty[1] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[2]]<-1
+      pngcolors<-color.vector.uncertainty[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      pnglabels<-paste(1:7,paste(breaks.map.uncertainty[1:7],breaks.map.uncertainty[2:8],sep="-"),sep=": ")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_LRM_Model_Uncertainty_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=8,options=c("WORLDFILE=YES"))
+      file.rename(from="result_LRM_Model_Uncertainty_Map.wld", to="result_LRM_Model_Uncertainty_Map.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"LRM Uncertainty map"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_uncertainty.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_LRM_Model_Uncertainty_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+      ###########################################
+      
+      
     }
     
     # LRM Validation Susceptibility
@@ -4205,6 +4671,39 @@ if(model.run.matrix[3] == "YES")
     
     writeRaster(layer_gridded_raster, filename="result_LRM_Validation_Susceptibility_Map.tif", format="GTiff", overwrite=TRUE)
     
+    ###########################################
+    require(rgdal)
+    ### Reprojecting
+    export_EPSG_code<-"4326"
+    layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+    layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+    fullgrid(layer_gridded_raster_reproject)
+    ### Reclassifying 
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.8 & layer_gridded_raster_reproject@data[,1]<=1]<-5
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.55 & layer_gridded_raster_reproject@data[,1]<=0.8]<-4
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.45 & layer_gridded_raster_reproject@data[,1]<=0.55]<-3
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.2 & layer_gridded_raster_reproject@data[,1]<=0.45]<-2
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0 & layer_gridded_raster_reproject@data[,1]<=0.2]<-1
+    pngcolors<-round(as.matrix(data.frame(color_ramp_fun(breaks.histogram.values[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]),alpha=rep(255,length(table(layer_gridded_raster_reproject@data[,1]))))))
+    colnames(pngcolors)<-c("red","green","blue","alpha")
+    pngcolors<-rgb(pngcolors,maxColorValue = 255)
+    pnglabels<-c("1: 0-0.20","2: 0.20-0.45","3: 0.45-0.55","4: 0.55-0.80","5: 0.80-1")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+    ### Writing .png .pngw files 
+    writeGDAL(layer_gridded_raster_reproject,"result_LRM_Validation_Susceptibility_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=6,options=c("WORLDFILE=YES"))
+    file.rename(from="result_LRM_Validation_Susceptibility_Map.wld", to="result_LRM_Validation_Susceptibility_Map.pngw")
+    ### Writing .properties files 
+    pngid<-1
+    pngtitle<-"LRM Validation Susceptibility map"
+    pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+    pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+    pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_susceptibility.PNG"
+    propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+    write.table(propertiesstring,"result_LRM_Validation_Susceptibility_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+    ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+    ###########################################
+    
+    
+    
     ###########
     if(enable_probability_optimal_classification==TRUE) 
     {
@@ -4216,21 +4715,50 @@ if(model.run.matrix[3] == "YES")
     
     if(enable_detailed_data_export_tiff==TRUE)
     {
-    # LRM Validation Matching Code
-    #dev.new()
-    pdf(file = "result_LRM_Validation_MatchingCode_Map.pdf",onefile = TRUE, pagecentre=TRUE)
-    layer_gridded<-shape_validation_lrm
-    layer_gridded@data<-as.data.frame(layer_gridded@data[,"VAL_MATCH"])
-    gridded(layer_gridded)<-TRUE
-    layer_gridded_raster<-raster(layer_gridded)
-    #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
-    res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
-    print(plot(layer_gridded_raster,col=color.vector.matching,round(breaks.map.matching.code),legend=FALSE))
-    legend("topright", legend = c("1: TN","2: FP","3: FN","4: TP"), cex=0.8,fill = color.vector.matching,xjust=1.1,bg="transparent",box.col="transparent")
-    #zoom(layer_gridded_raster)  	
-    dev.off()
-    
-    writeRaster(layer_gridded_raster, filename="result_LRM_Validation_MatchingCode_Map.tif", format="GTiff", overwrite=TRUE)
+      # LRM Validation Matching Code
+      #dev.new()
+      pdf(file = "result_LRM_Validation_MatchingCode_Map.pdf",onefile = TRUE, pagecentre=TRUE)
+      layer_gridded<-shape_validation_lrm
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"VAL_MATCH"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      print(plot(layer_gridded_raster,col=color.vector.matching,round(breaks.map.matching.code),legend=FALSE))
+      legend("topright", legend = c("1: TN","2: FP","3: FN","4: TP"), cex=0.8,fill = color.vector.matching,xjust=1.1,bg="transparent",box.col="transparent")
+      #zoom(layer_gridded_raster)  	
+      dev.off()
+      
+      writeRaster(layer_gridded_raster, filename="result_LRM_Validation_MatchingCode_Map.tif", format="GTiff", overwrite=TRUE)
+      
+      ###########################################
+      require(rgdal)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>3.5 & layer_gridded_raster_reproject@data[,1]<=4]<-4
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>2.5 & layer_gridded_raster_reproject@data[,1]<=3.5]<-3
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>1.5 & layer_gridded_raster_reproject@data[,1]<=2.5]<-2
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0.5 & layer_gridded_raster_reproject@data[,1]<=1.5]<-1
+      pngcolors<-color.vector.matching[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      pnglabels<-c("1: TN","2: FP","3: FN","4: TP")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_LRM_Validation_MatchingCode_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=6,options=c("WORLDFILE=YES"))
+      file.rename(from="result_LRM_Validation_MatchingCode_Map.wld", to="result_LRM_Validation_MatchingCode_Map.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"LRM Validation Matching code map"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_matchingcode.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_LRM_Validation_MatchingCode_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+      ###########################################
+      
     }
     
     ########
@@ -4249,7 +4777,7 @@ if(model.run.matrix[3] == "YES")
       #zoom(layer_gridded_raster)  	
       dev.off()
       writeRaster(layer_gridded_raster, filename="result_LRM_Validation_MatchingCode_Map_Optimal.tif", format="GTiff", overwrite=TRUE)
-
+      
       #dev.new()
       pdf(file = "result_LRM_Validation_SusceptibilityBinary_Map_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
       layer_gridded<-shape_validation_lrm
@@ -4270,20 +4798,52 @@ if(model.run.matrix[3] == "YES")
     
     if(enable_detailed_data_export_tiff==TRUE) 
     {
-    # LRM Model uncertainity
-    #dev.new()
-    pdf(file = "result_LRM_Validation_Uncertainty_Map.pdf",onefile = TRUE, pagecentre=TRUE)
-    layer_gridded<-shape_validation_lrm
-    layer_gridded@data<-as.data.frame(layer_gridded@data[,"PROB_SDMOD"])
-    gridded(layer_gridded)<-TRUE
-    layer_gridded_raster<-raster(layer_gridded)
-    #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
-    res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
-    print(plot(layer_gridded_raster,col=color.vector.uncertainty,breaks.map.uncertainty))
-    #zoom(layer_gridded_raster)		
-    dev.off()
-    
-    writeRaster(layer_gridded_raster, filename="result_LRM_Validation_Uncertainty_Map.tif", format="GTiff", overwrite=TRUE)
+      # LRM Model uncertainity
+      #dev.new()
+      pdf(file = "result_LRM_Validation_Uncertainty_Map.pdf",onefile = TRUE, pagecentre=TRUE)
+      layer_gridded<-shape_validation_lrm
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"PROB_SDMOD"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      print(plot(layer_gridded_raster,col=color.vector.uncertainty,breaks.map.uncertainty))
+      #zoom(layer_gridded_raster)		
+      dev.off()
+      
+      writeRaster(layer_gridded_raster, filename="result_LRM_Validation_Uncertainty_Map.tif", format="GTiff", overwrite=TRUE)
+      
+      ###########################################
+      require(rgdal)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[7] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[8]]<-7
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[6] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[7]]<-6
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[5] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[6]]<-5
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[4] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[5]]<-4
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[3] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[4]]<-3
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[2] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[3]]<-2
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=breaks.map.uncertainty[1] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[2]]<-1
+      pngcolors<-color.vector.uncertainty[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      pnglabels<-paste(1:7,paste(breaks.map.uncertainty[1:7],breaks.map.uncertainty[2:8],sep="-"),sep=": ")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_LRM_Validation_Uncertainty_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=8,options=c("WORLDFILE=YES"))
+      file.rename(from="result_LRM_Validation_Uncertainty_Map.wld", to="result_LRM_Validation_Uncertainty_Map.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"LRM Validation Uncertainty map"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_uncertainty.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_LRM_Validation_Uncertainty_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+      ###########################################
+      
     }
     
     ### Success & prediction rate curve
@@ -4368,12 +4928,12 @@ if(model.run.matrix[3] == "YES")
     ############
   }
 }
- 
+
 
 #------------------ NEURAL NETWORK MODEL ANALISYS -------------------#
 
 if(model.run.matrix[4] == "YES")
-  {
+{
   library(nnet)
   
   
@@ -5173,7 +5733,7 @@ if(model.run.matrix[4] == "YES")
     
     shape_training_nnm@data <- merge(x=shape_training_nnm@data,y=result_training_nnm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)  
     #writeOGR(shape_training_nnm,dsn="result_NNM_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_nnm,dsn=getwd(),layer="training_NNM",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_nnm,dsn="result_NNM_training",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
     # WARNING: The validation does't have the unvertainty estimation: probably this can be daone using the parabolic error function 
     shape_validation_nnm<-shape_validation
@@ -5190,7 +5750,7 @@ if(model.run.matrix[4] == "YES")
     shape_validation_nnm@data <- merge(x=shape_validation_nnm@data,y=result_validation_nnm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_nnm@data <- cbind(shape_validation_nnm@data,PROB_SDMOD=(coefficients(fit.parabola.probability.nnm)*(shape_validation_nnm@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.nnm)*shape_validation_nnm@data$VAL_PROB))
     #writeOGR(shape_validation_nnm,dsn="result_NNM_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_nnm,dsn=getwd(),layer="validation_NNM",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_nnm,dsn="result_NNM_validation",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
     ##################################################################
     ##################################################################
     
@@ -5346,7 +5906,7 @@ if(model.run.matrix[4] == "YES")
     #############
     shape_training_nnm@data <- merge(x=shape_training_nnm@data,y=result_training_nnm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     #writeOGR(shape_training_nnm,dsn="result_NNM_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_nnm,dsn=getwd(),layer="training_NNM",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_nnm,dsn="result_NNM_training",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
     
     # WARNING: The validation does't have the unvertainty estimation: probabilty this can be daone using the parabolic error function 
@@ -5363,7 +5923,7 @@ if(model.run.matrix[4] == "YES")
     shape_validation_nnm@data <- merge(x=shape_validation_nnm@data,y=result_validation_nnm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_nnm@data <- cbind(shape_validation_nnm@data,PROB_SDMOD=(coefficients(fit.parabola.probability.nnm)*(shape_validation_nnm@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.nnm)*shape_validation_nnm@data$VAL_PROB))
     #writeOGR(shape_validation_nnm,dsn="result_NNM_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_nnm,dsn=getwd(),layer="validation_NNM",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_nnm,dsn="result_NNM_validation",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
     require(raster)
     
@@ -5383,6 +5943,38 @@ if(model.run.matrix[4] == "YES")
     
     writeRaster(layer_gridded_raster, filename="result_NNM_Model_Susceptibility_Map.tif", format="GTiff", overwrite=TRUE)
     
+    ###########################################
+    require(rgdal)
+    ### Reprojecting
+    export_EPSG_code<-"4326"
+    layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+    layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+    fullgrid(layer_gridded_raster_reproject)
+    ### Reclassifying 
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.8 & layer_gridded_raster_reproject@data[,1]<=1]<-5
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.55 & layer_gridded_raster_reproject@data[,1]<=0.8]<-4
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.45 & layer_gridded_raster_reproject@data[,1]<=0.55]<-3
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.2 & layer_gridded_raster_reproject@data[,1]<=0.45]<-2
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0 & layer_gridded_raster_reproject@data[,1]<=0.2]<-1
+    pngcolors<-round(as.matrix(data.frame(color_ramp_fun(breaks.histogram.values[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]),alpha=rep(255,length(table(layer_gridded_raster_reproject@data[,1]))))))
+    colnames(pngcolors)<-c("red","green","blue","alpha")
+    pngcolors<-rgb(pngcolors,maxColorValue = 255)
+    pnglabels<-c("1: 0-0.20","2: 0.20-0.45","3: 0.45-0.55","4: 0.55-0.80","5: 0.80-1")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+    ### Writing .png .pngw files 
+    writeGDAL(layer_gridded_raster_reproject,"result_NNM_Model_Susceptibility_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=6,options=c("WORLDFILE=YES"))
+    file.rename(from="result_NNM_Model_Susceptibility_Map.wld", to="result_NNM_Model_Susceptibility_Map.pngw")
+    ### Writing .properties files 
+    pngid<-1
+    pngtitle<-"NNM Susceptibility map"
+    pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+    pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+    pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_susceptibility.PNG"
+    propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+    write.table(propertiesstring,"result_NNM_Model_Susceptibility_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+    ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+    ###########################################
+    
+    
     ###########
     if(enable_probability_optimal_classification==TRUE) 
     {
@@ -5394,20 +5986,48 @@ if(model.run.matrix[4] == "YES")
     
     if(enable_detailed_data_export_tiff==TRUE)
     {
-    # NNM Model Matching Code
-    #dev.new()
-    pdf(file = "result_NNM_Model_MatchingCode_Map.pdf",onefile = TRUE, pagecentre=TRUE)
-    layer_gridded<-shape_training_nnm
-    layer_gridded@data<-as.data.frame(layer_gridded@data[,"MOD_MATCH"])
-    gridded(layer_gridded)<-TRUE
-    layer_gridded_raster<-raster(layer_gridded)
-    #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
-    res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
-    index_col_macthing<-as.numeric(names(table(layer_gridded_raster@data@values)))
-    print(plot(layer_gridded_raster,col=color.vector.matching[index_col_macthing],legend=FALSE))
-    legend("topright", legend = c("1: TN","2: FP","3: FN","4: TP"), cex=0.8,fill = color.vector.matching,xjust=1.1,bg="transparent",box.col="transparent")
-    
-    writeRaster(layer_gridded_raster, filename="result_NNM_Model_MatchingCode_Map.tif", format="GTiff", overwrite=TRUE)
+      # NNM Model Matching Code
+      #dev.new()
+      pdf(file = "result_NNM_Model_MatchingCode_Map.pdf",onefile = TRUE, pagecentre=TRUE)
+      layer_gridded<-shape_training_nnm
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"MOD_MATCH"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      index_col_macthing<-as.numeric(names(table(layer_gridded_raster@data@values)))
+      print(plot(layer_gridded_raster,col=color.vector.matching[index_col_macthing],legend=FALSE))
+      legend("topright", legend = c("1: TN","2: FP","3: FN","4: TP"), cex=0.8,fill = color.vector.matching,xjust=1.1,bg="transparent",box.col="transparent")
+      
+      writeRaster(layer_gridded_raster, filename="result_NNM_Model_MatchingCode_Map.tif", format="GTiff", overwrite=TRUE)
+      
+      ###########################################
+      require(rgdal)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>3.5 & layer_gridded_raster_reproject@data[,1]<=4]<-4
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>2.5 & layer_gridded_raster_reproject@data[,1]<=3.5]<-3
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>1.5 & layer_gridded_raster_reproject@data[,1]<=2.5]<-2
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0.5 & layer_gridded_raster_reproject@data[,1]<=1.5]<-1
+      pngcolors<-color.vector.matching[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      pnglabels<-c("1: TN","2: FP","3: FN","4: TP")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_NNM_Model_MatchingCode_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=6,options=c("WORLDFILE=YES"))
+      file.rename(from="result_NNM_Model_MatchingCode_Map.wld", to="result_NNM_Model_MatchingCode_Map.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"NNM Matching code map"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_matchingcode.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_NNM_Model_MatchingCode_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+      ###########################################
     }
     
     ###########
@@ -5427,7 +6047,7 @@ if(model.run.matrix[4] == "YES")
       dev.off()
       
       writeRaster(layer_gridded_raster, filename="result_NNM_Model_MatchingCode_Map_Optimal.tif", format="GTiff", overwrite=TRUE)
-
+      
       #dev.new()
       pdf(file = "result_NNM_Model_SusceptibilityBinary_Map_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
       layer_gridded<-shape_training_nnm
@@ -5447,20 +6067,52 @@ if(model.run.matrix[4] == "YES")
     
     if(enable_detailed_data_export_tiff==TRUE)
     {
-    # NNM Model uncertainity
-    #dev.new()
-    pdf(file = "result_NNM_Model_Uncertainty_Map.pdf",onefile = TRUE, pagecentre=TRUE)
-    layer_gridded<-shape_training_nnm
-    layer_gridded@data<-as.data.frame(layer_gridded@data[,"NNM_PrSd"])
-    gridded(layer_gridded)<-TRUE
-    layer_gridded_raster<-raster(layer_gridded)
-    #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
-    res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
-    print(plot(layer_gridded_raster,col=color.vector.uncertainty,breaks.map.uncertainty))
-    #zoom(layer_gridded_raster)		
-    dev.off()
-    
-    writeRaster(layer_gridded_raster, filename="result_NNM_Model_Uncertainty_Map.tif", format="GTiff", overwrite=TRUE)
+      # NNM Model uncertainity
+      #dev.new()
+      pdf(file = "result_NNM_Model_Uncertainty_Map.pdf",onefile = TRUE, pagecentre=TRUE)
+      layer_gridded<-shape_training_nnm
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"NNM_PrSd"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      print(plot(layer_gridded_raster,col=color.vector.uncertainty,breaks.map.uncertainty))
+      #zoom(layer_gridded_raster)		
+      dev.off()
+      
+      writeRaster(layer_gridded_raster, filename="result_NNM_Model_Uncertainty_Map.tif", format="GTiff", overwrite=TRUE)
+      
+      ###########################################
+      require(rgdal)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[7] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[8]]<-7
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[6] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[7]]<-6
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[5] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[6]]<-5
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[4] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[5]]<-4
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[3] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[4]]<-3
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[2] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[3]]<-2
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=breaks.map.uncertainty[1] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[2]]<-1
+      pngcolors<-color.vector.uncertainty[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      pnglabels<-paste(1:7,paste(breaks.map.uncertainty[1:7],breaks.map.uncertainty[2:8],sep="-"),sep=": ")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_NNM_Model_Uncertainty_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=8,options=c("WORLDFILE=YES"))
+      file.rename(from="result_NNM_Model_Uncertainty_Map.wld", to="result_NNM_Model_Uncertainty_Map.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"NNM Uncertainty map"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_uncertainty.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_NNM_Model_Uncertainty_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+      ###########################################
+      
     }
     
     # NNM Validation Susceptibility
@@ -5478,6 +6130,38 @@ if(model.run.matrix[4] == "YES")
     
     writeRaster(layer_gridded_raster, filename="result_NNM_Validation_Susceptibility_Map.tif", format="GTiff", overwrite=TRUE)
     
+    ###########################################
+    require(rgdal)
+    ### Reprojecting
+    export_EPSG_code<-"4326"
+    layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+    layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+    fullgrid(layer_gridded_raster_reproject)
+    ### Reclassifying 
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.8 & layer_gridded_raster_reproject@data[,1]<=1]<-5
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.55 & layer_gridded_raster_reproject@data[,1]<=0.8]<-4
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.45 & layer_gridded_raster_reproject@data[,1]<=0.55]<-3
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.2 & layer_gridded_raster_reproject@data[,1]<=0.45]<-2
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0 & layer_gridded_raster_reproject@data[,1]<=0.2]<-1
+    pngcolors<-round(as.matrix(data.frame(color_ramp_fun(breaks.histogram.values[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]),alpha=rep(255,length(table(layer_gridded_raster_reproject@data[,1]))))))
+    colnames(pngcolors)<-c("red","green","blue","alpha")
+    pngcolors<-rgb(pngcolors,maxColorValue = 255)
+    pnglabels<-c("1: 0-0.20","2: 0.20-0.45","3: 0.45-0.55","4: 0.55-0.80","5: 0.80-1")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+    ### Writing .png .pngw files 
+    writeGDAL(layer_gridded_raster_reproject,"result_NNM_Validation_Susceptibility_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=6,options=c("WORLDFILE=YES"))
+    file.rename(from="result_NNM_Validation_Susceptibility_Map.wld", to="result_NNM_Validation_Susceptibility_Map.pngw")
+    ### Writing .properties files 
+    pngid<-1
+    pngtitle<-"NNM Validation Susceptibility map"
+    pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+    pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+    pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_susceptibility.PNG"
+    propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+    write.table(propertiesstring,"result_NNM_Validation_Susceptibility_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+    ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+    ###########################################
+    
+    
     ###########
     if(enable_probability_optimal_classification==TRUE) 
     {
@@ -5489,21 +6173,50 @@ if(model.run.matrix[4] == "YES")
     
     if(enable_detailed_data_export_tiff==TRUE)
     {
-    # NNM Validation Matching Code
-    #dev.new()
-    pdf(file = "result_NNM_Validation_MatchingCode_Map.pdf",onefile = TRUE, pagecentre=TRUE)
-    layer_gridded<-shape_validation_nnm
-    layer_gridded@data<-as.data.frame(layer_gridded@data[,"VAL_MATCH"])
-    gridded(layer_gridded)<-TRUE
-    layer_gridded_raster<-raster(layer_gridded)
-    #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
-    res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
-    print(plot(layer_gridded_raster,col=color.vector.matching,round(breaks.map.matching.code),legend=FALSE))
-    legend("topright", legend = c("1: TN","2: FP","3: FN","4: TP"), cex=0.8,fill = color.vector.matching,xjust=1.1,bg="transparent",box.col="transparent")
-    #zoom(layer_gridded_raster)  	
-    dev.off()
-    
-    writeRaster(layer_gridded_raster, filename="result_NNM_Validation_MatchingCode_Map.tif", format="GTiff", overwrite=TRUE)
+      # NNM Validation Matching Code
+      #dev.new()
+      pdf(file = "result_NNM_Validation_MatchingCode_Map.pdf",onefile = TRUE, pagecentre=TRUE)
+      layer_gridded<-shape_validation_nnm
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"VAL_MATCH"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      print(plot(layer_gridded_raster,col=color.vector.matching,round(breaks.map.matching.code),legend=FALSE))
+      legend("topright", legend = c("1: TN","2: FP","3: FN","4: TP"), cex=0.8,fill = color.vector.matching,xjust=1.1,bg="transparent",box.col="transparent")
+      #zoom(layer_gridded_raster)  	
+      dev.off()
+      
+      writeRaster(layer_gridded_raster, filename="result_NNM_Validation_MatchingCode_Map.tif", format="GTiff", overwrite=TRUE)
+      
+      ###########################################
+      require(rgdal)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>3.5 & layer_gridded_raster_reproject@data[,1]<=4]<-4
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>2.5 & layer_gridded_raster_reproject@data[,1]<=3.5]<-3
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>1.5 & layer_gridded_raster_reproject@data[,1]<=2.5]<-2
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0.5 & layer_gridded_raster_reproject@data[,1]<=1.5]<-1
+      pngcolors<-color.vector.matching[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      pnglabels<-c("1: TN","2: FP","3: FN","4: TP")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_NNM_Validation_MatchingCode_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=6,options=c("WORLDFILE=YES"))
+      file.rename(from="result_NNM_Validation_MatchingCode_Map.wld", to="result_NNM_Validation_MatchingCode_Map.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"NNM Validation Matching code map"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_matchingcode.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_NNM_Validation_MatchingCode_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+      ###########################################
+      
     }
     
     ########
@@ -5522,7 +6235,7 @@ if(model.run.matrix[4] == "YES")
       #zoom(layer_gridded_raster)  	
       dev.off()
       writeRaster(layer_gridded_raster, filename="result_NNM_Validation_MatchingCode_Map_Optimal.tif", format="GTiff", overwrite=TRUE)
-
+      
       #dev.new()
       pdf(file = "result_NNM_Validation_SusceptibilityBinary_Map_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
       layer_gridded<-shape_validation_nnm
@@ -5543,20 +6256,52 @@ if(model.run.matrix[4] == "YES")
     
     if(enable_detailed_data_export_tiff==TRUE)
     {
-    # NNM Model uncertainity
-    #dev.new()
-    pdf(file = "result_NNM_Validation_Uncertainty_Map.pdf",onefile = TRUE, pagecentre=TRUE)
-    layer_gridded<-shape_validation_nnm
-    layer_gridded@data<-as.data.frame(layer_gridded@data[,"PROB_SDMOD"])
-    gridded(layer_gridded)<-TRUE
-    layer_gridded_raster<-raster(layer_gridded)
-    #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
-    res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
-    print(plot(layer_gridded_raster,col=color.vector.uncertainty,breaks.map.uncertainty))
-    #zoom(layer_gridded_raster)		
-    dev.off()
-    
-    writeRaster(layer_gridded_raster, filename="result_NNM_Validation_Uncertainty_Map.tif", format="GTiff", overwrite=TRUE)
+      # NNM Model uncertainity
+      #dev.new()
+      pdf(file = "result_NNM_Validation_Uncertainty_Map.pdf",onefile = TRUE, pagecentre=TRUE)
+      layer_gridded<-shape_validation_nnm
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"PROB_SDMOD"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      print(plot(layer_gridded_raster,col=color.vector.uncertainty,breaks.map.uncertainty))
+      #zoom(layer_gridded_raster)		
+      dev.off()
+      
+      writeRaster(layer_gridded_raster, filename="result_NNM_Validation_Uncertainty_Map.tif", format="GTiff", overwrite=TRUE)
+      
+      ###########################################
+      require(rgdal)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[7] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[8]]<-7
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[6] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[7]]<-6
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[5] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[6]]<-5
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[4] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[5]]<-4
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[3] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[4]]<-3
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[2] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[3]]<-2
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=breaks.map.uncertainty[1] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[2]]<-1
+      pngcolors<-color.vector.uncertainty[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      pnglabels<-paste(1:7,paste(breaks.map.uncertainty[1:7],breaks.map.uncertainty[2:8],sep="-"),sep=": ")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_NNM_Validation_Uncertainty_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=8,options=c("WORLDFILE=YES"))
+      file.rename(from="result_NNM_Validation_Uncertainty_Map.wld", to="result_NNM_Validation_Uncertainty_Map.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"NNM Validation Uncertainty map"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_uncertainty.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_NNM_Validation_Uncertainty_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+      ###########################################
+      
     }
     
     ### Success & prediction rate curve
@@ -5646,14 +6391,14 @@ if(model.run.matrix[4] == "YES")
   
 }
 
-  
+
 
 #-------------------- FORECAST COMBINATION MODEL --------------------#
 #####  FORECAST COMBINATION USING A LOGISTIC REGRESSION MODEL
 #####(A constrained Ordinary Least Squared estimation can also be adopted)
 
 if(model.run.matrix[5] == "YES")
-  {
+{
   
   #library(Zelig) 
   #forecasting.combined.variables<-as.data.frame(cbind(data.variables[,1],predict.result.lda$posterior[,2],predict.result.qda$posterior[,2],result.cfm$result$fitted.values,predict.result.nnm))
@@ -6409,7 +7154,7 @@ if(model.run.matrix[5] == "YES")
     #############
     shape_training_cfm@data <- merge(x=shape_training_cfm@data,y=result_training_cfm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     #writeOGR(shape_training_cfm,dsn="result_CFM_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_cfm,dsn=getwd(),layer="training_CFM",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_cfm,dsn="result_CFM_training",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
     # WARNING: The validation does't have the unvertainty estimation: probably this can be daone using the parabolic error function 
     shape_validation_cfm<-shape_validation
@@ -6425,7 +7170,7 @@ if(model.run.matrix[5] == "YES")
     shape_validation_cfm@data <- merge(x=shape_validation_cfm@data,y=result_validation_cfm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_cfm@data <- cbind(shape_validation_cfm@data,PROB_SDMOD=(coefficients(fit.parabola.probability.cfm)*(shape_validation_cfm@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.cfm)*shape_validation_cfm@data$VAL_PROB))
     #writeOGR(shape_validation_cfm,dsn="result_CFM_validation.shp",layer="validation",driver="ESRI Shapefile")  # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_cfm,dsn=getwd(),layer="validation_CFM",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_cfm,dsn="result_CFM_validation",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
     ##################################################################
     ##################################################################
     
@@ -6580,7 +7325,7 @@ if(model.run.matrix[5] == "YES")
     #############
     shape_training_cfm@data <- merge(x=shape_training_cfm@data,y=result_training_cfm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     #writeOGR(shape_training_cfm,dsn="result_CFM_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_cfm,dsn=getwd(),layer="training_CFM",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_cfm,dsn="result_CFM_training",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
     
     # WARNING: The validation does't have the unvertainty estimation: probabilty this can be daone using the parabolic error function 
@@ -6598,7 +7343,7 @@ if(model.run.matrix[5] == "YES")
     shape_validation_cfm@data <- merge(x=shape_validation_cfm@data,y=result_validation_cfm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_cfm@data <- cbind(shape_validation_cfm@data,PROB_SDMOD=(coefficients(fit.parabola.probability.cfm)*(shape_validation_cfm@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.cfm)*shape_validation_cfm@data$VAL_PROB))
     #writeOGR(shape_validation_cfm,dsn="result_CFM_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_cfm,dsn=getwd(),layer="validation_CFM",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_cfm,dsn="result_CFM_validation",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
     
     require(raster)
     
@@ -6618,6 +7363,38 @@ if(model.run.matrix[5] == "YES")
     
     writeRaster(layer_gridded_raster, filename="result_CFM_Model_Susceptibility_Map.tif", format="GTiff", overwrite=TRUE)
     
+    ###########################################
+    require(rgdal)
+    ### Reprojecting
+    export_EPSG_code<-"4326"
+    layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+    layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+    fullgrid(layer_gridded_raster_reproject)
+    ### Reclassifying 
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.8 & layer_gridded_raster_reproject@data[,1]<=1]<-5
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.55 & layer_gridded_raster_reproject@data[,1]<=0.8]<-4
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.45 & layer_gridded_raster_reproject@data[,1]<=0.55]<-3
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.2 & layer_gridded_raster_reproject@data[,1]<=0.45]<-2
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0 & layer_gridded_raster_reproject@data[,1]<=0.2]<-1
+    pngcolors<-round(as.matrix(data.frame(color_ramp_fun(breaks.histogram.values[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]),alpha=rep(255,length(table(layer_gridded_raster_reproject@data[,1]))))))
+    colnames(pngcolors)<-c("red","green","blue","alpha")
+    pngcolors<-rgb(pngcolors,maxColorValue = 255)
+    pnglabels<-c("1: 0-0.20","2: 0.20-0.45","3: 0.45-0.55","4: 0.55-0.80","5: 0.80-1")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+    ### Writing .png .pngw files 
+    writeGDAL(layer_gridded_raster_reproject,"result_CFM_Model_Susceptibility_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=6,options=c("WORLDFILE=YES"))
+    file.rename(from="result_CFM_Model_Susceptibility_Map.wld", to="result_CFM_Model_Susceptibility_Map.pngw")
+    ### Writing .properties files 
+    pngid<-1
+    pngtitle<-"CFM Susceptibility map"
+    pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+    pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+    pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_susceptibility.PNG"
+    propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+    write.table(propertiesstring,"result_CFM_Model_Susceptibility_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+    ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+    ###########################################
+    
+    
     ###########
     if(enable_probability_optimal_classification==TRUE) 
     {
@@ -6629,21 +7406,49 @@ if(model.run.matrix[5] == "YES")
     
     if(enable_detailed_data_export_tiff==TRUE)
     {
-    # CFM Model Matching Code
-    #dev.new()
-    pdf(file = "result_CFM_Model_MatchingCode_Map.pdf",onefile = TRUE, pagecentre=TRUE)
-    layer_gridded<-shape_training_cfm
-    layer_gridded@data<-as.data.frame(layer_gridded@data[,"MOD_MATCH"])
-    gridded(layer_gridded)<-TRUE
-    layer_gridded_raster<-raster(layer_gridded)
-    #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
-    res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
-    index_col_macthing<-as.numeric(names(table(layer_gridded_raster@data@values)))
-    print(plot(layer_gridded_raster,col=color.vector.matching[index_col_macthing],legend=FALSE))
-    legend("topright", legend = c("1: TN","2: FP","3: FN","4: TP"), cex=0.8,fill = color.vector.matching,xjust=1.1,bg="transparent",box.col="transparent")
-    dev.off()
-    
-    writeRaster(layer_gridded_raster, filename="result_CFM_Model_MatchingCode_Map.tif", format="GTiff", overwrite=TRUE)
+      # CFM Model Matching Code
+      #dev.new()
+      pdf(file = "result_CFM_Model_MatchingCode_Map.pdf",onefile = TRUE, pagecentre=TRUE)
+      layer_gridded<-shape_training_cfm
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"MOD_MATCH"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      index_col_macthing<-as.numeric(names(table(layer_gridded_raster@data@values)))
+      print(plot(layer_gridded_raster,col=color.vector.matching[index_col_macthing],legend=FALSE))
+      legend("topright", legend = c("1: TN","2: FP","3: FN","4: TP"), cex=0.8,fill = color.vector.matching,xjust=1.1,bg="transparent",box.col="transparent")
+      dev.off()
+      
+      writeRaster(layer_gridded_raster, filename="result_CFM_Model_MatchingCode_Map.tif", format="GTiff", overwrite=TRUE)
+      
+      ###########################################
+      require(rgdal)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>3.5 & layer_gridded_raster_reproject@data[,1]<=4]<-4
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>2.5 & layer_gridded_raster_reproject@data[,1]<=3.5]<-3
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>1.5 & layer_gridded_raster_reproject@data[,1]<=2.5]<-2
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0.5 & layer_gridded_raster_reproject@data[,1]<=1.5]<-1
+      pngcolors<-color.vector.matching[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      pnglabels<-c("1: TN","2: FP","3: FN","4: TP")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_CFM_Model_MatchingCode_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=6,options=c("WORLDFILE=YES"))
+      file.rename(from="result_CFM_Model_MatchingCode_Map.wld", to="result_CFM_Model_MatchingCode_Map.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"CFM Matching code map"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_matchingcode.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_CFM_Model_MatchingCode_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+      ###########################################
     }
     
     ###########
@@ -6663,7 +7468,7 @@ if(model.run.matrix[5] == "YES")
       dev.off()
       
       writeRaster(layer_gridded_raster, filename="result_CFM_Model_MatchingCode_Map_Optimal.tif", format="GTiff", overwrite=TRUE)
-
+      
       #dev.new()
       pdf(file = "result_CFM_Model_SusceptibilityBinary_Map_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
       layer_gridded<-shape_training_cfm
@@ -6683,20 +7488,52 @@ if(model.run.matrix[5] == "YES")
     
     if(enable_detailed_data_export_tiff==TRUE)
     {
-    # CFM Model uncertainity
-    #dev.new()
-    pdf(file = "result_CFM_Model_Uncertainty_Map.pdf",onefile = TRUE, pagecentre=TRUE)
-    layer_gridded<-shape_training_cfm
-    layer_gridded@data<-as.data.frame(layer_gridded@data[,"CFM_PrSd"])
-    gridded(layer_gridded)<-TRUE
-    layer_gridded_raster<-raster(layer_gridded)
-    #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
-    res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
-    print(plot(layer_gridded_raster,col=color.vector.uncertainty,breaks.map.uncertainty))
-    #zoom(layer_gridded_raster)		
-    dev.off()
-    
-    writeRaster(layer_gridded_raster, filename="result_CFM_Model_Uncertainty_Map.tif", format="GTiff", overwrite=TRUE)
+      # CFM Model uncertainity
+      #dev.new()
+      pdf(file = "result_CFM_Model_Uncertainty_Map.pdf",onefile = TRUE, pagecentre=TRUE)
+      layer_gridded<-shape_training_cfm
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"CFM_PrSd"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      print(plot(layer_gridded_raster,col=color.vector.uncertainty,breaks.map.uncertainty))
+      #zoom(layer_gridded_raster)		
+      dev.off()
+      
+      writeRaster(layer_gridded_raster, filename="result_CFM_Model_Uncertainty_Map.tif", format="GTiff", overwrite=TRUE)
+      
+      ###########################################
+      require(rgdal)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[7] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[8]]<-7
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[6] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[7]]<-6
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[5] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[6]]<-5
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[4] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[5]]<-4
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[3] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[4]]<-3
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[2] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[3]]<-2
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=breaks.map.uncertainty[1] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[2]]<-1
+      pngcolors<-color.vector.uncertainty[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      pnglabels<-paste(1:7,paste(breaks.map.uncertainty[1:7],breaks.map.uncertainty[2:8],sep="-"),sep=": ")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_CFM_Model_Uncertainty_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=8,options=c("WORLDFILE=YES"))
+      file.rename(from="result_CFM_Model_Uncertainty_Map.wld", to="result_CFM_Model_Uncertainty_Map.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"CFM Uncertainty map"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_uncertainty.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_CFM_Model_Uncertainty_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+      ###########################################
+      
     }
     
     # CFM Validation Susceptibility
@@ -6714,6 +7551,38 @@ if(model.run.matrix[5] == "YES")
     
     writeRaster(layer_gridded_raster, filename="result_CFM_Validation_Susceptibility_Map.tif", format="GTiff", overwrite=TRUE)
     
+    ###########################################
+    require(rgdal)
+    ### Reprojecting
+    export_EPSG_code<-"4326"
+    layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+    layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+    fullgrid(layer_gridded_raster_reproject)
+    ### Reclassifying 
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.8 & layer_gridded_raster_reproject@data[,1]<=1]<-5
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.55 & layer_gridded_raster_reproject@data[,1]<=0.8]<-4
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.45 & layer_gridded_raster_reproject@data[,1]<=0.55]<-3
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.2 & layer_gridded_raster_reproject@data[,1]<=0.45]<-2
+    layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0 & layer_gridded_raster_reproject@data[,1]<=0.2]<-1
+    pngcolors<-round(as.matrix(data.frame(color_ramp_fun(breaks.histogram.values[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]),alpha=rep(255,length(table(layer_gridded_raster_reproject@data[,1]))))))
+    colnames(pngcolors)<-c("red","green","blue","alpha")
+    pngcolors<-rgb(pngcolors,maxColorValue = 255)
+    pnglabels<-c("1: 0-0.20","2: 0.20-0.45","3: 0.45-0.55","4: 0.55-0.80","5: 0.80-1")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+    ### Writing .png .pngw files 
+    writeGDAL(layer_gridded_raster_reproject,"result_CFM_Validation_Susceptibility_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=6,options=c("WORLDFILE=YES"))
+    file.rename(from="result_CFM_Validation_Susceptibility_Map.wld", to="result_CFM_Validation_Susceptibility_Map.pngw")
+    ### Writing .properties files 
+    pngid<-1
+    pngtitle<-"CFM Validation Susceptibility map"
+    pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+    pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+    pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_susceptibility.PNG"
+    propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+    write.table(propertiesstring,"result_CFM_Validation_Susceptibility_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+    ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+    ###########################################
+    
+    
     ###########
     if(enable_probability_optimal_classification==TRUE) 
     {
@@ -6725,21 +7594,50 @@ if(model.run.matrix[5] == "YES")
     
     if(enable_detailed_data_export_tiff==TRUE)
     {
-    # CFM Validation Matching Code
-    #dev.new()
-    pdf(file = "result_CFM_Validation_MatchingCode_Map.pdf",onefile = TRUE, pagecentre=TRUE)
-    layer_gridded<-shape_validation_cfm
-    layer_gridded@data<-as.data.frame(layer_gridded@data[,"VAL_MATCH"])
-    gridded(layer_gridded)<-TRUE
-    layer_gridded_raster<-raster(layer_gridded)
-    #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
-    res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
-    print(plot(layer_gridded_raster,col=color.vector.matching,round(breaks.map.matching.code),legend=FALSE))
-    legend("topright", legend = c("1: TN","2: FP","3: FN","4: TP"), cex=0.8,fill = color.vector.matching,xjust=1.1,bg="transparent",box.col="transparent")
-    #zoom(layer_gridded_raster)  	
-    dev.off()
-    
-    writeRaster(layer_gridded_raster, filename="result_CFM_Validation_MatchingCode_Map.tif", format="GTiff", overwrite=TRUE)
+      # CFM Validation Matching Code
+      #dev.new()
+      pdf(file = "result_CFM_Validation_MatchingCode_Map.pdf",onefile = TRUE, pagecentre=TRUE)
+      layer_gridded<-shape_validation_cfm
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"VAL_MATCH"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      print(plot(layer_gridded_raster,col=color.vector.matching,round(breaks.map.matching.code),legend=FALSE))
+      legend("topright", legend = c("1: TN","2: FP","3: FN","4: TP"), cex=0.8,fill = color.vector.matching,xjust=1.1,bg="transparent",box.col="transparent")
+      #zoom(layer_gridded_raster)  	
+      dev.off()
+      
+      writeRaster(layer_gridded_raster, filename="result_CFM_Validation_MatchingCode_Map.tif", format="GTiff", overwrite=TRUE)
+      
+      ###########################################
+      require(rgdal)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>3.5 & layer_gridded_raster_reproject@data[,1]<=4]<-4
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>2.5 & layer_gridded_raster_reproject@data[,1]<=3.5]<-3
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>1.5 & layer_gridded_raster_reproject@data[,1]<=2.5]<-2
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0.5 & layer_gridded_raster_reproject@data[,1]<=1.5]<-1
+      pngcolors<-color.vector.matching[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      pnglabels<-c("1: TN","2: FP","3: FN","4: TP")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_CFM_Validation_MatchingCode_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=6,options=c("WORLDFILE=YES"))
+      file.rename(from="result_CFM_Validation_MatchingCode_Map.wld", to="result_CFM_Validation_MatchingCode_Map.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"CFM Validation Matching code map"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_matchingcode.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_CFM_Validation_MatchingCode_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+      ###########################################
+      
     }
     
     ########
@@ -6758,7 +7656,7 @@ if(model.run.matrix[5] == "YES")
       #zoom(layer_gridded_raster)    
       dev.off()
       writeRaster(layer_gridded_raster, filename="result_CFM_Validation_MatchingCode_Map_Optimal.tif", format="GTiff", overwrite=TRUE)
-
+      
       #dev.new()
       pdf(file = "result_CFM_Validation_SusceptibilityBinary_Map_Optimal.pdf",onefile = TRUE, pagecentre=TRUE)
       layer_gridded<-shape_validation_cfm
@@ -6779,20 +7677,52 @@ if(model.run.matrix[5] == "YES")
     
     if(enable_detailed_data_export_tiff==TRUE)
     {
-    # CFM Model uncertainity
-    #dev.new()
-    pdf(file = "result_CFM_Validation_Uncertainty_Map.pdf",onefile = TRUE, pagecentre=TRUE)
-    layer_gridded<-shape_validation_cfm
-    layer_gridded@data<-as.data.frame(layer_gridded@data[,"PROB_SDMOD"])
-    gridded(layer_gridded)<-TRUE
-    layer_gridded_raster<-raster(layer_gridded)
-    #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
-    res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
-    print(plot(layer_gridded_raster,col=color.vector.uncertainty,breaks.map.uncertainty))
-    #zoom(layer_gridded_raster)		
-    dev.off()
-    
-    writeRaster(layer_gridded_raster, filename="result_CFM_Validation_Uncertainty_Map.tif", format="GTiff", overwrite=TRUE)
+      # CFM Model uncertainity
+      #dev.new()
+      pdf(file = "result_CFM_Validation_Uncertainty_Map.pdf",onefile = TRUE, pagecentre=TRUE)
+      layer_gridded<-shape_validation_cfm
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"PROB_SDMOD"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      print(plot(layer_gridded_raster,col=color.vector.uncertainty,breaks.map.uncertainty))
+      #zoom(layer_gridded_raster)		
+      dev.off()
+      
+      writeRaster(layer_gridded_raster, filename="result_CFM_Validation_Uncertainty_Map.tif", format="GTiff", overwrite=TRUE)
+      
+      ###########################################
+      require(rgdal)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[7] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[8]]<-7
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[6] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[7]]<-6
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[5] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[6]]<-5
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[4] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[5]]<-4
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[3] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[4]]<-3
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>breaks.map.uncertainty[2] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[3]]<-2
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=breaks.map.uncertainty[1] & layer_gridded_raster_reproject@data[,1]<=breaks.map.uncertainty[2]]<-1
+      pngcolors<-color.vector.uncertainty[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      pnglabels<-paste(1:7,paste(breaks.map.uncertainty[1:7],breaks.map.uncertainty[2:8],sep="-"),sep=": ")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_CFM_Validation_Uncertainty_Map.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=8,options=c("WORLDFILE=YES"))
+      file.rename(from="result_CFM_Validation_Uncertainty_Map.wld", to="result_CFM_Validation_Uncertainty_Map.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"CFM Validation Uncertainty map"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_uncertainty.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_CFM_Validation_Uncertainty_Map.tif.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      ##### Importante per conversione poligoni to raster use rasterize guarda qui https://gis.stackexchange.com/questions/44139/convert-a-spatialpolygonsdataframe-to-raster-using-rasterize-function
+      ###########################################
+      
     }
     
     ### Success & prediction rate curve
@@ -6877,190 +7807,190 @@ if(model.run.matrix[5] == "YES")
     
   }
 }
-  
-                                                                      #
+
+#
 #------------------- MODEL PROBABILITY COMPARISON --------------------#
 
 
 if(model.run.matrix[1] == "YES" & model.run.matrix[2] == "YES")
-  {
+{
   # LDA - QDA
   if (enable_screen_plotting==TRUE)
   {
-  dev.new()
-  plot(predict.result.lda$posterior[,2],predict.result.qda$posterior[,2],type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="LDA Model Probability",ylab="QDA Model Probability", main="MODEL COMPARISON")
-  abline(a=0,b=1,col="red",lty=1,lwd=1)
+    dev.new()
+    plot(predict.result.lda$posterior[,2],predict.result.qda$posterior[,2],type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="LDA Model Probability",ylab="QDA Model Probability", main="MODEL COMPARISON")
+    abline(a=0,b=1,col="red",lty=1,lwd=1)
   }
   pdf(file = "result_ModelComparison_LDA_QDA.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
   plot(predict.result.lda$posterior[,2],predict.result.qda$posterior[,2],type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="LDA Model Probability",ylab="QDA Model Probability", main="MODEL COMPARISON")
   abline(a=0,b=1,col="red",lty=1,lwd=1)
   dev.off()
-  }
-  
+}
+
 if(model.run.matrix[1] == "YES" & model.run.matrix[3] == "YES")
-  {  
+{  
   # LDA - LRM
   if (enable_screen_plotting==TRUE)
   {
-  dev.new()
-  plot(predict.result.lda$posterior[,2],predict(result.lrm, type="response"),type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="LDA Model Probability",ylab="LRM Model Probability", main="MODEL COMPARISON")
-  abline(a=0,b=1,col="red",lty=1,lwd=1)
+    dev.new()
+    plot(predict.result.lda$posterior[,2],predict(result.lrm, type="response"),type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="LDA Model Probability",ylab="LRM Model Probability", main="MODEL COMPARISON")
+    abline(a=0,b=1,col="red",lty=1,lwd=1)
   }
   pdf(file = "result_ModelComparison_LDA_LRM.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
   plot(predict.result.lda$posterior[,2],predict(result.lrm, type="response"),type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="LDA Model Probability",ylab="LRM Model Probability", main="MODEL COMPARISON")
   abline(a=0,b=1,col="red",lty=1,lwd=1)
   dev.off()
-  }
+}
 
 if(model.run.matrix[1] == "YES" & model.run.matrix[4] == "YES")
-  {
+{
   # LDA - NNM
   if (enable_screen_plotting==TRUE)
   {
-  dev.new()
-  plot(predict.result.lda$posterior[,2],predict.result.nnm,type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="LDA Model Probability",ylab="NNM Model Probability", main="MODEL COMPARISON")
-  abline(a=0,b=1,col="red",lty=1,lwd=1)
+    dev.new()
+    plot(predict.result.lda$posterior[,2],predict.result.nnm,type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="LDA Model Probability",ylab="NNM Model Probability", main="MODEL COMPARISON")
+    abline(a=0,b=1,col="red",lty=1,lwd=1)
   }
   pdf(file = "result_ModelComparison_LDA_NNM.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
   plot(predict.result.lda$posterior[,2],predict.result.nnm,type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="LDA Model Probability",ylab="NNM Model Probability", main="MODEL COMPARISON")
   abline(a=0,b=1,col="red",lty=1,lwd=1)
   dev.off()
-  }
+}
 
 if(model.run.matrix[2] == "YES" & model.run.matrix[1] == "YES")
-  {
+{
   # QDA - LDA
   if (enable_screen_plotting==TRUE)
   {
-  dev.new()
-  plot(predict.result.qda$posterior[,2],predict.result.lda$posterior[,2],type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="QDA Model Probability",ylab="LDA Model Probability", main="MODEL COMPARISON")
-  abline(a=0,b=1,col="red",lty=1,lwd=1)
+    dev.new()
+    plot(predict.result.qda$posterior[,2],predict.result.lda$posterior[,2],type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="QDA Model Probability",ylab="LDA Model Probability", main="MODEL COMPARISON")
+    abline(a=0,b=1,col="red",lty=1,lwd=1)
   }
   pdf(file = "result_ModelComparison_QDA_LDA.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
   plot(predict.result.qda$posterior[,2],predict.result.lda$posterior[,2],type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="QDA Model Probability",ylab="LDA Model Probability", main="MODEL COMPARISON")
   abline(a=0,b=1,col="red",lty=1,lwd=1)
   dev.off()
-  }
+}
 
 if(model.run.matrix[2] == "YES" & model.run.matrix[3] == "YES")
-  {
+{
   # QDA - LRM
   if (enable_screen_plotting==TRUE)
   {
-  dev.new()
-  plot(predict.result.qda$posterior[,2],predict(result.lrm, type="response"),type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="QDA Model Probability",ylab="LRM Model Probability", main="MODEL COMPARISON")
-  abline(a=0,b=1,col="red",lty=1,lwd=1)
+    dev.new()
+    plot(predict.result.qda$posterior[,2],predict(result.lrm, type="response"),type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="QDA Model Probability",ylab="LRM Model Probability", main="MODEL COMPARISON")
+    abline(a=0,b=1,col="red",lty=1,lwd=1)
   }
   pdf(file = "result_ModelComparison_QDA_LRM.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
   plot(predict.result.qda$posterior[,2],predict(result.lrm, type="response"),type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="QDA Model Probability",ylab="LRM Model Probability", main="MODEL COMPARISON")
   abline(a=0,b=1,col="red",lty=1,lwd=1)
   dev.off()
-  }
+}
 
 if(model.run.matrix[2] == "YES" & model.run.matrix[4] == "YES")
-  {  
+{  
   # QDA - NNM
   if (enable_screen_plotting==TRUE)
   {
-  dev.new()
-  plot(predict.result.qda$posterior[,2],predict.result.nnm,type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="QDA Model Probability",ylab="NNM Model Probability", main="MODEL COMPARISON")
-  abline(a=0,b=1,col="red",lty=1,lwd=1)
+    dev.new()
+    plot(predict.result.qda$posterior[,2],predict.result.nnm,type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="QDA Model Probability",ylab="NNM Model Probability", main="MODEL COMPARISON")
+    abline(a=0,b=1,col="red",lty=1,lwd=1)
   }
   pdf(file = "result_ModelComparison_QDA_NNM.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
   plot(predict.result.qda$posterior[,2],predict.result.nnm,type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="QDA Model Probability",ylab="NNM Model Probability", main="MODEL COMPARISON")
   abline(a=0,b=1,col="red",lty=1,lwd=1)
   dev.off()
-  }
+}
 
 if(model.run.matrix[3] == "YES" & model.run.matrix[1] == "YES")
-  {
+{
   # LRM - LDA
   if (enable_screen_plotting==TRUE)
   {
-  dev.new()
-  plot(predict(result.lrm, type="response"),predict.result.lda$posterior[,2],type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="LRM Model Probability",ylab="LDA Model Probability", main="MODEL COMPARISON")
-  abline(a=0,b=1,col="red",lty=1,lwd=1)
+    dev.new()
+    plot(predict(result.lrm, type="response"),predict.result.lda$posterior[,2],type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="LRM Model Probability",ylab="LDA Model Probability", main="MODEL COMPARISON")
+    abline(a=0,b=1,col="red",lty=1,lwd=1)
   }
   pdf(file = "result_ModelComparison_LRM_LDA.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
   plot(predict(result.lrm, type="response"),predict.result.lda$posterior[,2],type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="LRM Model Probability",ylab="LDA Model Probability", main="MODEL COMPARISON")
   abline(a=0,b=1,col="red",lty=1,lwd=1)
   dev.off()
-  }
+}
 
 if(model.run.matrix[3] == "YES" & model.run.matrix[2] == "YES")
-  {
+{
   # LRM - QDA
   if (enable_screen_plotting==TRUE)
   {
-  dev.new()
-  plot(predict(result.lrm, type="response"),predict.result.qda$posterior[,2],type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="LRM Model Probability",ylab="QDA Model Probability", main="MODEL COMPARISON")
-  abline(a=0,b=1,col="red",lty=1,lwd=1)
+    dev.new()
+    plot(predict(result.lrm, type="response"),predict.result.qda$posterior[,2],type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="LRM Model Probability",ylab="QDA Model Probability", main="MODEL COMPARISON")
+    abline(a=0,b=1,col="red",lty=1,lwd=1)
   }
   pdf(file = "result_ModelComparison_LRM_QDA.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
   plot(predict(result.lrm, type="response"),predict.result.qda$posterior[,2],type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="LRM Model Probability",ylab="QDA Model Probability", main="MODEL COMPARISON")
   abline(a=0,b=1,col="red",lty=1,lwd=1)
   dev.off()
-  }
+}
 
 if(model.run.matrix[3] == "YES" & model.run.matrix[4] == "YES")
-  {
+{
   # LRM - NNM
   if (enable_screen_plotting==TRUE)
   {
-  dev.new()
-  plot(predict(result.lrm, type="response"),predict.result.nnm,type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="LRM Model Probability",ylab="NNM Model Probability", main="MODEL COMPARISON")
-  abline(a=0,b=1,col="red",lty=1,lwd=1)
+    dev.new()
+    plot(predict(result.lrm, type="response"),predict.result.nnm,type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="LRM Model Probability",ylab="NNM Model Probability", main="MODEL COMPARISON")
+    abline(a=0,b=1,col="red",lty=1,lwd=1)
   }
   pdf(file = "result_ModelComparison_LRM_NNM.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
   plot(predict(result.lrm, type="response"),predict.result.nnm,type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="LRM Model Probability",ylab="NNM Model Probability", main="MODEL COMPARISON")
   abline(a=0,b=1,col="red",lty=1,lwd=1)
   dev.off()
-  }
+}
 
 if(model.run.matrix[4] == "YES" & model.run.matrix[1] == "YES")
-  {
+{
   # NNM - LDA
   if (enable_screen_plotting==TRUE)
   {
-  dev.new()
-  plot(predict.result.nnm,predict.result.lda$posterior[,2],type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="NNM Model Probability",ylab="LDA Model Probability", main="MODEL COMPARISON")
-  abline(a=0,b=1,col="red",lty=1,lwd=1)
+    dev.new()
+    plot(predict.result.nnm,predict.result.lda$posterior[,2],type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="NNM Model Probability",ylab="LDA Model Probability", main="MODEL COMPARISON")
+    abline(a=0,b=1,col="red",lty=1,lwd=1)
   }
   pdf(file = "result_ModelComparison_NNM_LDA.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
   plot(predict.result.nnm,predict.result.lda$posterior[,2],type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="NNM Model Probability",ylab="LDA Model Probability", main="MODEL COMPARISON")
   abline(a=0,b=1,col="red",lty=1,lwd=1)
   dev.off()
-  }
+}
 
 if(model.run.matrix[4] == "YES" & model.run.matrix[2] == "YES")
-  {
+{
   # NNM - QDA
   if (enable_screen_plotting==TRUE)
   {
-  dev.new()
-  plot(predict.result.nnm,predict.result.qda$posterior[,2],type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="NNM Model Probability",ylab="QDA Model Probability", main="MODEL COMPARISON")
-  abline(a=0,b=1,col="red",lty=1,lwd=1)
+    dev.new()
+    plot(predict.result.nnm,predict.result.qda$posterior[,2],type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="NNM Model Probability",ylab="QDA Model Probability", main="MODEL COMPARISON")
+    abline(a=0,b=1,col="red",lty=1,lwd=1)
   }
   pdf(file = "result_ModelComparison_NNM_QDA.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
   plot(predict.result.nnm,predict.result.qda$posterior[,2],type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="NNM Model Probability",ylab="QDA Model Probability", main="MODEL COMPARISON")
   abline(a=0,b=1,col="red",lty=1,lwd=1)
   dev.off()
-  }
+}
 
 if(model.run.matrix[4] == "YES" & model.run.matrix[3] == "YES")
-  {
+{
   # NNM - LRM
   if (enable_screen_plotting==TRUE)
   {
-  dev.new()
-  plot(predict.result.nnm,predict(result.lrm, type="response"),type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="NNM Model Probability",ylab="LRM Model Probability", main="MODEL COMPARISON")
-  abline(a=0,b=1,col="red",lty=1,lwd=1)
+    dev.new()
+    plot(predict.result.nnm,predict(result.lrm, type="response"),type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="NNM Model Probability",ylab="LRM Model Probability", main="MODEL COMPARISON")
+    abline(a=0,b=1,col="red",lty=1,lwd=1)
   }
   pdf(file = "result_ModelComparison_NNM_LRM.pdf", width = 6, height = 6, onefile = TRUE, family = "Helvetica", fonts = NULL, paper = "special", pagecentre=TRUE)
   plot(predict.result.nnm,predict(result.lrm, type="response"),type="p",pch=1,cex=0.85,col="dark blue",xlim=c(0,1),ylim=c(0,1),xlab="NNM Model Probability",ylab="LRM Model Probability", main="MODEL COMPARISON")
   abline(a=0,b=1,col="red",lty=1,lwd=1)
   dev.off()
-  }
+}
 
 save.image(file=paste("Susceptibility_",unlist(strsplit(rdata_file,"/"))[length(unlist(strsplit(rdata_file,"/")))],sep=""))
 
@@ -7074,50 +8004,58 @@ zip(paste("result_",time_suffix,".zip",sep=""),files=c("GroupingVariable_Histogr
 file.remove(c("GroupingVariable_Histogram.pdf","GroupingVariable_Histogram_Validation.pdf","result_Collinearity_Analysis.txt",paste("Susceptibility_",unlist(strsplit(rdata_file,"/"))[length(unlist(strsplit(rdata_file,"/")))],sep="")))
 file.remove(list.files(pattern="Rplots",include.dirs=FALSE))
 
-	  
+
 if(model.run.matrix[1] == "YES")
-  {
+{
   zip(paste("result_LinearDiscriminant_",time_suffix,".zip",sep=""),files=list.files(pattern="LDA",include.dirs=FALSE))
   #unlink(list.files(pattern="LDA",include.dirs=TRUE), recursive = TRUE,force=FALSE)
-  }
+}
 
 if(model.run.matrix[2] == "YES")
-  {
+{
   zip(paste("result_QuadraticDiscriminant_",time_suffix,".zip",sep=""),files=list.files(pattern="QDA",include.dirs=FALSE))
   #unlink(list.files(pattern="QDA",include.dirs=TRUE), recursive = TRUE,force=FALSE)
-  }
+}
 
 if(model.run.matrix[3] == "YES")
-  {
+{
   zip(paste("result_LogisticRegression_",time_suffix,".zip",sep=""),files=list.files(pattern="LRM",include.dirs=FALSE))
   #unlink(list.files(pattern="LRM",include.dirs=TRUE), recursive = TRUE,force=FALSE)
-  }
+}
 
 if(model.run.matrix[4] == "YES")
-  {
+{
   zip(paste("result_NeuralNetwork_",time_suffix,".zip",sep=""),files=list.files(pattern="NNM",include.dirs=FALSE))
   #unlink(list.files(pattern="NNM",include.dirs=TRUE), recursive = TRUE,force=FALSE)
-  }
+}
 
 if(model.run.matrix[5] == "YES")
-  {
+{
   zip(paste("result_Combination_",time_suffix,".zip",sep=""),files=list.files(pattern="CFM",include.dirs=FALSE))
   #unlink(list.files(pattern="CFM",include.dirs=TRUE), recursive = TRUE,force=FALSE)
-  }
+}
 
 
 #-------------------------------- File logging closing --------------------------------#
 if (enable_file_logging == TRUE)
   {
-  sink()
+  #sink()
+  sink(file = NULL,type = c("message"))
+  sink(file = NULL,type = c("output"))
   }  
-	  
-	  
+
+
 #rciop.publish(getwd(), recursive=FALSE, metalink=TRUE)
-	
+
 zip_list<-list.files(pattern=".zip",include.dirs=FALSE)
 for(count_zip in 1:length(zip_list))
   {
   rciop.publish(paste(getwd(),"/",zip_list[count_zip],sep=""), recursive=FALSE, metalink=TRUE)
+  }
+
+geo_list<-c(list.files(pattern=c(".tif"),include.dirs=FALSE),list.files(pattern=c(".png"),include.dirs=FALSE))
+for(count_geo in 1:length(geo_list))
+  {
+  rciop.publish(paste(getwd(),"/",geo_list[count_geo],sep=""), recursive=FALSE, metalink=TRUE)
   }
 
