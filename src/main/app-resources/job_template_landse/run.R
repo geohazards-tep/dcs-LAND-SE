@@ -111,7 +111,7 @@ library("rciop")
 #memory.limit(size=120000)
 time_start_calculation<-Sys.time()
 time_suffix<-format(time_start_calculation,"%Y%m%d_%H%M")
-enable_file_logging<-TRUE
+enable_file_logging<-FALSE
 log_file_name<-paste("LAND-SE_run_",time_suffix,".log",sep="")
 
 
@@ -8000,6 +8000,7 @@ print(paste("Total calculation time: ",total_calculation_time," hours",sep=""))
 
 
 ### Zipping results
+print("Zipping input data analysis results")
 zip(paste("result_",time_suffix,".zip",sep=""),files=c("GroupingVariable_Histogram.pdf","GroupingVariable_Histogram_Validation.pdf","result_Collinearity_Analysis.txt",paste("Susceptibility_",unlist(strsplit(rdata_file,"/"))[length(unlist(strsplit(rdata_file,"/")))],sep="")))
 file.remove(c("GroupingVariable_Histogram.pdf","GroupingVariable_Histogram_Validation.pdf","result_Collinearity_Analysis.txt",paste("Susceptibility_",unlist(strsplit(rdata_file,"/"))[length(unlist(strsplit(rdata_file,"/")))],sep="")))
 file.remove(list.files(pattern="Rplots",include.dirs=FALSE))
@@ -8007,30 +8008,35 @@ file.remove(list.files(pattern="Rplots",include.dirs=FALSE))
 
 if(model.run.matrix[1] == "YES")
 {
+  print("Zipping LDA results")
   zip(paste("result_LinearDiscriminant_",time_suffix,".zip",sep=""),files=list.files(pattern="LDA",include.dirs=FALSE))
   #unlink(list.files(pattern="LDA",include.dirs=TRUE), recursive = TRUE,force=FALSE)
 }
 
 if(model.run.matrix[2] == "YES")
 {
+  print("Zipping QDA results")
   zip(paste("result_QuadraticDiscriminant_",time_suffix,".zip",sep=""),files=list.files(pattern="QDA",include.dirs=FALSE))
   #unlink(list.files(pattern="QDA",include.dirs=TRUE), recursive = TRUE,force=FALSE)
 }
 
 if(model.run.matrix[3] == "YES")
 {
+  print("Zipping LRM results")
   zip(paste("result_LogisticRegression_",time_suffix,".zip",sep=""),files=list.files(pattern="LRM",include.dirs=FALSE))
   #unlink(list.files(pattern="LRM",include.dirs=TRUE), recursive = TRUE,force=FALSE)
 }
 
 if(model.run.matrix[4] == "YES")
 {
+  print("Zipping NNM results")
   zip(paste("result_NeuralNetwork_",time_suffix,".zip",sep=""),files=list.files(pattern="NNM",include.dirs=FALSE))
   #unlink(list.files(pattern="NNM",include.dirs=TRUE), recursive = TRUE,force=FALSE)
 }
 
 if(model.run.matrix[5] == "YES")
 {
+  print("Zipping CFM results")
   zip(paste("result_Combination_",time_suffix,".zip",sep=""),files=list.files(pattern="CFM",include.dirs=FALSE))
   #unlink(list.files(pattern="CFM",include.dirs=TRUE), recursive = TRUE,force=FALSE)
 }
@@ -8048,11 +8054,13 @@ if (enable_file_logging == TRUE)
 #rciop.publish(getwd(), recursive=FALSE, metalink=TRUE)
 
 zip_list<-list.files(pattern=".zip",include.dirs=FALSE)
+print("Publishing zipped model results")
 for(count_zip in 1:length(zip_list))
   {
   rciop.publish(paste(getwd(),"/",zip_list[count_zip],sep=""), recursive=FALSE, metalink=TRUE)
   }
 
+print("Publishing geographical model outputs")
 geo_list<-c(list.files(pattern=c(".tif"),include.dirs=FALSE),list.files(pattern=c(".png"),include.dirs=FALSE))
 for(count_geo in 1:length(geo_list))
   {
