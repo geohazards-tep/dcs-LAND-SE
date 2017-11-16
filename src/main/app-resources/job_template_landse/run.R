@@ -8050,18 +8050,22 @@ if (enable_file_logging == TRUE)
   sink(file = NULL,type = c("output"))
   }  
 
-
+print("Output files to be published:")
+list.files(getwd())
 #rciop.publish(getwd(), recursive=FALSE, metalink=TRUE)
-
+  
 zip_list<-list.files(pattern=".zip",include.dirs=FALSE)
-print("Publishing zipped model results")
+print("Publishing zipped model results:")
+print(zip_list)
 for(count_zip in 1:length(zip_list))
   {
   rciop.publish(paste(getwd(),"/",zip_list[count_zip],sep=""), recursive=FALSE, metalink=TRUE)
   }
 
-print("Publishing geographical model outputs")
+  
 geo_list<-c(list.files(pattern=c(".tif"),include.dirs=FALSE),list.files(pattern=c(".png"),include.dirs=FALSE))
+print("Publishing geographical model outputs")
+print(geo_list)
 for(count_geo in 1:length(geo_list))
   {
   rciop.publish(paste(getwd(),"/",geo_list[count_geo],sep=""), recursive=FALSE, metalink=TRUE)
