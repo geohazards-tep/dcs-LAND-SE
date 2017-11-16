@@ -7998,6 +7998,8 @@ time_end_calculation<-Sys.time()
 total_calculation_time<-difftime(time_end_calculation, time_start_calculation,units="hours")
 print(paste("Total calculation time: ",total_calculation_time," hours",sep=""))
 
+print("Entire list of output files:")
+list.files(getwd())
 
 ### Zipping results
 print("Zipping input data analysis results")
