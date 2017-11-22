@@ -142,6 +142,8 @@ if (length(table(pars == "-cd"))==2)
   #cd_selected<-"X:/R/SusceptibilityAnalysis/Messina_Tool_Paper/soglia2_Random/"
 }
 
+print(paste("--------------------------------------",sep=""))
+print(paste("Downloading files",sep=""))
 
 data_file_name <- rciop.getparam("file_name")
 res_data<-rciop.copy(data_file_name, TMPDIR, uncompress=FALSE)
@@ -195,6 +197,9 @@ seed.value<-NULL
 if (is.numeric(seed.value)){seed.value<-seed.value} else {seed.value<-round(runif(1,min=1,max=10000))}
 
 
+print(paste("--------------------------------------",sep=""))
+print(paste("Reading configuration files",sep=""))
+
 #---------------------  READ CONFIGURATION FILE ---------------------#
 configuration.table<-read.table(paste(cd_selected,"configuration.txt",sep=""),header = TRUE,dec=".", sep="\t")
 model.type<-as.character(configuration.table$MODEL)
@@ -210,6 +215,9 @@ spatial.data.type<-as.character(configuration.spatial.data.table$TYPE)
 spatial.data.presence<-as.character(configuration.spatial.data.table$PRESENCE)
 spatial.data.id<-as.character(configuration.spatial.data.table$ID_FIELD)
 spatial.data.epsg<-as.numeric(configuration.spatial.data.table$EPSG)
+
+print(paste("--------------------------------------",sep=""))
+print(paste("Reading input files",sep=""))
 
 #------------------------- READ OF THE DATA -------------------------#
 if (load_rdata==FALSE)
@@ -311,7 +319,8 @@ dev.off()
 ################
 
 
-
+print(paste("--------------------------------------",sep=""))
+print(paste("Reading spatial files",sep=""))
 
 #---------------------- READ SPATIAL DATA FILE ----------------------#
 if(configuration.spatial.data.table$PRESENCE == "YES" & configuration.spatial.data.table$GEOMETRY=="POLYGONS")
@@ -508,6 +517,7 @@ if(configuration.spatial.data.table$PRESENCE == "YES" & configuration.spatial.da
 }
 
 
+
 #---------------------  COLLINEARITY EVALUATION ---------------------#
 
 # Colldiag is an implementation of the regression collinearity diagnostic procedures found in
@@ -526,6 +536,9 @@ if(configuration.spatial.data.table$PRESENCE == "YES" & configuration.spatial.da
 
 if(enable_multicollinearity_test==TRUE)
 {
+print(paste("--------------------------------------",sep=""))
+print(paste("Collinearity test",sep=""))
+  
   #load collinearity package (perturb)
   library(perturb)
   #colnames(explanatory.variables)
@@ -627,6 +640,9 @@ library(MASS)
 ##### Linear Discriminant Analisys Run
 if(model.run.matrix[1] == "YES")
 {
+  print(paste("--------------------------------------",sep=""))
+  print(paste("Running LDA analysis",sep=""))
+  
   
   #if(class(result.lda[1]) == "NULL") # Other Error selection criteria. In this case the IF istruction must be put at the end of the script 
   if (class(try(lda(explanatory.variables, grouping.variable, tol=0.001, method="moment")))=="try-error")  
@@ -2063,6 +2079,10 @@ if(model.run.matrix[1] == "YES")
 
 if(model.run.matrix[2] == "YES")
 {
+  print(paste("--------------------------------------",sep=""))
+  print(paste("Running QDA analysis",sep=""))
+  
+  
   # Changing of Dummy Explanatory Variables in Numeric variable
   if (analysis.parameter.matrix[2] == "DUM")
   {
@@ -3490,6 +3510,10 @@ if(model.run.matrix[2] == "YES")
 
 if(model.run.matrix[3] == "YES")
 {
+  print(paste("--------------------------------------",sep=""))
+  print(paste("Running LRM analysis",sep=""))
+  
+  
   #library(Zelig)
   #if (class(try(zelig(as.formula(paste(names(data.variables)[1],"~",paste(names(data.variables[,2:dim(data.variables)[2]]),collapse= collapse_string))), data=data.variables, model="logit",cite=FALSE)))=="try-error")
   collapse_string<-"+"
@@ -4934,6 +4958,9 @@ if(model.run.matrix[3] == "YES")
 
 if(model.run.matrix[4] == "YES")
 {
+  print(paste("--------------------------------------",sep=""))
+  print(paste("Running NNM analysis",sep=""))
+  
   library(nnet)
   
   
@@ -6399,6 +6426,9 @@ if(model.run.matrix[4] == "YES")
 
 if(model.run.matrix[5] == "YES")
 {
+  print(paste("--------------------------------------",sep=""))
+  print(paste("Running CFM analysis",sep=""))
+  
   
   #library(Zelig) 
   #forecasting.combined.variables<-as.data.frame(cbind(data.variables[,1],predict.result.lda$posterior[,2],predict.result.qda$posterior[,2],result.cfm$result$fitted.values,predict.result.nnm))
@@ -7998,10 +8028,12 @@ time_end_calculation<-Sys.time()
 total_calculation_time<-difftime(time_end_calculation, time_start_calculation,units="hours")
 print(paste("Total calculation time: ",total_calculation_time," hours",sep=""))
 
+print(paste("--------------------------------------",sep=""))
 print("Entire list of output files:")
 list.files(getwd())
 
 ### Zipping results
+print(paste("--------------------------------------",sep=""))
 print("Zipping input data analysis results")
 zip(paste("result_",time_suffix,".zip",sep=""),files=c("GroupingVariable_Histogram.pdf","GroupingVariable_Histogram_Validation.pdf","result_Collinearity_Analysis.txt",paste("Susceptibility_",unlist(strsplit(rdata_file,"/"))[length(unlist(strsplit(rdata_file,"/")))],sep="")))
 file.remove(c("GroupingVariable_Histogram.pdf","GroupingVariable_Histogram_Validation.pdf","result_Collinearity_Analysis.txt",paste("Susceptibility_",unlist(strsplit(rdata_file,"/"))[length(unlist(strsplit(rdata_file,"/")))],sep="")))
@@ -8010,6 +8042,7 @@ file.remove(list.files(pattern="Rplots",include.dirs=FALSE))
 
 if(model.run.matrix[1] == "YES")
 {
+  print(paste("--------------------------------------",sep=""))
   print("Zipping LDA results")
   zip(paste("result_LinearDiscriminant_",time_suffix,".zip",sep=""),files=list.files(pattern="LDA",include.dirs=FALSE))
   #unlink(list.files(pattern="LDA",include.dirs=TRUE), recursive = TRUE,force=FALSE)
@@ -8017,6 +8050,7 @@ if(model.run.matrix[1] == "YES")
 
 if(model.run.matrix[2] == "YES")
 {
+  print(paste("--------------------------------------",sep=""))
   print("Zipping QDA results")
   zip(paste("result_QuadraticDiscriminant_",time_suffix,".zip",sep=""),files=list.files(pattern="QDA",include.dirs=FALSE))
   #unlink(list.files(pattern="QDA",include.dirs=TRUE), recursive = TRUE,force=FALSE)
@@ -8024,6 +8058,7 @@ if(model.run.matrix[2] == "YES")
 
 if(model.run.matrix[3] == "YES")
 {
+  print(paste("--------------------------------------",sep=""))
   print("Zipping LRM results")
   zip(paste("result_LogisticRegression_",time_suffix,".zip",sep=""),files=list.files(pattern="LRM",include.dirs=FALSE))
   #unlink(list.files(pattern="LRM",include.dirs=TRUE), recursive = TRUE,force=FALSE)
@@ -8031,6 +8066,7 @@ if(model.run.matrix[3] == "YES")
 
 if(model.run.matrix[4] == "YES")
 {
+  print(paste("--------------------------------------",sep=""))
   print("Zipping NNM results")
   zip(paste("result_NeuralNetwork_",time_suffix,".zip",sep=""),files=list.files(pattern="NNM",include.dirs=FALSE))
   #unlink(list.files(pattern="NNM",include.dirs=TRUE), recursive = TRUE,force=FALSE)
@@ -8038,6 +8074,7 @@ if(model.run.matrix[4] == "YES")
 
 if(model.run.matrix[5] == "YES")
 {
+  print(paste("--------------------------------------",sep=""))
   print("Zipping CFM results")
   zip(paste("result_Combination_",time_suffix,".zip",sep=""),files=list.files(pattern="CFM",include.dirs=FALSE))
   #unlink(list.files(pattern="CFM",include.dirs=TRUE), recursive = TRUE,force=FALSE)
@@ -8052,11 +8089,13 @@ if (enable_file_logging == TRUE)
   sink(file = NULL,type = c("output"))
   }  
 
+print(paste("--------------------------------------",sep=""))
 print("Output files to be published:")
 list.files(getwd())
 #rciop.publish(getwd(), recursive=FALSE, metalink=TRUE)
   
 zip_list<-list.files(pattern=".zip",include.dirs=FALSE)
+print(paste("--------------------------------------",sep=""))
 print("Publishing zipped model results:")
 print(zip_list)
 for(count_zip in 1:length(zip_list))
@@ -8066,6 +8105,7 @@ for(count_zip in 1:length(zip_list))
 
   
 geo_list<-c(list.files(pattern=c(".tif"),include.dirs=FALSE),list.files(pattern=c(".png"),include.dirs=FALSE))
+print(paste("--------------------------------------",sep=""))
 print("Publishing geographical model outputs")
 print(geo_list)
 for(count_geo in 1:length(geo_list))
