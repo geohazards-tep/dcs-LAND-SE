@@ -1,6 +1,6 @@
 #!/opt/anaconda/bin/Rscript --vanilla --slave --quiet
 library("rciop")
-
+Sys.setenv(PROJ_LIB = "/opt/anaconda/share/proj")
 
 
 
