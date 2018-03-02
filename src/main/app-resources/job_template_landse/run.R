@@ -1,6 +1,6 @@
 #!/opt/anaconda/bin/Rscript --vanilla --slave --quiet
 library("rciop")
-Sys.setenv(PROJ_LIB = "/opt/anaconda/share/proj")
+Sys.setenv(PROJ_LIB = "/opt/anaconda/share/proj") # change reference to libraries
 
 
 
@@ -125,8 +125,10 @@ if (length(table(pars == "-wd"))==2)
 } else
 {
   wd_selected<-""
+  #wd_selected<-"X:/R/SusceptibilityAnalysis/MEMPHIS_test/collazzone/"
   #wd_selected<-paste(getwd(),"/",sep="")
-  #wd_selected<-"/media/disco_dati/R/SusceptibilityAnalysis/MEMPHIS_test/"
+  #wd_selected<-"X:/R/SusceptibilityAnalysis/MEMPHIS_test/test_png/"
+  #wd_selected<-"/media/disco_dati/R/SusceptibilityAnalysis/MEMPHIS_test/
   #wd_selected<-"X:/R/SusceptibilityAnalysis/Messina_Tool_Paper/soglia2_Random/"
 }
 # setwd(wd_selected)
@@ -137,10 +139,13 @@ if (length(table(pars == "-cd"))==2)
 } else
 {
   cd_selected<-""
+  #cd_selected<-"X:/R/SusceptibilityAnalysis/MEMPHIS_test/collazzone/"
   #cd_selected<-paste(getwd(),"/",sep="")
+  #cd_selected<-"X:/R/SusceptibilityAnalysis/MEMPHIS_test/test_png/"
   #cd_selected<-"/media/disco_dati/R/SusceptibilityAnalysis/MEMPHIS_test/"
   #cd_selected<-"X:/R/SusceptibilityAnalysis/Messina_Tool_Paper/soglia2_Random/"
 }
+#setwd(wd_selected)
 
 print(paste("--------------------------------------",sep=""))
 print(paste("Downloading files",sep=""))
@@ -148,7 +153,7 @@ print(paste("Downloading files",sep=""))
 data_file_name <- rciop.getparam("file_name")
 res_data<-rciop.copy(data_file_name, TMPDIR, uncompress=FALSE)
 if (res_data$exit.code==0) local.url.data <- res_data$output
-
+ 
 data_file_name
 tar_file_list<-untar(local.url.data,list=TRUE) # list files
 untar(local.url.data,list=FALSE) # untar files
@@ -1419,7 +1424,37 @@ if(model.run.matrix[1] == "YES")
     
     shape_training_lda@data <- merge(x=shape_training_lda@data,y=result_training_lda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     #writeOGR(shape_training_lda,dsn="result_LDA_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_lda,dsn="result_LDA_training.shp",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE)
+      {
+      writeOGR(shape_training_lda,dsn="result_LDA_training.shp",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+      require(rgdal)
+      require(raster)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded<-shape_training_lda
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"MOD_CLASS"])
+      r<-raster(xmn=layer_gridded@bbox[1,1],xmx=layer_gridded@bbox[1,2],ymn=layer_gridded@bbox[2,1],ymx=layer_gridded@bbox[2,2],resolution=as.numeric(configuration.spatial.data.table[c(8)]),crs=layer_gridded@proj4string)
+      layer_gridded_raster<-rasterize(layer_gridded,r,field=1)
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0]<-1
+      pngcolors<-gray(c(1,0))[2]
+      pnglabels<-c("StudyArea")
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_LDA_training.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=0,options=c("WORLDFILE=YES"))
+      file.rename(from="result_LDA_training.wld", to="result_LDA_training.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"LDA shapefile training"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_studyarea.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_LDA_training.shp.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      }
+    
     
     # WARNING: The validation does't have the unvertainty estimation: probably this can be daone using the parabolic error function 
     shape_validation_lda<-shape_validation
@@ -1435,7 +1470,37 @@ if(model.run.matrix[1] == "YES")
     shape_validation_lda@data <- merge(x=shape_validation_lda@data,y=result_validation_lda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_lda@data <- cbind(shape_validation_lda@data,PROB_SDMOD=(coefficients(fit.parabola.probability.lda)*(shape_validation_lda@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.lda)*shape_validation_lda@data$VAL_PROB))
     #writeOGR(shape_validation_lda,dsn="result_LDA_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_lda,dsn="result_LDA_validation.shp",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE)
+      {
+      writeOGR(shape_validation_lda,dsn="result_LDA_validation.shp",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+      require(rgdal)
+      require(raster)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded<-shape_validation_lda
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"VAL_CLASS"])
+      r<-raster(xmn=layer_gridded@bbox[1,1],xmx=layer_gridded@bbox[1,2],ymn=layer_gridded@bbox[2,1],ymx=layer_gridded@bbox[2,2],resolution=as.numeric(configuration.spatial.data.table[c(8)]),crs=layer_gridded@proj4string)
+      layer_gridded_raster<-rasterize(layer_gridded,r,field=1)
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0]<-1
+      pngcolors<-gray(c(1,0))[2]
+      pnglabels<-c("StudyArea")
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_LDA_validation.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=0,options=c("WORLDFILE=YES"))
+      file.rename(from="result_LDA_validation.wld", to="result_LDA_validation.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"LDA shapefile validation"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_studyarea.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_LDA_validation.shp.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      }
+    
     
     # Plot and export of maps
     # LDA Susceptibility
@@ -1591,7 +1656,39 @@ if(model.run.matrix[1] == "YES")
     
     shape_training_lda@data <- merge(x=shape_training_lda@data,y=result_training_lda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     #writeOGR(shape_training_lda,dsn="result_LDA_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_lda,dsn="result_LDA_training.shp",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE)
+      {
+      writeOGR(shape_training_lda,dsn="result_LDA_training.shp",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+      require(rgdal)
+      require(raster)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded<-shape_training_lda
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"MOD_CLASS"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.5 & layer_gridded_raster_reproject@data[,1]<=1]<-1
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0 & layer_gridded_raster_reproject@data[,1]<=0.5]<-0
+      pngcolors<-gray(c(1,0))[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]
+      pnglabels<-c("0: Stable","1: Unstable")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_LDA_training.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=2,options=c("WORLDFILE=YES"))
+      file.rename(from="result_LDA_training.wld", to="result_LDA_training.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"LDA shapefile training"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_binary.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_LDA_training.shp.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      }
     
     
     # WARNING: The validation does't have the unvertainty estimation: probably this can be daone using the parabolic error function 
@@ -1609,7 +1706,42 @@ if(model.run.matrix[1] == "YES")
     shape_validation_lda@data <- merge(x=shape_validation_lda@data,y=result_validation_lda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_lda@data <- cbind(shape_validation_lda@data,PROB_SDMOD=(coefficients(fit.parabola.probability.lda)*(shape_validation_lda@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.lda)*shape_validation_lda@data$VAL_PROB))
     #writeOGR(shape_validation_lda,dsn="result_LDA_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_lda,dsn="result_LDA_validation.shp",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE)
+      {
+      writeOGR(shape_validation_lda,dsn="result_LDA_validation.shp",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+      require(rgdal)
+      require(raster)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded<-shape_validation_lda
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"VAL_CLASS"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.5 & layer_gridded_raster_reproject@data[,1]<=1]<-1
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0 & layer_gridded_raster_reproject@data[,1]<=0.5]<-0
+      pngcolors<-gray(c(1,0))[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]
+      pnglabels<-c("0: Stable","1: Unstable")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_LDA_validation.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=2,options=c("WORLDFILE=YES"))
+      file.rename(from="result_LDA_validation.wld", to="result_LDA_validation.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"LDA shapefile validation"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_binary.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_LDA_validation.shp.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      }
+    
+    
+    
     
     require(raster)
     
@@ -2847,7 +2979,36 @@ if(model.run.matrix[2] == "YES")
     
     shape_training_qda@data <- merge(x=shape_training_qda@data,y=result_training_qda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     #writeOGR(shape_training_qda,dsn="result_QDA_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_qda,dsn="result_QDA_training.shp",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE)
+      {
+      writeOGR(shape_training_qda,dsn="result_QDA_training.shp",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+      require(rgdal)
+      require(raster)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded<-shape_training_qda
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"MOD_CLASS"])
+      r<-raster(xmn=layer_gridded@bbox[1,1],xmx=layer_gridded@bbox[1,2],ymn=layer_gridded@bbox[2,1],ymx=layer_gridded@bbox[2,2],resolution=as.numeric(configuration.spatial.data.table[c(8)]),crs=layer_gridded@proj4string)
+      layer_gridded_raster<-rasterize(layer_gridded,r,field=1)
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0]<-1
+      pngcolors<-gray(c(1,0))[2]
+      pnglabels<-c("StudyArea")
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_QDA_training.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=0,options=c("WORLDFILE=YES"))
+      file.rename(from="result_QDA_training.wld", to="result_QDA_training.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"QDA shapefile training"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_studyarea.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_QDA_training.shp.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      }
     
     # WARNING: The validation does't have the unvertainty estimation: probably this can be daone using the parabolic error function 
     shape_validation_qda<-shape_validation
@@ -2863,7 +3024,38 @@ if(model.run.matrix[2] == "YES")
     shape_validation_qda@data <- merge(x=shape_validation_qda@data,y=result_validation_qda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_qda@data <- cbind(shape_validation_qda@data,PROB_SDMOD=(coefficients(fit.parabola.probability.qda)*(shape_validation_qda@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.qda)*shape_validation_qda@data$VAL_PROB))
     #writeOGR(shape_validation_qda,dsn="result_QDA_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_qda,dsn="result_QDA_validation.shp",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE)
+      {
+        writeOGR(shape_validation_qda,dsn="result_QDA_validation.shp",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+        require(rgdal)
+        require(raster)
+        ### Reprojecting
+        export_EPSG_code<-"4326"
+        layer_gridded<-shape_validation_qda
+        layer_gridded@data<-as.data.frame(layer_gridded@data[,"VAL_CLASS"])
+        r<-raster(xmn=layer_gridded@bbox[1,1],xmx=layer_gridded@bbox[1,2],ymn=layer_gridded@bbox[2,1],ymx=layer_gridded@bbox[2,2],resolution=as.numeric(configuration.spatial.data.table[c(8)]),crs=layer_gridded@proj4string)
+        layer_gridded_raster<-rasterize(layer_gridded,r,field=1)
+        layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+        layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+        fullgrid(layer_gridded_raster_reproject)
+        ### Reclassifying 
+        layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0]<-1
+        pngcolors<-gray(c(1,0))[2]
+        pnglabels<-c("StudyArea")
+        ### Writing .png .pngw files 
+        writeGDAL(layer_gridded_raster_reproject,"result_QDA_validation.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=0,options=c("WORLDFILE=YES"))
+        file.rename(from="result_QDA_validation.wld", to="result_QDA_validation.pngw")
+        ### Writing .properties files 
+        pngid<-1
+        pngtitle<-"QDA shapefile validation"
+        pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+        pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+        pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_studyarea.PNG"
+        propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+        write.table(propertiesstring,"result_QDA_validation.shp.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      }
+    
+    
     ##################################################################
     ##################################################################
     
@@ -3017,7 +3209,39 @@ if(model.run.matrix[2] == "YES")
     
     shape_training_qda@data <- merge(x=shape_training_qda@data,y=result_training_qda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     #writeOGR(shape_training_qda,dsn="result_QDA_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_qda,dsn="result_QDA_training.shp",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE)
+      {
+      writeOGR(shape_training_qda,dsn="result_QDA_training.shp",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+      require(rgdal)
+      require(raster)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded<-shape_training_qda
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"MOD_CLASS"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.5 & layer_gridded_raster_reproject@data[,1]<=1]<-1
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0 & layer_gridded_raster_reproject@data[,1]<=0.5]<-0
+      pngcolors<-gray(c(1,0))[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]
+      pnglabels<-c("0: Stable","1: Unstable")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_QDA_training.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=2,options=c("WORLDFILE=YES"))
+      file.rename(from="result_QDA_training.wld", to="result_QDA_training.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"QDA shapefile training"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_binary.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_QDA_training.shp.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      }
     
     
     # WARNING: The validation does't have the unvertainty estimation: probabilty this can be daone using the parabolic error function 
@@ -3035,7 +3259,40 @@ if(model.run.matrix[2] == "YES")
     shape_validation_qda@data <- merge(x=shape_validation_qda@data,y=result_validation_qda_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_qda@data <- cbind(shape_validation_qda@data,PROB_SDMOD=(coefficients(fit.parabola.probability.qda)*(shape_validation_qda@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.qda)*shape_validation_qda@data$VAL_PROB))
     #writeOGR(shape_validation_qda,dsn="result_QDA_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_qda,dsn="result_QDA_validation.shp",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE)
+      {
+      writeOGR(shape_validation_qda,dsn="result_QDA_validation.shp",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+      require(rgdal)
+      require(raster)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded<-shape_validation_qda
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"VAL_CLASS"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.5 & layer_gridded_raster_reproject@data[,1]<=1]<-1
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0 & layer_gridded_raster_reproject@data[,1]<=0.5]<-0
+      pngcolors<-gray(c(1,0))[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]
+      pnglabels<-c("0: Stable","1: Unstable")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_QDA_validation.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=2,options=c("WORLDFILE=YES"))
+      file.rename(from="result_QDA_validation.wld", to="result_QDA_validation.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"QDA shapefile validation"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_binary.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_QDA_validation.shp.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      }
+    
     
     require(raster)
     
@@ -4292,7 +4549,36 @@ if(model.run.matrix[3] == "YES")
     
     shape_training_lrm@data <- merge(x=shape_training_lrm@data,y=result_training_lrm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     #writeOGR(shape_training_lrm,dsn="result_LRM_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_lrm,dsn="result_LRM_training.shp",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE)
+    {
+      writeOGR(shape_training_lrm,dsn="result_LRM_training.shp",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+      require(rgdal)
+      require(raster)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded<-shape_training_lrm
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"MOD_CLASS"])
+      r<-raster(xmn=layer_gridded@bbox[1,1],xmx=layer_gridded@bbox[1,2],ymn=layer_gridded@bbox[2,1],ymx=layer_gridded@bbox[2,2],resolution=as.numeric(configuration.spatial.data.table[c(8)]),crs=layer_gridded@proj4string)
+      layer_gridded_raster<-rasterize(layer_gridded,r,field=1)
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0]<-1
+      pngcolors<-gray(c(1,0))[2]
+      pnglabels<-c("StudyArea")
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_LRM_training.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=0,options=c("WORLDFILE=YES"))
+      file.rename(from="result_LRM_training.wld", to="result_LRM_training.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"LRM shapefile training"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_studyarea.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_LRM_training.shp.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+    }
     
     # WARNING: The validation does't have the unvertainty estimation: probably this can be daone using the parabolic error function 
     shape_validation_lrm<-shape_validation
@@ -4310,7 +4596,36 @@ if(model.run.matrix[3] == "YES")
     shape_validation_lrm@data <- merge(x=shape_validation_lrm@data,y=result_validation_lrm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_lrm@data <- cbind(shape_validation_lrm@data,PROB_SDMOD=(coefficients(fit.parabola.probability.lrm)*(shape_validation_lrm@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.lrm)*shape_validation_lrm@data$VAL_PROB))
     #writeOGR(shape_validation_lrm,dsn="result_LRM_validation.shp",layer="validation",driver="ESRI Shapefile")  # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_lrm,dsn="result_LRM_validation.shp",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE)
+      {
+        writeOGR(shape_validation_lrm,dsn="result_LRM_validation.shp",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+        require(rgdal)
+        require(raster)
+        ### Reprojecting
+        export_EPSG_code<-"4326"
+        layer_gridded<-shape_validation_lrm
+        layer_gridded@data<-as.data.frame(layer_gridded@data[,"VAL_CLASS"])
+        r<-raster(xmn=layer_gridded@bbox[1,1],xmx=layer_gridded@bbox[1,2],ymn=layer_gridded@bbox[2,1],ymx=layer_gridded@bbox[2,2],resolution=as.numeric(configuration.spatial.data.table[c(8)]),crs=layer_gridded@proj4string)
+        layer_gridded_raster<-rasterize(layer_gridded,r,field=1)
+        layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+        layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+        fullgrid(layer_gridded_raster_reproject)
+        ### Reclassifying 
+        layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0]<-1
+        pngcolors<-gray(c(1,0))[2]
+        pnglabels<-c("StudyArea")
+        ### Writing .png .pngw files 
+        writeGDAL(layer_gridded_raster_reproject,"result_LRM_validation.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=0,options=c("WORLDFILE=YES"))
+        file.rename(from="result_LRM_validation.wld", to="result_LRM_validation.pngw")
+        ### Writing .properties files 
+        pngid<-1
+        pngtitle<-"LRM shapefile validation"
+        pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+        pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+        pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_studyarea.PNG"
+        propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+        write.table(propertiesstring,"result_LRM_validation.shp.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      }
     ##################################################################
     ##################################################################
     
@@ -4468,8 +4783,39 @@ if(model.run.matrix[3] == "YES")
     shape_training_lrm@data <- merge(x=shape_training_lrm@data,y=result_training_lrm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     #writeOGR(shape_training_lrm,dsn="result_LRM_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
     
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_lrm,dsn="result_LRM_training.shp",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
-    
+    if(enable_detailed_data_export==TRUE)
+      {
+      writeOGR(shape_training_lrm,dsn="result_LRM_training.shp",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+      require(rgdal)
+      require(raster)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded<-shape_training_lrm
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"MOD_CLASS"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.5 & layer_gridded_raster_reproject@data[,1]<=1]<-1
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0 & layer_gridded_raster_reproject@data[,1]<=0.5]<-0
+      pngcolors<-gray(c(1,0))[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]
+      pnglabels<-c("0: Stable","1: Unstable")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_LRM_training.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=2,options=c("WORLDFILE=YES"))
+      file.rename(from="result_LRM_training.wld", to="result_LRM_training.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"LRM shapefile training"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_binary.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_LRM_training.shp.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      }
     
     # WARNING: The validation does't have the unvertainty estimation: probabilty this can be daone using the parabolic error function 
     shape_validation_lrm<-shape_validation
@@ -4485,7 +4831,39 @@ if(model.run.matrix[3] == "YES")
     shape_validation_lrm@data <- merge(x=shape_validation_lrm@data,y=result_validation_lrm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_lrm@data <- cbind(shape_validation_lrm@data,PROB_SDMOD=(coefficients(fit.parabola.probability.lrm)*(shape_validation_lrm@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.lrm)*shape_validation_lrm@data$VAL_PROB))
     #writeOGR(shape_validation_lrm,dsn="result_LRM_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_lrm,dsn="result_LRM_validation.shp",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE)
+      {
+      writeOGR(shape_validation_lrm,dsn="result_LRM_validation.shp",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+      require(rgdal)
+      require(raster)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded<-shape_validation_lrm
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"VAL_CLASS"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.5 & layer_gridded_raster_reproject@data[,1]<=1]<-1
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0 & layer_gridded_raster_reproject@data[,1]<=0.5]<-0
+      pngcolors<-gray(c(1,0))[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]
+      pnglabels<-c("0: Stable","1: Unstable")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_LRM_validation.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=2,options=c("WORLDFILE=YES"))
+      file.rename(from="result_LRM_validation.wld", to="result_LRM_validation.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"LRM shapefile validation"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_binary.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_LRM_validation.shp.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      }
     
     require(raster)
     
@@ -5760,7 +6138,37 @@ if(model.run.matrix[4] == "YES")
     
     shape_training_nnm@data <- merge(x=shape_training_nnm@data,y=result_training_nnm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)  
     #writeOGR(shape_training_nnm,dsn="result_NNM_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_nnm,dsn="result_NNM_training.shp",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE)
+    {
+      writeOGR(shape_training_nnm,dsn="result_NNM_training.shp",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+      require(rgdal)
+      require(raster)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded<-shape_training_nnm
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"MOD_CLASS"])
+      r<-raster(xmn=layer_gridded@bbox[1,1],xmx=layer_gridded@bbox[1,2],ymn=layer_gridded@bbox[2,1],ymx=layer_gridded@bbox[2,2],resolution=as.numeric(configuration.spatial.data.table[c(8)]),crs=layer_gridded@proj4string)
+      layer_gridded_raster<-rasterize(layer_gridded,r,field=1)
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0]<-1
+      pngcolors<-gray(c(1,0))[2]
+      pnglabels<-c("StudyArea")
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_NNM_training.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=0,options=c("WORLDFILE=YES"))
+      file.rename(from="result_NNM_training.wld", to="result_NNM_training.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"NNM shapefile training"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_studyarea.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_NNM_training.shp.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+    }
+    
     
     # WARNING: The validation does't have the unvertainty estimation: probably this can be daone using the parabolic error function 
     shape_validation_nnm<-shape_validation
@@ -5777,7 +6185,36 @@ if(model.run.matrix[4] == "YES")
     shape_validation_nnm@data <- merge(x=shape_validation_nnm@data,y=result_validation_nnm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_nnm@data <- cbind(shape_validation_nnm@data,PROB_SDMOD=(coefficients(fit.parabola.probability.nnm)*(shape_validation_nnm@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.nnm)*shape_validation_nnm@data$VAL_PROB))
     #writeOGR(shape_validation_nnm,dsn="result_NNM_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_nnm,dsn="result_NNM_validation.shp",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE)
+      {
+        writeOGR(shape_validation_nnm,dsn="result_NNM_validation.shp",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+        require(rgdal)
+        require(raster)
+        ### Reprojecting
+        export_EPSG_code<-"4326"
+        layer_gridded<-shape_validation_nnm
+        layer_gridded@data<-as.data.frame(layer_gridded@data[,"VAL_CLASS"])
+        r<-raster(xmn=layer_gridded@bbox[1,1],xmx=layer_gridded@bbox[1,2],ymn=layer_gridded@bbox[2,1],ymx=layer_gridded@bbox[2,2],resolution=as.numeric(configuration.spatial.data.table[c(8)]),crs=layer_gridded@proj4string)
+        layer_gridded_raster<-rasterize(layer_gridded,r,field=1)
+        layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+        layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+        fullgrid(layer_gridded_raster_reproject)
+        ### Reclassifying 
+        layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0]<-1
+        pngcolors<-gray(c(1,0))[2]
+        pnglabels<-c("StudyArea")
+        ### Writing .png .pngw files 
+        writeGDAL(layer_gridded_raster_reproject,"result_NNM_validation.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=0,options=c("WORLDFILE=YES"))
+        file.rename(from="result_NNM_validation.wld", to="result_NNM_validation.pngw")
+        ### Writing .properties files 
+        pngid<-1
+        pngtitle<-"NNM shapefile validation"
+        pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+        pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+        pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_studyarea.PNG"
+        propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+        write.table(propertiesstring,"result_NNM_validation.shp.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      }
     ##################################################################
     ##################################################################
     
@@ -5933,8 +6370,39 @@ if(model.run.matrix[4] == "YES")
     #############
     shape_training_nnm@data <- merge(x=shape_training_nnm@data,y=result_training_nnm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     #writeOGR(shape_training_nnm,dsn="result_NNM_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_nnm,dsn="result_NNM_training.shp",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
-    
+    if(enable_detailed_data_export==TRUE)
+      {
+      writeOGR(shape_training_nnm,dsn="result_NNM_training.shp",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+      require(rgdal)
+      require(raster)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded<-shape_training_nnm
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"MOD_CLASS"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.5 & layer_gridded_raster_reproject@data[,1]<=1]<-1
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0 & layer_gridded_raster_reproject@data[,1]<=0.5]<-0
+      pngcolors<-gray(c(1,0))[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]
+      pnglabels<-c("0: Stable","1: Unstable")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_NNM_training.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=2,options=c("WORLDFILE=YES"))
+      file.rename(from="result_NNM_training.wld", to="result_NNM_training.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"NNM shapefile training"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_binary.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_NNM_training.shp.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      }
     
     # WARNING: The validation does't have the unvertainty estimation: probabilty this can be daone using the parabolic error function 
     shape_validation_nnm<-shape_validation
@@ -5950,7 +6418,40 @@ if(model.run.matrix[4] == "YES")
     shape_validation_nnm@data <- merge(x=shape_validation_nnm@data,y=result_validation_nnm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_nnm@data <- cbind(shape_validation_nnm@data,PROB_SDMOD=(coefficients(fit.parabola.probability.nnm)*(shape_validation_nnm@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.nnm)*shape_validation_nnm@data$VAL_PROB))
     #writeOGR(shape_validation_nnm,dsn="result_NNM_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_nnm,dsn="result_NNM_validation.shp",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE)
+      {
+      writeOGR(shape_validation_nnm,dsn="result_NNM_validation.shp",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+      require(rgdal)
+      require(raster)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded<-shape_validation_nnm
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"VAL_CLASS"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.5 & layer_gridded_raster_reproject@data[,1]<=1]<-1
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0 & layer_gridded_raster_reproject@data[,1]<=0.5]<-0
+      pngcolors<-gray(c(1,0))[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]
+      pnglabels<-c("0: Stable","1: Unstable")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_NNM_validation.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=2,options=c("WORLDFILE=YES"))
+      file.rename(from="result_NNM_validation.wld", to="result_NNM_validation.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"NNM shapefile validation"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_binary.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_NNM_validation.shp.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      }
+    
     
     require(raster)
     
@@ -7184,7 +7685,37 @@ if(model.run.matrix[5] == "YES")
     #############
     shape_training_cfm@data <- merge(x=shape_training_cfm@data,y=result_training_cfm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     #writeOGR(shape_training_cfm,dsn="result_CFM_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_cfm,dsn="result_CFM_training.shp",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE)
+    {
+      writeOGR(shape_training_cfm,dsn="result_CFM_training.shp",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+      require(rgdal)
+      require(raster)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded<-shape_training_cfm
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"MOD_CLASS"])
+      r<-raster(xmn=layer_gridded@bbox[1,1],xmx=layer_gridded@bbox[1,2],ymn=layer_gridded@bbox[2,1],ymx=layer_gridded@bbox[2,2],resolution=as.numeric(configuration.spatial.data.table[c(8)]),crs=layer_gridded@proj4string)
+      layer_gridded_raster<-rasterize(layer_gridded,r,field=1)
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0]<-1
+      pngcolors<-gray(c(1,0))[2]
+      pnglabels<-c("StudyArea")
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_CFM_training.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=0,options=c("WORLDFILE=YES"))
+      file.rename(from="result_CFM_training.wld", to="result_CFM_training.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"CFM shapefile training"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_studyarea.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_CFM_training.shp.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+    }
+    
     
     # WARNING: The validation does't have the unvertainty estimation: probably this can be daone using the parabolic error function 
     shape_validation_cfm<-shape_validation
@@ -7200,7 +7731,37 @@ if(model.run.matrix[5] == "YES")
     shape_validation_cfm@data <- merge(x=shape_validation_cfm@data,y=result_validation_cfm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_cfm@data <- cbind(shape_validation_cfm@data,PROB_SDMOD=(coefficients(fit.parabola.probability.cfm)*(shape_validation_cfm@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.cfm)*shape_validation_cfm@data$VAL_PROB))
     #writeOGR(shape_validation_cfm,dsn="result_CFM_validation.shp",layer="validation",driver="ESRI Shapefile")  # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_cfm,dsn="result_CFM_validation.shp",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE)
+    {
+      writeOGR(shape_validation_cfm,dsn="result_CFM_validation.shp",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+      require(rgdal)
+      require(raster)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded<-shape_validation_cfm
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"VAL_CLASS"])
+      r<-raster(xmn=layer_gridded@bbox[1,1],xmx=layer_gridded@bbox[1,2],ymn=layer_gridded@bbox[2,1],ymx=layer_gridded@bbox[2,2],resolution=as.numeric(configuration.spatial.data.table[c(8)]),crs=layer_gridded@proj4string)
+      layer_gridded_raster<-rasterize(layer_gridded,r,field=1)
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0]<-1
+      pngcolors<-gray(c(1,0))[2]
+      pnglabels<-c("StudyArea")
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_CFM_validation.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=0,options=c("WORLDFILE=YES"))
+      file.rename(from="result_CFM_validation.wld", to="result_CFM_validation.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"CFM shapefile validation"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_studyarea.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_CFM_validation.shp.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+    }
+    
     ##################################################################
     ##################################################################
     
@@ -7355,8 +7916,41 @@ if(model.run.matrix[5] == "YES")
     #############
     shape_training_cfm@data <- merge(x=shape_training_cfm@data,y=result_training_cfm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     #writeOGR(shape_training_cfm,dsn="result_CFM_training.shp",layer="training",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_training_cfm,dsn="result_CFM_training.shp",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
-    
+    if(enable_detailed_data_export==TRUE)
+      {
+      writeOGR(shape_training_cfm,dsn="result_CFM_training.shp",layer="training",driver="ESRI Shapefile",overwrite_layer=TRUE)
+      require(rgdal)
+      require(raster)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded<-shape_training_cfm
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"MOD_CLASS"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.5 & layer_gridded_raster_reproject@data[,1]<=1]<-1
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0 & layer_gridded_raster_reproject@data[,1]<=0.5]<-0
+      pngcolors<-gray(c(1,0))[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]
+      pnglabels<-c("0: Stable","1: Unstable")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_CFM_training.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=2,options=c("WORLDFILE=YES"))
+      file.rename(from="result_CFM_training.wld", to="result_CFM_training.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"CFM shapefile training"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_binary.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_NNM_training.shp.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      }
+      
+      
     
     # WARNING: The validation does't have the unvertainty estimation: probabilty this can be daone using the parabolic error function 
     shape_validation_cfm<-shape_validation
@@ -7373,7 +7967,39 @@ if(model.run.matrix[5] == "YES")
     shape_validation_cfm@data <- merge(x=shape_validation_cfm@data,y=result_validation_cfm_shape,by.x=shape_merge_field, by.y="ID", all.x=T, sort=F)	
     shape_validation_cfm@data <- cbind(shape_validation_cfm@data,PROB_SDMOD=(coefficients(fit.parabola.probability.cfm)*(shape_validation_cfm@data$VAL_PROB^2)) + ((-1)*coefficients(fit.parabola.probability.cfm)*shape_validation_cfm@data$VAL_PROB))
     #writeOGR(shape_validation_cfm,dsn="result_CFM_validation.shp",layer="validation",driver="ESRI Shapefile") # Version of rgdal older than 2.13.1
-    if(enable_detailed_data_export==TRUE) writeOGR(shape_validation_cfm,dsn="result_CFM_validation.shp",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+    if(enable_detailed_data_export==TRUE)
+      {
+      writeOGR(shape_validation_cfm,dsn="result_CFM_validation.shp",layer="validation",driver="ESRI Shapefile",overwrite_layer=TRUE)
+      require(rgdal)
+      require(raster)
+      ### Reprojecting
+      export_EPSG_code<-"4326"
+      layer_gridded<-shape_validation_cfm
+      layer_gridded@data<-as.data.frame(layer_gridded@data[,"VAL_CLASS"])
+      gridded(layer_gridded)<-TRUE
+      layer_gridded_raster<-raster(layer_gridded)
+      #res(layer_gridded_raster)<-gridparameters(layer_gridded)[1,2]
+      res(layer_gridded_raster)<-as.numeric(configuration.spatial.data.table[c(8)])
+      layer_gridded_raster_reproject<-projectRaster(from=layer_gridded_raster,crs=CRS(paste("+init=epsg:",export_EPSG_code,sep="")))
+      layer_gridded_raster_reproject<-as(layer_gridded_raster_reproject, "SpatialPixelsDataFrame")
+      fullgrid(layer_gridded_raster_reproject)
+      ### Reclassifying 
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>0.5 & layer_gridded_raster_reproject@data[,1]<=1]<-1
+      layer_gridded_raster_reproject@data[,1][layer_gridded_raster_reproject@data[,1]>=0 & layer_gridded_raster_reproject@data[,1]<=0.5]<-0
+      pngcolors<-gray(c(1,0))[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]
+      pnglabels<-c("0: Stable","1: Unstable")[as.numeric(names(table(layer_gridded_raster_reproject@data[,1])))+1]
+      ### Writing .png .pngw files 
+      writeGDAL(layer_gridded_raster_reproject,"result_CFM_validation.png",drivername = "PNG", type = "Byte",colorTable=list(pngcolors), catNames=list(pnglabels),mvFlag=2,options=c("WORLDFILE=YES"))
+      file.rename(from="result_CFM_validation.wld", to="result_CFM_validation.pngw")
+      ### Writing .properties files 
+      pngid<-1
+      pngtitle<-"CFM shapefile validation"
+      pngdate<-format(Sys.time(),"%Y-%m-%dT%H:%M:%SZ")
+      pnggeom<-paste("POLYGON((",paste(paste(expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,1],expand.grid(layer_gridded@bbox[1,],layer_gridded@bbox[2,])[,2],sep=" "),collapse=","),"))",sep="")
+      pngimgurl<-"https://raw.githubusercontent.com/maurorossi/dcs-LAND-SE/master/src/main/app-resources/job_template_landse/legend_binary.PNG"
+      propertiesstring<-paste("identifier=",pngid,"\ntitle=",pngtitle,"\ndate=",pngdate,"\ngeometry=",pnggeom,"\nimage_url=",pngimgurl,sep="")
+      write.table(propertiesstring,"result_CFM_validation.shp.properties",row.names=FALSE,col.names=FALSE,quote=FALSE)
+      }
     
     require(raster)
     
@@ -8104,12 +8730,40 @@ for(count_zip in 1:length(zip_list))
 }
 
 
-geo_list<-c(list.files(pattern=c(".tif"),include.dirs=FALSE),list.files(pattern=c(".png"),include.dirs=FALSE))
-print(paste("--------------------------------------",sep=""))
-print("Publishing geographical model outputs")
-print(geo_list)
-for(count_geo in 1:length(geo_list))
-{
-  rciop.publish(paste(getwd(),"/",geo_list[count_geo],sep=""), recursive=FALSE, metalink=TRUE)
-}
+if(configuration.spatial.data.table$PRESENCE == "YES")
+  {
+  print(paste("--------------------------------------",sep=""))
+  print("Publishing shapefiles model results:")
+  model_list<-as.character(configuration.table[configuration.table$RUN=="YES",1])
+  shp_list_entire<-NULL
+  for(count_mod in 1:length(model_list))
+    {
+    #count_mod<-1
+    #training folder
+    #shp_list<-c(list.files(paste(getwd(),"/result_",model_list[count_mod],"_training",sep=""),include.dirs=FALSE,full.names=TRUE),list.files(paste(getwd(),"/result_",model_list[count_mod],"_validation",sep=""),include.dirs=FALSE,full.names=TRUE))
+    shp_list<-c(list.files(pattern=paste("result_",model_list[count_mod],"_training",sep=""),include.dirs=FALSE,full.names=FALSE),list.files(pattern=paste("result_",model_list[count_mod],"_validation",sep=""),include.dirs=FALSE,full.names=FALSE))
+    shp_list_entire<-c(shp_list,shp_list_entire)
+    #validation folder
+    for(count_shp in 1:length(shp_list))
+      {
+      #print(shp_list[count_shp])
+      #rciop.publish(shp_list[count_shp], recursive=FALSE, metalink=TRUE)
+      rciop.publish(paste(getwd(),"/",shp_list[count_shp],sep=""), recursive=FALSE, metalink=TRUE)
+      }
+    }
+  
+  if(configuration.spatial.data.table$GEOMETRY=="POINTS")
+    {
+    geo_list<-c(list.files(pattern=c(".tif"),include.dirs=FALSE),list.files(pattern=c(".png"),include.dirs=FALSE))
+
+    print(paste("--------------------------------------",sep=""))
+    print("Publishing geographical model outputs")
+    print(geo_list)
+    for(count_geo in 1:length(geo_list))
+      {
+      rciop.publish(paste(getwd(),"/",geo_list[count_geo],sep=""), recursive=FALSE, metalink=TRUE)
+      }
+    }
+  }
+
 
