@@ -8746,7 +8746,7 @@ if(configuration.spatial.data.table$PRESENCE == "YES")
     #validation folder
     for(count_shp in 1:length(shp_list))
       {
-      #print(shp_list[count_shp])
+      print(shp_list[count_shp])
       #rciop.publish(shp_list[count_shp], recursive=FALSE, metalink=TRUE)
       rciop.publish(paste(getwd(),"/",shp_list[count_shp],sep=""), recursive=FALSE, metalink=TRUE)
       }
@@ -8761,6 +8761,7 @@ if(configuration.spatial.data.table$PRESENCE == "YES")
     print(geo_list)
     for(count_geo in 1:length(geo_list))
       {
+      print(geo_list[count_geo])
       rciop.publish(paste(getwd(),"/",geo_list[count_geo],sep=""), recursive=FALSE, metalink=TRUE)
       }
     }
